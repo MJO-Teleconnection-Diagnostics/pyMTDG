@@ -70,7 +70,7 @@ for istep in steps[1:]:
 
 # Compute daily means
 
-z500 = gh500.resample(time='D').mean()
+z500 = gh500.resample(time='D').mean(dim='time')
 z500.attrs['units'] = 'gpm'
 z500.attrs['name'] = '500hPa geopotential height'
 time_daily_mean = z500['time']
