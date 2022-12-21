@@ -18,7 +18,7 @@ def calcAnomObs(ds,anom_name):
 
 def select_mjo_event(rmm_index,phase,phase_val):
     
-    # Select the MJO events with amplitude > 1 and in a given phase
+    # Select MJO events with amplitude > 1 and in a given phase
     # rmm_index: time series of the RMM index
     # phase: time series of the phase
     # phase_val: integer 1 ... 8
