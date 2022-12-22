@@ -50,6 +50,12 @@ def calcComposites(ds,mjo_events,week,name):
             ds_anoms.append(anoms.to_dataset(name=name))
     ds_comp_anoms=xr.combine_nested(ds_anoms,concat_dim='mjo_events')
     
-    # Bootstrap for significance ...
-
     return ds_comp_anoms
+
+def test_sig(ds,confidence_level,n_resamples):
+    rng = np.random.default_rng()
+    res=bootstrap((ds.to_array(),),np.std,axis=1,confidence_level=confidence_level, 
+                 n_resamples=n_resamples,random_state=rng)
+    ci_l,ci_u=res.confidence_interval
+    
+    return ci_l, ci_u
