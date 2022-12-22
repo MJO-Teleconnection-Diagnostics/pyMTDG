@@ -23,7 +23,7 @@ def select_mjo_event(rmm_index,phase,phase_val):
     # phase: time series of the phase
     # phase_val: integer 1 ... 8
     
-    mjo_events=np.where((rmm_index>1) & (phase==phase_val),drop=True)
+    mjo_events=rmm_index.where((rmm_index>1) & (phase==phase_val),drop=True)
     return mjo_events
 
 def calcComposites(ds,mjo_events,week,name):
