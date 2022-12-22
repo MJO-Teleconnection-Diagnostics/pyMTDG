@@ -3,6 +3,7 @@
 import numpy as np
 import xarray as xr
 import pandas as pd
+from scipy.stats import bootstrap
 
 def calcAnomObs(ds,anom_name):
     
