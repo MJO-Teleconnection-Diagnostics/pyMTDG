@@ -54,8 +54,9 @@ def calcComposites(ds,mjo_events,week,name):
     return ds_comp_anoms
 
 def test_sig(ds,confidence_level,n_resamples):
+    # ds shape (mjo_events,longitude,latitude)
     rng = np.random.default_rng()
-    res=bootstrap((ds.to_array(),),np.std,axis=1,confidence_level=confidence_level, 
+    res=bootstrap((ds.to_array(),),np.mean,axis=1,confidence_level=confidence_level, 
                  n_resamples=n_resamples,random_state=rng)
     ci_l,ci_u=res.confidence_interval
     
