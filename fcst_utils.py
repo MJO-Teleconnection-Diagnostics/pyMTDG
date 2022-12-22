@@ -18,7 +18,9 @@ def calcAnom(ds,anom_name):
     # Compute climatology for each forecast lead 
     climo=[]
     for i in range(nlead):
-        da=ds[i:ntimes-1:nlead,:,:].mean(dim='time')
+        #AMJ 12/22/22 fixed indexing bug
+        #da=ds[i:ntimes-1:nlead,:,:].mean(dim='time')
+        da=ds[i:ntimes:nlead,:,:].mean(dim='time')
         climo.append(da.to_dataset(name='clim'))
     ds_clim=xr.combine_nested(climo,concat_dim='time')
     
