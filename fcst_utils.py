@@ -89,8 +89,6 @@ def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
     delon = 360. / nlon_out
     lon_out = np.arange ( nlon_out ) * delon
     
-# Vector interpolation to be added 
-    
     data_in_pre_regrid=np.empty([1, nlat_in, nlon_in])
     data_regrid=np.empty([len (ds_in.time),nlat_out,nlon_out])
     for i in range(len (ds_in.time)):
@@ -101,3 +99,5 @@ def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
                                coords=dict(time=ds_in.time,latitude=lat_out,longitude=lon_out),
                                attrs=ds_in.attrs)
     return output_regrid 
+
+# Interpolation function for vector fields to be added
