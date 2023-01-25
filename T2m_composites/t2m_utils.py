@@ -1,3 +1,7 @@
+import numpy as np
+import matplotlib.pyplot as plt # matplotlib version 3.2 and custom version 3.3
+import proplot as plot
+
 def is_ndjfm(month):
     return (month >= 11) | (month <= 3)
 import matplotlib.pyplot as plt # matplotlib version 3.2 and custom version 3.3
@@ -25,3 +29,12 @@ def plotComposites(ds,levels,cmap,lon_0,lat_0,sig_map):
     ax.contourf(ds.longitude,ds.latitude,sig_map,levels=[0,1],
                 colors='None',hatches=['...',''])
     ax.format(coast='True',boundinglat=lat_0,grid=False)
+  
+def correlate(obs,model,lat_min,lat_max,lon_min,lon_max):
+    x=obs.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min,lon_max))
+    y=model.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min,lon_max))
+    x_stacked=x.stack(grid=('latitude','longitude'))
+    y_stacked=y.stack(grid=('latitude','longitude'))
+    corr=np.corrcoef(x_stacked,y_stacked)
+    
+    return corr
