@@ -98,6 +98,7 @@ def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
                                dims=[ 'time','latitude','longitude'],
                                coords=dict(time=ds_in.time,latitude=lat_out,longitude=lon_out),
                                attrs=ds_in.attrs)
+    output_regird['time']=ds_in.time
     return output_regrid 
 
 # Interpolation function for vector fields to be added
