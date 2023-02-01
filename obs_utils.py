@@ -61,4 +61,12 @@ def test_sig(ds,confidence_level,n_resamples):
                  n_resamples=n_resamples,random_state=rng)
     ci_l,ci_u=res.confidence_interval
     
-    return ci_l, ci_u
+    ci_l_return=xr.DataArray(ci_l, name='ci_l',
+                               dims=['latitude','longitude'],
+                               coords=dict(latitude=ds.latitude,longitude=ds.longitude))
+    ci_u_return=xr.DataArray(ci_u, name='ci_u',
+                               dims=['latitude','longitude'],
+                               coords=dict(latitude=ds.latitude,longitude=ds.longitude))
+    del ci_l, ci_u
+    
+    return ci_l_return, ci_u_return
