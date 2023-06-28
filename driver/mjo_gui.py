@@ -1,5 +1,3 @@
-#have to add back buttons
-#solve the issue with overflowing layout
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter
 from PyQt5.QtWidgets import *
@@ -15,6 +13,7 @@ import yaml
 class EntryWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        #self.setupUi(self)
         self.setWindowTitle('MJO Teleconnections Diagnostics')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
@@ -65,7 +64,7 @@ class EntryWindow(QMainWindow):
         
 
         #IMERG
-        imerg_label = QLabel('Use ERA_I for validation:', self)
+        imerg_label = QLabel('Use IMERG for validation:', self)
         groupbox2 = QGroupBox()
         vbox = QVBoxLayout()
         groupbox2.setLayout(vbox)
@@ -81,6 +80,7 @@ class EntryWindow(QMainWindow):
         #Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
+        
         left_layout.addStretch()
 
         #Create a layout for the right half (text widgets and button)
@@ -139,7 +139,6 @@ class EntryWindow(QMainWindow):
             self.era = False
 
 
-
     def open_second_window(self):
         dict_file =[]
         dict_file.append({'DIR_IN' : self.dir_in_text.text()})
@@ -157,17 +156,19 @@ class EntryWindow(QMainWindow):
             dict_file.append({'IMERG:' : False})
 
         yaml.dump(dict_file, file)
-        self.second_window = SecondWindow(self.dir_in_text.text(),self.era)
+        self.second_window = SecondWindow(self,self.dir_in_text.text(),self.era)
         self.second_window.showMaximized()
-        #self.close()
+        self.hide()
     
     def output(self):
         pass
 
 
 class SecondWindow(QMainWindow):
-    def __init__(self,dirin,era):
+    def __init__(self,parent,dirin,era):
         super().__init__()
+        #self.setupUi(self)
+        self.parent=parent
         self.setWindowTitle('Daily Anomaly and RMM')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
@@ -254,10 +255,14 @@ class SecondWindow(QMainWindow):
         vbox.addWidget(zonalpath200)
         vbox.addWidget(self.zonalpath200T)
         vbox.addWidget(but)
-        
+
+        back = QPushButton('Back', self)
+        back.clicked.connect(self.closee)
+
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
+        left_layout.addWidget(back)
         left_layout.addStretch()
 
         # Create a layout for the right half (text widgets and button)
@@ -298,6 +303,11 @@ class SecondWindow(QMainWindow):
             self.dailyAnomaly = True
         else:
             self.dailyAnomaly = False
+    def closee(self):
+        self.close()
+        self.parent.show()
+        
+        
     
     def onrmmClicked(self):
         radioButton = self.sender()
@@ -322,8 +332,10 @@ class SecondWindow(QMainWindow):
             dict_file.append({'RMM:' : False})
 
         yaml.dump(dict_file, file)
-        self.third_window = ThirdWindow(self.dirin,self.era)
+        self.third_window = ThirdWindow(self,self.dirin,self.era)
         self.third_window.showMaximized()
+        self.hide()
+        
         #self.close()
 
     def method(self,checked):
@@ -336,74 +348,14 @@ class SecondWindow(QMainWindow):
             self.groupbox.setParent(None)
             #self.close()
 
-class RMM(QMainWindow):
-    def __init__(self,dirin,era):
-        super().__init__()
-        
-        self.setWindowTitle('Daily Anomaly and RMM')
-        self.setGeometry(0, 0, 800, 400)  # Set window position and size
-        self.showMaximized()
-        # Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
-        self.era=era
-        #Replace with the actual path to your weather image file
-        #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
-        # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # Create the text widgets
 
-        
-
-        # Create a layout for the left half (weather image)
-        left_layout = QVBoxLayout()
-        left_layout.addWidget(weather_image)
-        left_layout.addStretch()
-
-        # Create a layout for the right half (text widgets and button)
-        right_layout = QVBoxLayout()
-        right_layout.addWidget(dir_in_label)
-        right_layout.addWidget(self.dir_in_text)
-        right_layout.addWidget(start_date_label)
-        right_layout.addWidget(self.start_date_text)
-        right_layout.addWidget(end_date_label)
-        right_layout.addWidget(self.end_date_text)
-        right_layout.addWidget(but)
-        right_layout.addStretch()
-
-        # Create a QSplitter to split the window equally
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(QWidget())
-        splitter.addWidget(QWidget())
-        splitter.setSizes([1, 1])
-
-        # Set the left layout to the first widget of the splitter
-        splitter.widget(0).setLayout(left_layout)
-        splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        # Set the right layout to the second widget of the splitter
-        splitter.widget(1).setLayout(right_layout)
-        splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        # Create a central widget to hold the splitter
-        central_widget = QWidget()
-        central_layout = QHBoxLayout()
-        central_layout.addWidget(splitter)
-        central_widget.setLayout(central_layout)
-        self.setCentralWidget(central_widget)
-
-    def openThirdWindow(self):
-        self.fourth_window = ThirdWindow(self.dirin,self.era)
-        self.fourth_window.showMaximized()
-        #self.close()
 
 
 class ThirdWindow(QMainWindow):
-    def __init__(self,dirin,era):
+    def __init__(self,parent,dirin,era):
         super().__init__()
+        #self.setupUi(self)
+        self.parent=parent
         self.setWindowTitle('Third Window')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
@@ -460,10 +412,13 @@ class ThirdWindow(QMainWindow):
         # Create the checkboxs
         but = QPushButton('Submit', self)
         but.clicked.connect(self.openThirdSubWindow)
+        back = QPushButton('Back', self)
+        back.clicked.connect(self.closee)
         
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
+        left_layout.addWidget(back)
         left_layout.addStretch()
 
         # Create a layout for the right half (text widgets and button)
@@ -503,6 +458,9 @@ class ThirdWindow(QMainWindow):
         central_layout.addWidget(splitter)
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
     def openThirdSubWindow(self):
         selected=[]
         if(self.all.isChecked()):
@@ -528,9 +486,13 @@ class ThirdWindow(QMainWindow):
                 selected.append(9)
             if self.ten.isChecked():
                 selected.append(10)
-        self.ThirdSubWindow = ThirdSubWindow(selected,self.dirin,self.era)
+        self.ThirdSubWindow = ThirdSubWindow(self,selected,self.dirin,self.era)
         self.ThirdSubWindow.showMaximized()
+        self.hide()
+        
         #self.close()
+    
+    
 
     def method(self,checked):
         # printing the checked status
@@ -564,8 +526,10 @@ class ThirdWindow(QMainWindow):
 
 
 class ThirdSubWindow(QMainWindow):
-    def __init__(self,selected,dirin,era):
+    def __init__(self,parent,selected,dirin,era):
         super().__init__()
+        #self.setupUi(self)
+        self.parent=parent
         vbox = QHBoxLayout()
         self.setWindowTitle('Third Sub Window')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
@@ -910,10 +874,13 @@ class ThirdSubWindow(QMainWindow):
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(self.widget)
 
+        back = QPushButton('Back', self)
+        back.clicked.connect(self.closee)
 
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
+        left_layout.addWidget(back)
         left_layout.addStretch()
 
         # Create a layout for the right half (text widgets and button)
@@ -939,6 +906,10 @@ class ThirdSubWindow(QMainWindow):
         central_layout.addWidget(splitter)
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
+    
+    def closee(self):
+        self.close()
+        self.parent.show()
     def submi(self):
         dict_file =[]
         dict_file.append({'z500' : self.z500T.text()})
@@ -964,7 +935,6 @@ class ThirdSubWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     file = open(r'config.yml', 'w') 
-    
     entry_window = EntryWindow()
     entry_window.show()
     sys.exit(app.exec())
