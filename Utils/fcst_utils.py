@@ -2,6 +2,7 @@
 
 import numpy as np
 import xarray as xr
+import spharm
 
 def calcAnom(ds,anom_name):
     # Save the original dates 
@@ -43,11 +44,62 @@ def calcAnom(ds,anom_name):
     
     return anom
   
-def regrid_scalar_spharm ( data_in , grid_input , grid_output ) : # This function is from the original code provided by Cheng
-    input_reorder  = np.transpose ( data_in , ( 1 , 2 , 0 ) )
-    regrid_data = spharm.regrid ( grid_input , grid_output , input_reorder )
-    regrid_reorder = np.transpose ( regrid_data , ( 2 , 0 , 1 ) )
-    return regrid_reorder
+def regrid_scalar_spharm(data, lat_in, lon_in, lat_out, lon_out):
+    '''
+    Regrid global scalar data using spherical harmonics.
+    
+        Parameters:
+            data:    xarray data array of gridded data to be regridded. 
+                     coordinate dimensions must be named 'latitude', 
+                     and 'longitude'. Dimensions can be 2D, 3D, or 4D.
+            lat_in:  latitudes corresponding to input data 
+            lon_in:  longitudes corresponding to input data
+            lat_out: latitudes corresponding to regridded data (xarray data array)
+            lon_out: longitudes corresponding to regridded data (xarray data array)
+            
+        Returns:
+            data_regrid: regridded data. note order of dimensions will be 
+                         re-arranged so that latitude & longitude are leading
+    '''
+    # dimension names
+    dims = data.dims
+    dims_not_lat_lon = list(set(['latitude','longitude']) ^ set(dims))
+    
+    ingrid = spharm.Spharmt(len(lon_in), len(lat_in), gridtype='regular')
+    outgrid = spharm.Spharmt(len(lon_out), len(lat_out), gridtype='regular')
+    
+    # From spharm documentation: input data dimensionality needs to be 
+    # (lat, lon, ...), and max. 3D
+    data = data.transpose('latitude','longitude',...)
+    
+    if data.ndim>2:
+        # Works for 3D or 4D data
+        data_regrid=[]
+        for ii in range(len(data[dims_not_lat_lon[0]])):
+            data_regrid.append(spharm.regrid(ingrid,outgrid,
+                                        data.isel(**{dims_not_lat_lon[0]: ii}).values))
+            
+        data_regrid = np.asarray(data_regrid) # list of arrays to one array
+        
+        # Construct data array from numpy array
+        data_regrid = xr.DataArray(data=data_regrid,dims=dims)
+            
+        # Assign the remaining coordinates
+        data_regrid['latitude'] = lat_out
+        data_regrid['longitude'] = lon_out
+        
+        for dim in dims_not_lat_lon:
+            data_regrid[dim]=data[dim]
+            
+    else:
+        data_regrid=spharm.regrid(ingrid,outgrid,data.values)
+        
+        # Construct data array from numpy array
+        data_regrid = xr.DataArray(data=data_regrid,
+                                   coords={'latitude':lat_out,
+                                           'longitude':lon_out})
+        
+    return data_regrid
 
 def regrid_vector_spharm ( u_input , v_input , grid_input , grid_output ) :   # This function is from the original code provided by Cheng
     nlat = grid_input.nlat
@@ -102,3 +154,50 @@ def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
     return output_regrid 
 
 # Interpolation function for vector fields to be added
+
+def reshape_forecast(fc,nfc=35):
+    ''' Reshape forecast data so the time dimension
+    is 2D with dimensions initialization day & forecast day. 
+    ---
+    Inputs
+    ---
+    fc: xarray data array of forecast data with merged time dimension named "time"
+    nfc: number of forecast days, default=35. Must be integer
+    
+    ---
+    Returns
+    ---
+    fc_reshape: reshaped xarray of forecast data with 2D time
+    '''
+    
+    # Check to make sure nfc is an integer
+    if not isinstance(nfc, int):
+        print('warning: nfc is not an integer. forcing integer type')
+        nfc = int(nfc)
+    
+    # Initialization days
+    init_day = fc.time[::nfc]
+    
+    # Forecast lead time
+    fc_day = np.arange(1,nfc+1)
+    
+    # Reshape
+    fc_reshape=[]
+    for iinit in range(len(init_day)):
+        # Subset and rename the forecast dimension
+        subset = fc.isel(time=np.arange(iinit*nfc,iinit*nfc+nfc))
+        subset = subset.rename(time='forecast_day')
+        subset['forecast_day']=fc_day
+        fc_reshape.append(subset)
+        
+    # Convert to single xarray data array from list of multiple data arrays
+    fc_reshape=xr.concat(fc_reshape,dim='time')
+    fc_reshape['time']=init_day
+    fc_reshape.time.attrs['long_name']='initial time'
+    
+    return fc_reshape
+
+def is_ndjfm(month):
+    ''' Returns true if winter month
+    '''
+    return (month >= 11) | (month <= 3)
