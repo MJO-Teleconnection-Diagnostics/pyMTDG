@@ -155,8 +155,8 @@ class EntryWindow(QMainWindow):
         else:
             dict_file.append({'IMERG:' : False})
 
-        yaml.dump(dict_file, file)
-        self.second_window = SecondWindow(self,self.dir_in_text.text(),self.era)
+        
+        self.second_window = SecondWindow(self,self.dir_in_text.text(),self.era,dict_file)
         self.second_window.showMaximized()
         self.hide()
     
@@ -165,10 +165,11 @@ class EntryWindow(QMainWindow):
 
 
 class SecondWindow(QMainWindow):
-    def __init__(self,parent,dirin,era):
+    def __init__(self,parent,dirin,era,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent=parent
+        self.dict_file = dict_file
         self.setWindowTitle('Daily Anomaly and RMM')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
@@ -321,7 +322,7 @@ class SecondWindow(QMainWindow):
 
 
     def openThirdWindow(self):
-        dict_file=[]
+        dict_file=self.dict_file
         if self.dailyAnomaly:
             dict_file.append({'Daily Anomaly:' : True})
         else:
@@ -331,8 +332,8 @@ class SecondWindow(QMainWindow):
         else:
             dict_file.append({'RMM:' : False})
 
-        yaml.dump(dict_file, file)
-        self.third_window = ThirdWindow(self,self.dirin,self.era)
+        
+        self.third_window = ThirdWindow(self,self.dirin,self.era,dict_file)
         self.third_window.showMaximized()
         self.hide()
         
@@ -352,10 +353,11 @@ class SecondWindow(QMainWindow):
 
 
 class ThirdWindow(QMainWindow):
-    def __init__(self,parent,dirin,era):
+    def __init__(self,parent,dirin,era,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent=parent
+        self.dict_file = dict_file
         self.setWindowTitle('Third Window')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
@@ -486,7 +488,7 @@ class ThirdWindow(QMainWindow):
                 selected.append(9)
             if self.ten.isChecked():
                 selected.append(10)
-        self.ThirdSubWindow = ThirdSubWindow(self,selected,self.dirin,self.era)
+        self.ThirdSubWindow = ThirdSubWindow(self,selected,self.dirin,self.era,self.dict_file)
         self.ThirdSubWindow.showMaximized()
         self.hide()
         
@@ -526,10 +528,11 @@ class ThirdWindow(QMainWindow):
 
 
 class ThirdSubWindow(QMainWindow):
-    def __init__(self,parent,selected,dirin,era):
+    def __init__(self,parent,selected,dirin,era,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent=parent
+        self.dict_file = dict_file
         vbox = QHBoxLayout()
         self.setWindowTitle('Third Sub Window')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
@@ -625,8 +628,6 @@ class ThirdSubWindow(QMainWindow):
         but.clicked.connect(self.submi)
 
 ###########
-        
-        
         
         rendered=[]
         if(len(selected)>=1):
@@ -911,7 +912,7 @@ class ThirdSubWindow(QMainWindow):
         self.close()
         self.parent.show()
     def submi(self):
-        dict_file =[]
+        dict_file =self.dict_file
         dict_file.append({'z500' : self.z500T.text()})
         dict_file.append({'z500 observational files' : self.z500Tobs.text()})
         dict_file.append({'z100' : self.z100T.text()})
