@@ -90,6 +90,7 @@ def regrid_scalar_spharm(data, lat_in, lon_in, lat_out, lon_out):
         
         for dim in dims_not_lat_lon:
             data_regrid[dim]=data[dim]
+            data_regrid['time']=data.time
             
     else:
         data_regrid=spharm.regrid(ingrid,outgrid,data.values)
@@ -124,36 +125,6 @@ def regrid_vector_spharm ( u_input , v_input , grid_input , grid_output ) :   # 
     v_out, w_out, ierror = _spherepack.vhses(nlon_out,br_out,bi_out,cr_out,ci_out,grid_output.wvhses,lwork_out)
     return w_out,-v_out
 
-def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
-    
-    #grid_type: "regular", "gaussian"
-    
-    # Coordinates of field to be regrided
-    nlon_in = len(ds_in.longitude)
-    nlat_in = len(ds_in.latitude)
-    
-    # Define the input and output grids
-    ingrid = spharm.Spharmt ( nlon_in  , nlat_in  , gridtype=grid_type )
-    outgrid = spharm.Spharmt ( nlon_out , nlat_out , gridtype=grid_type )
-    
-    delat = 180. / ( nlat_out - 1 )
-    lat_out = 90 - np.arange ( nlat_out ) * delat
-    delon = 360. / nlon_out
-    lon_out = np.arange ( nlon_out ) * delon
-    
-    data_in_pre_regrid=np.empty([1, nlat_in, nlon_in])
-    data_regrid=np.empty([len (ds_in.time),nlat_out,nlon_out])
-    for i in range(len (ds_in.time)):
-        data_in_pre_regrid[0,:,:]=ds_in[i,:,:]
-        data_regrid[i,:,:]=regrid_scalar_spharm(data_in_pre_regrid,ingrid,outgrid)
-    output_regrid=xr.DataArray(data_regrid, name=var_name,
-                               dims=[ 'time','latitude','longitude'],
-                               coords=dict(time=ds_in.time,latitude=lat_out,longitude=lon_out),
-                               attrs=ds_in.attrs)
-    output_regrid['time']=ds_in.time
-    return output_regrid 
-
-# Interpolation function for vector fields to be added
 
 def reshape_forecast(fc,nfc=35):
     ''' Reshape forecast data so the time dimension
