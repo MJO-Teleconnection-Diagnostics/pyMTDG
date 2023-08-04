@@ -30,10 +30,11 @@ def plotComposites(ds,levels,cmap,lon_0,lat_0,sig_map,fig_name):
                 colors='None',hatches=['...',''])
     ax.format(coast='True',boundinglat=lat_0,grid=False)
     fig.savefig(fig_name+'.jpg',dpi=300)
-  
+    return 
+
 def correlate(obs,model,lat_min,lat_max,lon_min,lon_max):
-    x=obs.sel(latitude=slice(lat_min,lat_max),longitude=slice(lon_min,lon_max),method = 'nearest')
-    y=model.sel(latitude=slice(lat_min,lat_max),longitude=slice(lon_min,lon_max),method = 'nearest')
+    x=obs.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min,lon_max))
+    y=model.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min,lon_max))
     x_stacked=x.stack(grid=('latitude','longitude'))
     y_stacked=y.stack(grid=('latitude','longitude'))
     corr=np.corrcoef(x_stacked,y_stacked)
