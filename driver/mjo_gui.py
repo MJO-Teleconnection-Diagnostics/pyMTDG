@@ -1255,6 +1255,12 @@ class ThirdSubWindow(QMainWindow):
         
         dict_file['Select weeks:'] = self.selectweeks.text()
 
+        dict_file['Path to T2m model data files for date'] = []
+        for i in self.t2mTs:
+            dict_file['Path to T2m model data files for date'].append(i.text())
+        dict_file['Path to T2m observational data files:'] = self.t2mTobs.text()
+        
+
         if self.z500anomalies.isChecked():
             dict_file['Compute the z500 anomalies:'] = True
         else:
