@@ -291,13 +291,13 @@ class SecondWindow(QMainWindow):
         vbox = QVBoxLayout()
         groupbox2.setLayout(vbox)
         self.dailyAnomaly_yes = QRadioButton("Yes")
-        self.dailyAnomaly_yes .setChecked(True)
+        self.dailyAnomaly_yes.setChecked(True)
         self.dailyAnomaly_yes.toggled.connect(self.ondailyAnomalyClicked)
         vbox.addWidget(self.dailyAnomaly_yes)
         self.dailyAnomaly_no = QRadioButton("No")
         vbox.addWidget(self.dailyAnomaly_no)
 
-        self.rmm = True
+        self.rmm = False
         #RMM Index
         rmm_label = QLabel('Compute RMM Index:', self)
         groupbox = QGroupBox()
@@ -308,7 +308,7 @@ class SecondWindow(QMainWindow):
         self.rmm_yes.toggled.connect(self.onrmmClicked)
         vbox.addWidget(self.rmm_yes)
         self.rmm_no = QRadioButton("No")
-        self.rmm_no .setChecked(True)
+        self.rmm_no.setChecked(True)
         vbox.addWidget(self.rmm_no)
         
 
@@ -589,6 +589,12 @@ class ThirdWindow(QMainWindow):
                 selected.append(9)
             if self.ten.isChecked():
                 selected.append(10)
+        if selected == []:
+            msg = QMessageBox()
+            msg.setWindowTitle("Empty input given")
+            msg.setText("Please choose the calculations you want to perform")
+            x=msg.exec_()
+            return
         self.ThirdSubWindow = ThirdSubWindow(self,selected,self.dirin,self.era,self.dict_file)
         self.ThirdSubWindow.showMaximized()
         self.hide()
@@ -666,16 +672,17 @@ class ThirdSubWindow(QMainWindow):
         dates = dict_file['Initial dates:' ].split()
         print(dates)
         print(num_dates)
+
+        self.num_dates = num_dates
         # Path to Z500 data files:
         z500s=[]
         self.z500Ts = []
-        z500obss = []
+        
         self.z500Tobss = []
 
         for i in range(num_dates):
             z500 = QLabel(f'Path to Z500 model data files for date {dates[i]}:', self)
             self.z500T = QLineEdit(self)
-
             self.z500T.setText(pref)
             self.z500T.setCursorPosition(len(pref))
 
@@ -693,7 +700,7 @@ class ThirdSubWindow(QMainWindow):
         # Path to Z100 data files:
         z100s = []
         self.z100Ts = []
-        z100obss = []
+        
         self.z100Tobss = []
     
         for i in range(num_dates):
@@ -716,7 +723,7 @@ class ThirdSubWindow(QMainWindow):
         # Path to zonal wind at 850 hPa data files:
         zonalwind850s = []
         self.zonalwind850Ts = []
-        zonalwind850obss = []
+        
         self.zonalwind850Tobss = []
 
         for i in range(num_dates):
@@ -871,7 +878,7 @@ class ThirdSubWindow(QMainWindow):
         self.selectweeks = QLineEdit(self)
 
         #Compute the of Z500 anomalies
-        self.z500anomalies = QCheckBox("Copmute the z500 anomalies")
+        self.z500anomalies = QCheckBox("Compute the z500 anomalies")
         self.z500anomalies.setChecked(False)
 
         self.dailyMean= QCheckBox("Model input file daily mean?")
@@ -1195,26 +1202,146 @@ class ThirdSubWindow(QMainWindow):
         self.parent.show()
     def submi(self):
         dict_file =self.dict_file
-        dict_file['z500'] = self.z500T.text()
-        dict_file['z500 observational files'] = self.z500Tobs.text()
-        dict_file['z100'] = self.z100T.text()
-        dict_file['z100 observational files'] = self.z100Tobs.text()
-        dict_file['zonalwind850'] = self.zonalwind850T.text()
-        dict_file['zonalwind850 observational files'] = self.zonalwind850Tobs.text()
-        dict_file['meridional wind at 850 hPa data file'] = self.meridionalwind850T.text()
-        dict_file['meridional wind at 850 hPa observational data file'] = self.meridionalwind850Tobs.text()
-        dict_file['Path to meridional wind at 500 hPa data files:'] = self.meridionalwind500T.text()
-        dict_file['Path to meridional wind at 500 hPa data files:'] = self.meridionalwind500Tobs.text()
-        dict_file['zonal wind at 10 hPa data files:'] = self.zonalwind10T.text()
-        dict_file['zonal wind at 10 hPa data files:'] = self.zonalwind10Tobs.text()
-        dict_file['temperature at 500 hPa data files' ]= self.temperature500T.text()
-        dict_file['temperature at 500 hPa data files'] = self.temperature500Tobs.text()
-        dict_file['Path to precipitation data files:'] = self.precDataT.text()
-        dict_file['Path to precipitation data files:'] = self.precDataTobs.text()
+        dict_file['Path to z500 date files'] = []
+        for i in self.z500Ts:
+            dict_file['Path to z500 date files'].append(i.text())
+
+        dict_file['Path to z500 observational files'] = self.z500Tobs.text()
+
+
+        
+        dict_file['Path to z100 date files'] = []
+        for i in self.z100Ts:
+            dict_file['Path to z100 date files'].append(i.text())
+
+        dict_file['Path to z100 observational files'] = self.z100Tobs.text()
+
+        
+        dict_file['Path to zonalwind850 date files'] = []
+        for i in self.zonalwind850Ts:
+            dict_file['Path to zonalwind850 date files'].append(i.text())
+
+        dict_file['Path to zonalwind850 observational files'] = self.zonalwind850Tobs.text()
+
+        
+        dict_file['Path to meridional wind at 850 hPa date files'] = []
+        for i in self.meridionalwind850Ts:
+            dict_file['Path to meridional wind at 850 hPa date files'].append(i.text())
+
+        dict_file['Path to meridional wind at 850 hPa observational data file'] = self.meridionalwind850Tobs.text()
+
+        
+        dict_file['Path to meridional wind at 500 hPa date files'] = []
+        for i in self.meridionalwind500Ts:
+            dict_file['Path to meridional wind at 500 hPa date files'].append(i.text())
+
+        dict_file['Path to meridional wind at 500 hPa observational data files:'] = self.meridionalwind500Tobs.text()
+
+        dict_file['Path to zonal wind at 10 hPa data files:'] = []
+        for i in self.zonalwind10Ts:
+            dict_file['Path to zonal wind at 10 hPa data files:'].append(i.text())
+        dict_file['Path to zonal wind at 10 hPa observational data files:'] = self.zonalwind10Tobs.text()
+
+        dict_file['Path to temperature at 500 hPa data files' ]=[]
+        for i in self.temperature500Ts:
+            dict_file['Path to temperature at 500 hPa data files' ].append(i.text())
+        dict_file['Path to temperature at 500 hPa observational data files'] = self.temperature500Tobs.text()
+
+        dict_file['Path to precipitation data files:'] = []
+        for i in self.precDataTs:
+            dict_file['Path to precipitation data files:'].append(i.text())
+
+        dict_file['Path to precipitation observational data files:'] = self.precDataTobs.text()
+        
+        dict_file['Select weeks:'] = self.selectweeks.text()
+
+        if self.z500anomalies.isChecked():
+            dict_file['Compute the z500 anomalies:'] = True
+        else:
+            dict_file['Compute the z500 anomalies:'] = False
+        if self.dailyMean.isChecked():
+            dict_file['Model input file daily mean:'] = True
+        else:
+            dict_file['Model input file daily mean:'] = False
         file = open(r'config.yml', 'w') 
         yaml.dump(dict_file, file)
         file.close()
+        self.OutputWindow = OutputWindow(self,self.dirin,self.dict_file)
+        self.OutputWindow.showMaximized()
+        #self.hide()
 
+
+class OutputWindow(QMainWindow):
+    def __init__(self,parent,dirin,dict_file):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent=parent
+        central_widget = QWidget()
+        self.dict_file = dict_file
+        self.setWindowTitle('Output Window')
+        self.setGeometry(0, 0, 800, 400)  # Set window position and size
+        self.showMaximized()
+        # Create the weather image widget
+        glayout = QGridLayout(central_widget)
+        stripes = []
+        stripes.append(QPixmap('OutputImgs/Stripes_1.jpg'))
+        stripes.append(QPixmap('OutputImgs/Stripes_2.jpg'))
+        stripes.append(QPixmap('OutputImgs/Stripes_3.jpg'))
+        stripes.append(QPixmap('OutputImgs/Stripes_4.jpg'))
+
+        for i in range(4):
+            image = QLabel(central_widget)
+            image.setPixmap(stripes[i])
+            image.resize(stripes[i].width(),stripes[i].height())
+            glayout.addWidget(image,0,i)
+
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
+        
+        #Replace with the actual path to your weather image file
+        #Scale the pixmap to fit the size of the QLabel
+        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
+        # Set the size policy of the QLabel to expand and fill the available space
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Create the text widgets
+
+        # Create a central widget to hold the splitter
+        
+        #central_widget.setLayout(glayout)
+        self.setCentralWidget(central_widget)
+        self.show()
+
+    def closee(self):
+        self.close()
+        self.parent.show()
+    
+        
+        
+    
+    
+
+    def method(self,checked):
+        # printing the checked status
+        if checked:
+            self.all.setChecked(True)
+            self.first.setChecked(True)
+            self.second.setChecked(True)
+            self.third.setChecked(True)
+            self.fourth.setChecked(True)
+            self.fifth.setChecked(True)
+            self.sixth.setChecked(True)
+            self.seventh.setChecked(True)
+            self.eight.setChecked(True)
+            self.nine.setChecked(True)
+            self.ten.setChecked(True)
+        else:
+            self.all.setChecked(False)
+
+    def closee(self):
+        self.close()
+        self.parent.show()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
