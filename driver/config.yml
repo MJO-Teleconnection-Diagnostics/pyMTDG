@@ -1,25 +1,52 @@
-- DIR_IN: /projects/cstan
-- 'START_DATE:': '2011-01-01'
-- 'END_DATE:': '2018-12-31'
-- 'Number of ensembles:': '1'
-- 'Number of initial dates:': '2'
-- 'ERAI:': true
-- 'IMERG:': true
-- 'Daily Anomaly:': true
-- 'RMM:': false 
-- z500: ''
-- z500 observational files: ''
-- z100: ''
-- z100 observational files: ''
-- zonalwind850: ''
-- zonalwind850 observational files: ''
-- meridional wind at 850 hPa data file: ''
-- meridional wind at 850 hPa observational data file: ''
-- 'Path to meridional wind at 500 hPa data files:': ''
-- 'Path to meridional wind at 500 hPa data files:': ''
-- 'zonal wind at 10 hPa data files:': ''
-- 'zonal wind at 10 hPa data files:': ''
-- temperature at 500 hPa data files: ''
-- temperature at 500 hPa data files: ''
-- 'Path to precipitation data files:': ''
-- 'Path to precipitation data files:': ''
+'Compute the z500 anomalies:': false
+DIR_IN: /projects/cstan
+'Daily Anomaly:': true
+'END_DATE:': '2018-12-31'
+'ERAI:': true
+'IMERG:': true
+'Initial dates:': 1 15
+'Model input file daily mean:': false
+'Number of ensembles:': '1'
+'Number of initial dates:': '2'
+'Path to OLR data files:': /projects/cstan/OBS/
+Path to T2m model data files for date:
+- /projects/cstan/ufs6/daily/mean/t2m/t2m_*01.nc
+- /projects/cstan/ufs6/daily/mean/t2m/t2m_*15.nc
+'Path to T2m observational data files:': /projects/cstan/OBS/
+Path to meridional wind at 500 hPa date files:
+- /projects/cstan/
+- /projects/cstan/
+'Path to meridional wind at 500 hPa observational data files:': /projects/cstan/OBS/
+Path to meridional wind at 850 hPa date files:
+- /projects/cstan/
+- /projects/cstan/
+Path to meridional wind at 850 hPa observational data file: /projects/cstan/OBS/
+'Path to precipitation data files:':
+- /projects/cstan/
+- /projects/cstan/
+'Path to precipitation observational data files:': /projects/cstan/OBS/
+Path to temperature at 500 hPa data files:
+- /projects/cstan/
+- /projects/cstan/
+Path to temperature at 500 hPa observational data files: /projects/cstan/OBS/
+Path to z100 date files:
+- /projects/cstan/
+- /projects/cstan/
+Path to z100 observational files: /projects/cstan/OBS/
+Path to z500 date files:
+- /projects/cstan/
+- /projects/cstan/
+Path to z500 observational files: /projects/cstan/OBS/
+'Path to zonal wind at 10 hPa data files:':
+- /projects/cstan/
+- /projects/cstan/
+'Path to zonal wind at 10 hPa observational data files:': /projects/cstan/OBS/
+'Path to zonal wind at 200 hPa data files:': /projects/cstan/OBS/
+'Path to zonal wind at 850 hPa data files:': /projects/cstan/OBS/
+Path to zonalwind850 date files:
+- /projects/cstan/
+- /projects/cstan/
+Path to zonalwind850 observational files: /projects/cstan/OBS/
+'RMM:': false
+'START_DATE:': '2011-01-01'
+'Select weeks:': ''
