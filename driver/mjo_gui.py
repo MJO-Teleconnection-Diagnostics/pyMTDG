@@ -45,10 +45,6 @@ class FirstWindow(QMainWindow):
         #button2.setGeometry(200, 150, 40, 40)
         button2.clicked.connect(self.open_second_window)
         button2.setStyleSheet("border: 1px solid black;font-size: 15px;")
-        
-        
-        spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        
        
         
         #Create a layout for the left half (weather image)
@@ -98,20 +94,22 @@ class EntryWindow(QMainWindow):
         self.scroll = QScrollArea()
         self.parent=parent
         self.setWindowTitle('MJO Teleconnections Diagnostics')
-        self.setGeometry(0, 0, 800, 400)  # Set window position and size
+        self.setGeometry(0, 0, 800, 400)  
         self.showMaximized()
 
-        #Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+       
+        dir_in_ilabel = QLabel('DIR_IN: Please enter the input data directory path',self)
+        start_date_ilabel = QLabel('START_DATE: Please enter the start date',self)
+        end_date_ilabel = QLabel('END_DATE: Please enter the end date',self)
+        legthFor_ilabel = QLabel('Length of the forecats (in days): Please enter the length of the forecats in days',self)
+        num_ensm_ilabel = QLabel('Number of ensembles: Please enter the number of ensembles',self)
+        num_ini_ilabel = QLabel('Number of initial dates: Please enter the number of initial dates',self)
+        ini_dates_ilabel = QLabel('Initial dates: Please enter all the intial dates',self)
+        era_ilabel = QLabel('Use ERA_I for validation: Please check this box if ERA_I is used for validation',self)
+        imerg_ilabel = QLabel('Use IMERG for validation: Please check this box if IMERG is used for validation',self)
 
-        #Replace with the actual path to your weather image file
-        #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
-        # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+
         # Create the text widgets
         dir_in_label = QLabel('DIR_IN:', self)
         self.dir_in_text = QLineEdit(self)
@@ -135,8 +133,10 @@ class EntryWindow(QMainWindow):
         self.initial_dates_values = QLineEdit(self)
         
         button2 = QPushButton('Next', self)
+        button2.setFixedSize(70,30)
         button2.clicked.connect(self.open_second_window)
         back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
         #ERA - 1
         era_label = QLabel('Use ERA_I for validation:', self)
@@ -168,9 +168,23 @@ class EntryWindow(QMainWindow):
 
         #Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(weather_image)
-        left_layout.addWidget(back)
+        help = QLabel('Help:',self)
+        
         left_layout.addStretch()
+        left_layout.addWidget(help)
+        
+        left_layout.addWidget(dir_in_ilabel)
+        left_layout.addWidget(start_date_ilabel)
+        left_layout.addWidget(end_date_ilabel)
+        left_layout.addWidget(legthFor_ilabel)
+        left_layout.addWidget(num_ensm_ilabel)
+        left_layout.addWidget(num_ini_ilabel)
+        left_layout.addWidget(ini_dates_ilabel)
+        left_layout.addWidget(era_ilabel)
+        left_layout.addWidget(imerg_ilabel)
+        left_layout.addStretch()
+        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        
 
         #Create a layout for the right half (text widgets and button)
         right_layout = QVBoxLayout()
@@ -193,8 +207,9 @@ class EntryWindow(QMainWindow):
         right_layout.addWidget(groupbox)
         right_layout.addWidget(imerg_label)
         right_layout.addWidget(groupbox2)
-        right_layout.addWidget(button2)
         right_layout.addStretch()
+        right_layout.addWidget(button2,alignment=Qt.AlignRight)
+        
 
         # Create a QSplitter to split the window equally
         splitter = QSplitter(Qt.Horizontal)
@@ -338,12 +353,10 @@ class SecondWindow(QMainWindow):
         self.rmm_no = QRadioButton("No")
         self.rmm_no.setChecked(True)
         vbox.addWidget(self.rmm_no)
-        
-
-        
-        
+       
         self.dirin=dirin
         but = QPushButton('Next', self)
+        but.setFixedSize(70,30)
         but.clicked.connect(self.openThirdWindow)
 
         
@@ -370,6 +383,7 @@ class SecondWindow(QMainWindow):
         self.zonalpath200T.setCursorPosition(len(prefix))
 
         but = QPushButton('Submit', self)
+        but.setFixedSize(70,30)
         but.clicked.connect(self.openThirdWindow)
 
         self.groupbox = QGroupBox()
@@ -384,13 +398,15 @@ class SecondWindow(QMainWindow):
         vbox.addWidget(but)
 
         back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
 
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
-        left_layout.addWidget(back)
         left_layout.addStretch()
+        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        
 
         # Create a layout for the right half (text widgets and button)
         self.right_layout = QVBoxLayout()
@@ -399,8 +415,9 @@ class SecondWindow(QMainWindow):
         self.right_layout.addWidget(groupbox2)
         self.right_layout.addWidget(rmm_label)
         self.right_layout.addWidget(groupbox)
-        self.right_layout.addWidget(but)
         self.right_layout.addStretch()
+        self.right_layout.addWidget(but,alignment=Qt.AlignRight)
+        
         
 
         # Create a QSplitter to split the window equally
@@ -548,15 +565,18 @@ class ThirdWindow(QMainWindow):
 
         # Create the checkboxs
         but = QPushButton('Submit', self)
+        but.setFixedSize(70,30)
         but.clicked.connect(self.openThirdSubWindow)
         back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
         
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
-        left_layout.addWidget(back)
         left_layout.addStretch()
+        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        
 
         # Create a layout for the right half (text widgets and button)
         right_layout = QVBoxLayout()
@@ -573,9 +593,9 @@ class ThirdWindow(QMainWindow):
         right_layout.addWidget(self.nine)
         right_layout.addWidget(self.nine_two)
         right_layout.addWidget(self.ten)
-        
-        right_layout.addWidget(but)
         right_layout.addStretch()
+        right_layout.addWidget(but,alignment=Qt.AlignRight)
+        
 
         # Create a QSplitter to split the window equally
         splitter = QSplitter(Qt.Horizontal)
@@ -955,6 +975,7 @@ class ThirdSubWindow(QMainWindow):
         self.dailyMean.setChecked(False)
 
         but = QPushButton('Submit', self)
+        but.setFixedSize(70,30)
         but.clicked.connect(self.submi)
         
         rendered=[]
@@ -1254,9 +1275,9 @@ class ThirdSubWindow(QMainWindow):
                     
                     
 
-
-        right_layout.addWidget(but)    
         right_layout.addStretch()
+        right_layout.addWidget(but,alignment=Qt.AlignRight)    
+        
         
         self.widget.setLayout(right_layout)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -1265,13 +1286,15 @@ class ThirdSubWindow(QMainWindow):
         self.scroll.setWidget(self.widget)
 
         back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
 
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
-        left_layout.addWidget(back)
         left_layout.addStretch()
+        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        l
 
         # Create a layout for the right half (text widgets and button)
         
