@@ -1294,7 +1294,7 @@ class ThirdSubWindow(QMainWindow):
         left_layout.addWidget(weather_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
-        l
+        
 
         # Create a layout for the right half (text widgets and button)
         
@@ -1402,14 +1402,15 @@ class ThirdSubWindow(QMainWindow):
         file = open(r'config.yml', 'w') 
         yaml.dump(dict_file, file)
         file.close()
-        #self.hide()
+        self.hide()
         #self.close()
-        run_longtask()
+        #run_longtask()
         diagnostics_paths = ["/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py"]
         
-        for i in self.selected:
-            with open("/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py") as f:
-                exec(f.read())
+        
+        with open("/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py") as f:
+            exec(f.read())
+        
 
 class ProgressBar(QMainWindow):
   
