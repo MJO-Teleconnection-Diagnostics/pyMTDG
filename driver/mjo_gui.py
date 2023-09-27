@@ -1690,25 +1690,25 @@ class ninthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1777,25 +1777,25 @@ class eightResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1863,25 +1863,25 @@ class seventhResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1947,25 +1947,25 @@ class fifthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2030,25 +2030,25 @@ class sixthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2116,25 +2116,25 @@ class third2Result(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2201,25 +2201,25 @@ class fourthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2286,25 +2286,25 @@ class firstResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2370,25 +2370,25 @@ class secondResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2453,25 +2453,25 @@ class thirdResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
