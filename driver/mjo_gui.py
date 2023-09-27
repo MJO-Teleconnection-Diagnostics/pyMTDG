@@ -1,11 +1,11 @@
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter, QSizePolicy
 from PyQt5.QtGui import *
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 import yaml
@@ -63,8 +63,6 @@ class FirstWindow(QMainWindow):
         #Create a layout for the right half (text widgets and button)
         
         
-
-
         # Create a central widget to hold the splitter
         central_widget = QWidget()
         
@@ -504,7 +502,7 @@ class ThirdWindow(QMainWindow):
         #self.setupUi(self)
         self.parent=parent
         self.dict_file = dict_file
-        self.setWindowTitle('Third Window')
+        self.setWindowTitle('Select what you want to view')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
         # Create the weather image widget
@@ -1408,9 +1406,1122 @@ class ThirdSubWindow(QMainWindow):
         diagnostics_paths = ["/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py"]
         
         
-        with open("/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py") as f:
+        '''with open("/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py") as f:
             exec(f.read())
+        '''
+        self.OutputWindow = FinalWindow(self,self.dirin,self.dict_file,self.selected)
+        self.OutputWindow.showMaximized()
+        self.close()
+
+class FinalWindow(QMainWindow):
+    def __init__(self,parent,dirin,dict_file,selected):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent=parent
+        self.dict_file = dict_file
+        self.selected = selected
+        self.setWindowTitle('Select what you want to view')
+        self.setGeometry(0, 0, 800, 400)  # Set window position and size
+        self.showMaximized()
+        # Create the weather image widget
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
         
+        #Replace with the actual path to your weather image file
+        #Scale the pixmap to fit the size of the QLabel
+        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
+        # Set the size policy of the QLabel to expand and fill the available space
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Create the text widgets
+        
+        self.dirin = dirin
+        
+        
+        
+
+        self.first = QRadioButton("STRIPE Index for geopotential height")
+        self.first.setChecked(False) # 1
+
+        self.second = QRadioButton("STRIPE Index for precipitation")
+        self.second.setChecked(False) #2
+
+        self.third = QRadioButton("Pattern CC over the PNA region")
+        self.third.setChecked(False) #3
+
+        self.third_2 = QRadioButton("Pattern CC over the Euro-Atlantic sector")
+        self.third_2.setChecked(False) #11
+
+        self.fourth = QRadioButton("Fraction of the observed STRIPE index for geopotential height")
+        self.fourth.setChecked(False) #4
+
+        self.fifth = QRadioButton("Relative amplitude over PNA?")
+        self.fifth.setChecked(False) #5
+
+        self.sixth = QRadioButton("Stratospheric pathway")
+        self.sixth.setChecked(False) #6
+
+        self.seventh = QRadioButton("Histogram of 10 hPa zonal wind")
+        self.seventh.setChecked(False) #7
+
+        self.eight = QRadioButton("Extratropical cyclone activity")
+        self.eight.setChecked(False) #8
+
+        self.nine = QRadioButton("EKE850-Z500 correlation")
+        self.nine.setChecked(False) #9
+
+        self.nine_two = QRadioButton("MJO")
+        self.nine_two.setChecked(False) #12
+
+        self.ten = QRadioButton("Surface air temperature")
+        self.ten.setChecked(False) #10
+
+        
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+
+        next = QPushButton('Next', self)
+        next.setFixedSize(70,30)
+        next.clicked.connect(self.showResults)
+        
+        
+        
+        # Create a layout for the left half (weather image)
+        left_layout = QVBoxLayout()
+        left_layout.addWidget(weather_image)
+        left_layout.addStretch()
+        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        
+        result_label = QLabel('Show results for:')
+        # Create a layout for the right half (text widgets and button)
+        right_layout = QVBoxLayout()
+        right_layout.addWidget(result_label)
+        
+        
+        for i in selected:
+            if i == 0:
+
+                right_layout.addWidget(self.first)
+                right_layout.addWidget(self.second)
+                right_layout.addWidget(self.third)
+                right_layout.addWidget(self.third_2)
+                right_layout.addWidget(self.fourth)
+                right_layout.addWidget(self.fifth)
+                right_layout.addWidget(self.sixth)
+                right_layout.addWidget(self.seventh)
+                right_layout.addWidget(self.eight)
+                right_layout.addWidget(self.nine)
+                right_layout.addWidget(self.nine_two)
+                right_layout.addWidget(self.ten)
+                
+            else:
+                if i == 1:
+                    right_layout.addWidget(self.first)
+                    
+                if i == 2:
+                    right_layout.addWidget(self.second)
+                    
+                if i==3:
+                    right_layout.addWidget(self.third)
+                    
+                if i ==11:
+                    right_layout.addWidget(self.third_2)
+                    
+                if i==4:
+                    right_layout.addWidget(self.fourth)
+                    
+                if i==5:
+                    right_layout.addWidget(self.fifth)
+                    
+                if i==6:
+                    right_layout.addWidget(self.sixth)
+                    
+                if i==7:
+                    right_layout.addWidget(self.seventh)
+                    
+                if i==8:
+                    right_layout.addWidget(self.eight)
+                    
+                if i==9:
+                    right_layout.addWidget(self.nine)
+                    
+                if i==12:
+                    right_layout.addWidget(self.nine_two)
+                    
+                if i==10:
+                    right_layout.addWidget(self.ten)
+                    
+
+        right_layout.addStretch() 
+        right_layout.addWidget(next,alignment=Qt.AlignRight)
+        #right_layout.addWidget(but,alignment=Qt.AlignRight)
+        # Create a QSplitter to split the window equally
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(QWidget())
+        splitter.addWidget(QWidget())
+        splitter.setSizes([1, 1])
+
+        # Set the left layout to the first widget of the splitter
+        splitter.widget(0).setLayout(left_layout)
+        splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Set the right layout to the second widget of the splitter
+        splitter.widget(1).setLayout(right_layout)
+        splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_layout = QHBoxLayout()
+        central_layout.addWidget(splitter)
+        central_widget.setLayout(central_layout)
+        self.setCentralWidget(central_widget)
+
+    def showResults(self):
+        self.hide()
+        if self.first.isChecked():
+            #open new window
+            self.win1 = firstResult(self)
+            self.win1.show()
+
+        elif self.second.isChecked():
+            print('I am here')
+            self.win2 = secondResult(self)
+            self.win2.show()
+        
+        elif self.third.isChecked():
+            print('I am here')
+            self.win2 = thirdResult(self)
+            self.win2.show()
+        elif self.third_2.isChecked():
+            print('I am here')
+            self.win2 = third2Result(self)
+            self.win2.show()
+        elif self.fourth.isChecked():
+            print('I am here')
+            self.win2 = fourthResult(self)
+            self.win2.show()
+        elif self.fifth.isChecked():
+            print('I am here')
+            self.win2 = fifthResult(self)
+            self.win2.show()
+        elif self.sixth.isChecked():
+            print('I am here')
+            self.win2 = sixthResult(self)
+            self.win2.show()
+        elif self.seventh.isChecked():
+            print('I am here')
+            self.win2 = seventhResult(self)
+            self.win2.show()
+        elif self.eight.isChecked():
+            
+            self.win2 = eightResult(self)
+            self.win2.show()
+        elif self.nine.isChecked():
+            
+            self.win2 = ninthResult(self)
+            self.win2.show()
+
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+class ninthResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('EKE850-Z500 correlation')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+
+        
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+
+
+class eightResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Extratropical cyclone activity results')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+
+        
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+
+class seventhResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Histogram of 10 hPa zonal wind results')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+
+        
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+class fifthResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Relative amplitude over PNA results')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+class sixthResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Stratospheric pathway')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+    
+class third2Result(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Pattern CC over the Euro-Atlantic sector')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+class fourthResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Fraction of the observed STRIPE index for geopotential height results')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+
+class firstResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('STRIPE Index for geopotential height')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+    def closee(self):
+        self.close()
+        self.parent.show()
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+class secondResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('STRIPE Index for precipitation')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+class thirdResult(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.viewImage1 = None
+        self.viewImage2 = None
+        self.viewImage3 = None
+        self.viewImage4 = None
+        self.setWindowTitle('Pattern CC over the PNA region')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        #self.setMaximumSize(width, height)
+
+        #Create the weather image widget
+        
+        week1_2 = QPushButton('Week1 - 2', self)
+        week1_2.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week1_2.clicked.connect(self.openweek1_2)
+
+        week3_4 = QPushButton('Week3 - 4', self)
+        week3_4.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week3_4.clicked.connect(self.openweek3_4)
+        
+        week5_6 = QPushButton('Week5 - 6', self)
+        week5_6.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week5_6.clicked.connect(self.openweek5_6)
+
+        week7_8 = QPushButton('Week7 - 8', self)
+        week7_8.setFixedSize(100,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        week7_8.clicked.connect(self.openweek7_8)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        
+        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        layout.addWidget(back,alignment=Qt.AlignCenter)
+        layout.addStretch()
+
+        #Create a layout for the right half (text widgets and button)
+        
+        
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+    def closee(self):
+        self.close()
+        self.parent.show()
+    def openweek1_2(self):
+        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
+            print('I am here')
+            self.viewImage1 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_1.png",'Stripes - 1')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage1.show()
+
+    def openweek3_4(self):
+        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
+            print('I am here')
+            self.viewImage2 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_2.png",'Stripes - 2')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage2.show()
+    def openweek5_6(self):
+        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
+            print('I am here')
+            self.viewImage3 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_3.png",'Stripes - 3')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage3.show()
+    def openweek7_8(self):
+        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
+            self.viewImage4 = viewImage("/Users/saisrik/pyqt5/OutputImgs/Stripes_4.png",'Stripes - 4')
+            #self.viewImage1.closed.connect(self.quit1)
+            self.viewImage4.show()
+
+
+class viewImage(QMainWindow):
+    def __init__(self,imageP,title):
+        super().__init__()
+        print('Viewing image')
+        self.setWindowTitle(title)
+        self.setGeometry(200, 200, 200, 400)  # Set window position and size
+        self.closed = pyqtSignal()
+        #Create the weather image widget
+        image = QLabel(self)
+        pixmap = QPixmap(imageP) 
+        pixmap= pixmap.scaled(350, 600)
+        image.setPixmap(pixmap)
+        
+        image.setAlignment(Qt.AlignCenter)
+        
+        left_layout = QVBoxLayout()
+        left_layout.addWidget(image)
+        left_layout.addStretch()
+        
+        right_layout = QVBoxLayout()
+        helpText = QLabel('Here will be the help text on this image.')
+        right_layout.addWidget(helpText)
+        
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(QWidget())
+        splitter.addWidget(QWidget())
+        splitter.setSizes([1, 1])
+
+        # Set the left layout to the first widget of the splitter
+        splitter.widget(0).setLayout(left_layout)
+        splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Set the right layout to the second widget of the splitter
+        splitter.widget(1).setLayout(right_layout)
+        splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_layout = QHBoxLayout()
+        central_layout.addWidget(splitter)
+        central_widget.setLayout(central_layout)
+        self.setCentralWidget(central_widget)
+
+    
+
+
 
 class ProgressBar(QMainWindow):
   
@@ -1446,6 +2557,7 @@ class ProgressBar(QMainWindow):
         self.OutputWindow = OutputWindow(self,self.dirin,self.dict_file)
         self.OutputWindow.showMaximized()
         self.close()
+
 
 class OutputWindow(QMainWindow):
     def __init__(self,parent,dirin,dict_file):
