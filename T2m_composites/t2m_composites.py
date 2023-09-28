@@ -109,7 +109,7 @@ ds_t2m_erai=ds_t2m_erai.reindex(latitude=list(reversed(ds_t2m_erai.latitude)))
 
 if (dictionary['Daily Anomaly:'] == True):
     tBegin=dictionary['START_DATE:']
-    tEnd=dictonary['END_DATE:']
+    tEnd=dictionary['END_DATE:']
     t2m_obs_anom=calcAnomObs(ds_t2m_erai['t2m'].sel(time=slice(tBegin,tEnd)),'t2m_anom')
 
 
