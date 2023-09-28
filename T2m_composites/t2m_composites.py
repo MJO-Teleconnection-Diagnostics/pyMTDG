@@ -87,7 +87,7 @@ ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
 # In[ ]:
 
 
-if (dictonary['ERAI:']==True):
+if (dictionary['ERAI:']==True):
     fil_t2m_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t2m/erai.T2m.day.mean.1979-2019.nc'
 ds_t2m_erai=xr.open_dataset(fil_t2m_erai)
 
