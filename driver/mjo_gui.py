@@ -21,19 +21,19 @@ class FirstWindow(QMainWindow):
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
 
-        #Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        #Create the logo image widget
+        logo_image = QLabel(self)
+        pixmap = QPixmap('logo1.jpg') 
 
-        #Replace with the actual path to your weather image file
+        #Replace with the actual path to your logo image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
-        weather_image.setAlignment(Qt.AlignCenter)
+        logo_image.setAlignment(Qt.AlignCenter)
         welcome_label = QLabel('Welcome to MJO Teleconnections Diagnostics', self)
         welcome_label.setAlignment(Qt.AlignCenter)
         
@@ -47,12 +47,12 @@ class FirstWindow(QMainWindow):
         button2.setStyleSheet("border: 1px solid black;font-size: 15px;")
        
         
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         left_layout = QVBoxLayout()
         
         left_layout.addWidget(welcome_label)
         left_layout.addStretch()
-        left_layout.addWidget(weather_image)
+        left_layout.addWidget(logo_image)
         
         widgetB = QWidget()
         left_layout.addStretch()
@@ -164,7 +164,7 @@ class EntryWindow(QMainWindow):
         
         
 
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         left_layout = QVBoxLayout()
         help = QLabel('Help:',self)
         
@@ -311,17 +311,17 @@ class SecondWindow(QMainWindow):
         self.setWindowTitle('Daily Anomaly and RMM')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        #Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        #Create the logo image widget
+        logo_image = QLabel(self)
+        pixmap = QPixmap('logo.jpg') 
         self.era = era
        
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dailyAnomaly=True
@@ -399,9 +399,9 @@ class SecondWindow(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
 
-        # Create a layout for the left half (weather image)
+        # Create a layout for the left half (logo image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(weather_image)
+        left_layout.addWidget(logo_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -505,17 +505,17 @@ class ThirdWindow(QMainWindow):
         self.setWindowTitle('Select what you want to view')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        # Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        # Create the logo image widget
+        logo_image = QLabel(self)
+        pixmap = QPixmap('logo.jpg') 
         
-        #Replace with the actual path to your weather image file
+        #Replace with the actual path to your logo image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dirin = dirin
@@ -525,10 +525,10 @@ class ThirdWindow(QMainWindow):
         self.all.setChecked(False)
         self.all.stateChanged.connect(self.method)
 
-        self.first = QCheckBox("STRIPE Index for geopotential height")
+        self.first = QCheckBox("STRIPES Index for geopotential height")
         self.first.setChecked(False)
 
-        self.second = QCheckBox("STRIPE Index for precipitation")
+        self.second = QCheckBox("STRIPES Index for precipitation")
         self.second.setChecked(False)
 
         self.third = QCheckBox("Pattern CC over the PNA region")
@@ -537,7 +537,7 @@ class ThirdWindow(QMainWindow):
         self.third_2 = QCheckBox("Pattern CC over the Euro-Atlantic sector")
         self.third_2.setChecked(False) #11
 
-        self.fourth = QCheckBox("Fraction of the observed STRIPE index for geopotential height")
+        self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
         self.fourth.setChecked(False)
 
         self.fifth = QCheckBox("Relative amplitude over PNA?")
@@ -569,9 +569,9 @@ class ThirdWindow(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
         
-        # Create a layout for the left half (weather image)
+        # Create a layout for the left half (logo image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(weather_image)
+        left_layout.addWidget(logo_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -708,17 +708,17 @@ class ThirdSubWindow(QMainWindow):
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
         scroll_bar = QScrollBar(self)
-        # Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        # Create the logo image widget
+        logo_image = QLabel(self)
+        pixmap = QPixmap('logo.jpg') 
         
-        #Replace with the actual path to your weather image file
+        #Replace with the actual path to your logo image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dirin = dirin
@@ -1085,7 +1085,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(precDataobs)
                             right_layout.addWidget(self.precDataTobs)
 
-                if 3 in selected or 11 in selected: #Fraction of the observed STRIPE
+                if 3 in selected or 11 in selected: #Fraction of the observed STRIPES
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1287,9 +1287,9 @@ class ThirdSubWindow(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
 
-        # Create a layout for the left half (weather image)
+        # Create a layout for the left half (logo image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(weather_image)
+        left_layout.addWidget(logo_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -1423,17 +1423,17 @@ class FinalWindow(QMainWindow):
         self.setWindowTitle('Select what you want to view')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        # Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        # Create the logo image widget
+        logo_image = QLabel(self)
+        pixmap = QPixmap('logo.jpg') 
         
-        #Replace with the actual path to your weather image file
+        #Replace with the actual path to your logo image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dirin = dirin
@@ -1441,7 +1441,7 @@ class FinalWindow(QMainWindow):
         
         
 
-        self.first = QRadioButton("STRIPE Index for geopotential height")
+        self.first = QRadioButton("STRIPES Index for geopotential height")
         self.first.setChecked(False) # 1
 
         self.second = QRadioButton("STRIPE Index for precipitation")
@@ -1488,9 +1488,9 @@ class FinalWindow(QMainWindow):
         
         
         
-        # Create a layout for the left half (weather image)
+        # Create a layout for the left half (logo image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(weather_image)
+        left_layout.addWidget(logo_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -1640,7 +1640,7 @@ class ninthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1666,7 +1666,7 @@ class ninthResult(QMainWindow):
         back.clicked.connect(self.closee)
 
         
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -1727,7 +1727,7 @@ class eightResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1753,7 +1753,7 @@ class eightResult(QMainWindow):
         back.clicked.connect(self.closee)
 
         
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -1813,7 +1813,7 @@ class seventhResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1839,7 +1839,7 @@ class seventhResult(QMainWindow):
         back.clicked.connect(self.closee)
 
         
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -1898,7 +1898,7 @@ class fifthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1923,7 +1923,7 @@ class fifthResult(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
         
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -1982,7 +1982,7 @@ class sixthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2007,7 +2007,7 @@ class sixthResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -2066,7 +2066,7 @@ class third2Result(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2091,7 +2091,7 @@ class third2Result(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -2151,7 +2151,7 @@ class fourthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2176,7 +2176,7 @@ class fourthResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -2237,7 +2237,7 @@ class firstResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2262,7 +2262,7 @@ class firstResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -2321,7 +2321,7 @@ class secondResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2346,7 +2346,7 @@ class secondResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -2405,7 +2405,7 @@ class thirdResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the weather image widget
+        #Create the logo image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2430,7 +2430,7 @@ class thirdResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (logo image)
         layout = QVBoxLayout()
         
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
@@ -2483,7 +2483,7 @@ class viewImage(QMainWindow):
         self.setWindowTitle(title)
         self.setGeometry(200, 200, 200, 400)  # Set window position and size
         self.closed = pyqtSignal()
-        #Create the weather image widget
+        #Create the logo image widget
         image = QLabel(self)
         pixmap = QPixmap(imageP) 
         pixmap= pixmap.scaled(350, 600)
@@ -2589,16 +2589,16 @@ class OutputWindow(QMainWindow):
             
             glayout.addWidget(image,0,i)
 
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        logo_image = QLabel(self)
+        pixmap = QPixmap('logo.jpg') 
         central_widget.setLayout(glayout)
-        #Replace with the actual path to your weather image file
+        #Replace with the actual path to your logo image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        #weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
 
         
