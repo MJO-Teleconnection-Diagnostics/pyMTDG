@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter, QSizePolicy
 from PyQt5.QtGui import *
@@ -21,67 +20,130 @@ class FirstWindow(QMainWindow):
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
 
-        #Create the logo image widget
-        logo_image = QLabel(self)
+        #Create the weather image widget
+        weather_image = QLabel(self)
         pixmap = QPixmap('logo1.jpg') 
 
-        #Replace with the actual path to your logo image file
-        #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_image.setPixmap(pixmap)
-        logo_image.resize(pixmap.width(),pixmap.height())
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
-        logo_image.setAlignment(Qt.AlignCenter)
+        weather_image.setAlignment(Qt.AlignCenter)
         welcome_label = QLabel('Welcome to MJO Teleconnections Diagnostics', self)
         welcome_label.setAlignment(Qt.AlignCenter)
         
-        welcome_label.setStyleSheet("border: 1px solid black;font-size: 20px;")
+        
         
         
         button2 = QPushButton('Start', self)
         button2.setFixedSize(70,30)
         #button2.setGeometry(200, 150, 40, 40)
         button2.clicked.connect(self.open_second_window)
-        button2.setStyleSheet("border: 1px solid black;font-size: 15px;")
+        
        
         
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         
         left_layout.addWidget(welcome_label)
         left_layout.addStretch()
-        left_layout.addWidget(logo_image)
+        left_layout.addWidget(weather_image)
         
         widgetB = QWidget()
         left_layout.addStretch()
         
         left_layout.addWidget(button2,alignment=Qt.AlignCenter)
         left_layout.addStretch()
-
-        #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
         central_widget = QWidget()
         
         central_widget.setLayout(left_layout)
         self.setCentralWidget(central_widget)
 
-
-    
-
-
     def open_second_window(self):
-        
-        
-        self.second_window = EntryWindow(self)
-        self.second_window.showMaximized()
+        self.second_window = ViewRes_RunCal(self)
         self.hide()
     
-    def output(self):
-        pass
+    
+
+class ViewRes_RunCal(QMainWindow):
+    def __init__(self,parent):
+        super().__init__()
+        #self.setupUi(self)
+        self.parent = parent
+        self.setWindowTitle('MJO Teleconnections Diagnostics')
+        self.setGeometry(200, 200, 400, 200)  # Set window position and size
+        self.show()
+        
+        ViewRes= QPushButton('View results from previous calculations', self)
+        ViewRes.setFixedSize(300,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        ViewRes.clicked.connect(self.openViewRes)
+
+        runDiag = QPushButton('Run diagnostics first', self)
+        runDiag.setFixedSize(300,30)
+        #button2.setGeometry(200, 150, 40, 40)
+        runDiag.clicked.connect(self.openrunDiag)
+       
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+        #Create a layout for the left half (weather image)
+        layout = QVBoxLayout()
+        ryt_layout = QVBoxLayout()
+       
+        layout.addWidget(ViewRes,alignment=Qt.AlignCenter)
+        layout.addStretch()
+        
+        
+        ryt_layout.addWidget(runDiag,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
+        #Create a layout for the right half (text widgets and button)
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
+        central_widget = QWidget()
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+    def openViewRes(self):
+        self.runFinal = FinalWindow(self,[0,])
+        self.runFinal.showMaximized()
+        self.close()
+
+    def openrunDiag(self):
+        self.runDiagnostics = EntryWindow(self)
+        self.runDiagnostics.showMaximized()
+        self.hide()
+    
 
 
 class EntryWindow(QMainWindow):
@@ -164,7 +226,7 @@ class EntryWindow(QMainWindow):
         
         
 
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         help = QLabel('Help:',self)
         
@@ -311,17 +373,17 @@ class SecondWindow(QMainWindow):
         self.setWindowTitle('Daily Anomaly and RMM')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        #Create the logo image widget
-        logo_image = QLabel(self)
-        pixmap = QPixmap('logo.jpg') 
+        #Create the weather image widget
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
         self.era = era
        
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_image.setPixmap(pixmap)
-        logo_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dailyAnomaly=True
@@ -399,9 +461,9 @@ class SecondWindow(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
 
-        # Create a layout for the left half (logo image)
+        # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(logo_image)
+        left_layout.addWidget(weather_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -502,20 +564,20 @@ class ThirdWindow(QMainWindow):
         #self.setupUi(self)
         self.parent=parent
         self.dict_file = dict_file
-        self.setWindowTitle('Select what you want to view')
+        self.setWindowTitle('Select which diagnostic you want to run')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        # Create the logo image widget
-        logo_image = QLabel(self)
-        pixmap = QPixmap('logo.jpg') 
+        # Create the weather image widget
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
         
-        #Replace with the actual path to your logo image file
+        #Replace with the actual path to your weather image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_image.setPixmap(pixmap)
-        logo_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dirin = dirin
@@ -525,10 +587,10 @@ class ThirdWindow(QMainWindow):
         self.all.setChecked(False)
         self.all.stateChanged.connect(self.method)
 
-        self.first = QCheckBox("STRIPES Index for geopotential height")
+        self.first = QCheckBox("STRIPE Index for geopotential height")
         self.first.setChecked(False)
 
-        self.second = QCheckBox("STRIPES Index for precipitation")
+        self.second = QCheckBox("STRIPE Index for precipitation")
         self.second.setChecked(False)
 
         self.third = QCheckBox("Pattern CC over the PNA region")
@@ -537,7 +599,7 @@ class ThirdWindow(QMainWindow):
         self.third_2 = QCheckBox("Pattern CC over the Euro-Atlantic sector")
         self.third_2.setChecked(False) #11
 
-        self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
+        self.fourth = QCheckBox("Fraction of the observed STRIPE index for geopotential height")
         self.fourth.setChecked(False)
 
         self.fifth = QCheckBox("Relative amplitude over PNA?")
@@ -569,9 +631,9 @@ class ThirdWindow(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
         
-        # Create a layout for the left half (logo image)
+        # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(logo_image)
+        left_layout.addWidget(weather_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -708,17 +770,17 @@ class ThirdSubWindow(QMainWindow):
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
         scroll_bar = QScrollBar(self)
-        # Create the logo image widget
-        logo_image = QLabel(self)
-        pixmap = QPixmap('logo.jpg') 
+        # Create the weather image widget
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
         
-        #Replace with the actual path to your logo image file
+        #Replace with the actual path to your weather image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_image.setPixmap(pixmap)
-        logo_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
         
         self.dirin = dirin
@@ -1085,7 +1147,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(precDataobs)
                             right_layout.addWidget(self.precDataTobs)
 
-                if 3 in selected or 11 in selected: #Fraction of the observed STRIPES
+                if 3 in selected or 11 in selected: #Fraction of the observed STRIPE
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1287,9 +1349,9 @@ class ThirdSubWindow(QMainWindow):
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
 
-        # Create a layout for the left half (logo image)
+        # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(logo_image)
+        left_layout.addWidget(weather_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -1403,45 +1465,52 @@ class ThirdSubWindow(QMainWindow):
         self.hide()
         #self.close()
         #run_longtask()
-        diagnostics_paths = ["/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py"]
-        
-        
-        '''with open("/home/skollapa/MJO-Teleconnections/MJO-Teleconnections/T2m_composites/t2m_composites.py") as f:
-            exec(f.read())
         '''
-        self.OutputWindow = FinalWindow(self,self.dirin,self.dict_file,self.selected)
+        #running each calculation that was selected 
+        diagnostics_paths = ["../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py",
+                             "../T2m_composites/t2m_composites.py"]
+        
+        
+        
+        
+        for i in selected:
+            with open(diagnostics_path[i]) as f:
+                exec(f.read())
+        '''
+        self.OutputWindow = FinalWindow(self,self.selected)
         self.OutputWindow.showMaximized()
         self.close()
 
 class FinalWindow(QMainWindow):
-    def __init__(self,parent,dirin,dict_file,selected):
+    def __init__(self,parent,selected):
         super().__init__()
         #self.setupUi(self)
         self.parent=parent
-        self.dict_file = dict_file
+       
         self.selected = selected
         self.setWindowTitle('Select what you want to view')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        # Create the logo image widget
-        logo_image = QLabel(self)
-        pixmap = QPixmap('logo.jpg') 
+        # Create the weather image widget
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
         
-        #Replace with the actual path to your logo image file
-        #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_image.setPixmap(pixmap)
-        logo_image.resize(pixmap.width(),pixmap.height())
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # Create the text widgets
+        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.dirin = dirin
-        
-        
-        
-
-        self.first = QRadioButton("STRIPES Index for geopotential height")
+        self.first = QRadioButton("STRIPE Index for geopotential height")
         self.first.setChecked(False) # 1
 
         self.second = QRadioButton("STRIPE Index for precipitation")
@@ -1488,9 +1557,9 @@ class FinalWindow(QMainWindow):
         
         
         
-        # Create a layout for the left half (logo image)
+        # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
-        left_layout.addWidget(logo_image)
+        left_layout.addWidget(weather_image)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
@@ -1640,7 +1709,7 @@ class ninthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1651,6 +1720,7 @@ class ninthResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -1661,28 +1731,55 @@ class ninthResult(QMainWindow):
         week7_8.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week7_8.clicked.connect(self.openweek7_8)
+       
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-
-        
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
@@ -1690,25 +1787,25 @@ class ninthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1727,7 +1824,7 @@ class eightResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1738,6 +1835,7 @@ class eightResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -1748,28 +1846,55 @@ class eightResult(QMainWindow):
         week7_8.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week7_8.clicked.connect(self.openweek7_8)
+       
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-
-        
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
@@ -1777,25 +1902,25 @@ class eightResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1813,7 +1938,7 @@ class seventhResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1824,6 +1949,7 @@ class seventhResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -1834,28 +1960,55 @@ class seventhResult(QMainWindow):
         week7_8.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week7_8.clicked.connect(self.openweek7_8)
+       
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-
-        
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
@@ -1863,25 +2016,25 @@ class seventhResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1898,7 +2051,7 @@ class fifthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1909,6 +2062,7 @@ class fifthResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -1919,27 +2073,55 @@ class fifthResult(QMainWindow):
         week7_8.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week7_8.clicked.connect(self.openweek7_8)
+       
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
@@ -1947,25 +2129,25 @@ class fifthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1982,7 +2164,7 @@ class sixthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -1993,6 +2175,7 @@ class sixthResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -2007,48 +2190,76 @@ class sixthResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2066,7 +2277,7 @@ class third2Result(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2077,6 +2288,7 @@ class third2Result(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -2091,23 +2303,50 @@ class third2Result(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
 
     def closee(self):
         self.close()
@@ -2116,25 +2355,25 @@ class third2Result(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2151,7 +2390,7 @@ class fourthResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2162,6 +2401,7 @@ class fourthResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -2176,23 +2416,50 @@ class fourthResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
 
     def closee(self):
         self.close()
@@ -2201,25 +2468,25 @@ class fourthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2237,7 +2504,7 @@ class firstResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2248,6 +2515,7 @@ class firstResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -2262,23 +2530,50 @@ class firstResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
 
     def closee(self):
         self.close()
@@ -2286,25 +2581,25 @@ class firstResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2321,7 +2616,7 @@ class secondResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2332,6 +2627,7 @@ class secondResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -2346,23 +2642,51 @@ class secondResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
@@ -2370,25 +2694,25 @@ class secondResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2405,7 +2729,7 @@ class thirdResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
-        #Create the logo image widget
+        #Create the weather image widget
         
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
@@ -2416,6 +2740,7 @@ class thirdResult(QMainWindow):
         week3_4.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week3_4.clicked.connect(self.openweek3_4)
+
         
         week5_6 = QPushButton('Week5 - 6', self)
         week5_6.setFixedSize(100,30)
@@ -2430,48 +2755,76 @@ class thirdResult(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (logo image)
+        #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        
+        ryt_layout = QVBoxLayout()
+       
         layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        layout.addWidget(week7_8,alignment=Qt.AlignCenter)
-        layout.addWidget(back,alignment=Qt.AlignCenter)
         layout.addStretch()
+        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
+        
+        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        
+        
 
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
-        
-        
-        # Create a central widget to hold the splitter
+        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
+
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
         central_widget = QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
+        back.setStyleSheet("""
+        QPushButton:hover {
+            background-color: gray;
+        }
+    """)
+        central_layout.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(central_layout)
+        self.setCentralWidget(main_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2481,12 +2834,14 @@ class viewImage(QMainWindow):
         super().__init__()
         print('Viewing image')
         self.setWindowTitle(title)
-        self.setGeometry(200, 200, 200, 400)  # Set window position and size
+        self.setGeometry(200, 200, 500, 700)  # Set window position and size
         self.closed = pyqtSignal()
-        #Create the logo image widget
+        scroll_bar = QScrollBar(self)
+        self.scroll = QScrollArea()
+        #Create the weather image widget
         image = QLabel(self)
         pixmap = QPixmap(imageP) 
-        pixmap= pixmap.scaled(350, 600)
+        pixmap= pixmap.scaled(450, 700,Qt.KeepAspectRatio, Qt.SmoothTransformation)
         image.setPixmap(pixmap)
         
         image.setAlignment(Qt.AlignCenter)
@@ -2517,7 +2872,13 @@ class viewImage(QMainWindow):
         central_layout = QHBoxLayout()
         central_layout.addWidget(splitter)
         central_widget.setLayout(central_layout)
-        self.setCentralWidget(central_widget)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(central_widget)
+        #central_widget.setLayout(glayout)
+        self.setCentralWidget(self.scroll)
+        
 
     
 
@@ -2578,7 +2939,7 @@ class OutputWindow(QMainWindow):
         glayout = QGridLayout()
         stripes = []
         for i in range(4):
-            path = 'OutputImgs/Stripes_'+str(i+1)+'.png'
+            path = 'OutputImgs/StripeIndexGeoPotHeight/Stripes_'+str(i+1)+'.png'
             px1 = QPixmap(path)
             #px1.setDevicePixelRatio(0.5)
             stripes.append(px1)
@@ -2589,16 +2950,16 @@ class OutputWindow(QMainWindow):
             
             glayout.addWidget(image,0,i)
 
-        logo_image = QLabel(self)
-        pixmap = QPixmap('logo.jpg') 
+        weather_image = QLabel(self)
+        pixmap = QPixmap('weather.jpg') 
         central_widget.setLayout(glayout)
-        #Replace with the actual path to your logo image file
+        #Replace with the actual path to your weather image file
         #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(logo_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        logo_image.setPixmap(pixmap)
-        logo_image.resize(pixmap.width(),pixmap.height())
+        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        weather_image.setPixmap(pixmap)
+        weather_image.resize(pixmap.width(),pixmap.height())
         # Set the size policy of the QLabel to expand and fill the available space
-        #logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Create the text widgets
 
         
@@ -2641,7 +3002,53 @@ class OutputWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setStyleSheet('*[mandatoryField="true"] { background-color: yellow }')
+    style = """
+        QWidget{
+            background: #262D37;
+        }
+        
+        QLabel{
+            color: #fff;
+        }
+
+        QLabel#round_count_label, QLabel#highscore_count_label{
+            border: 1px solid #fff;
+            border-radius: 8px;
+            padding: 2px;
+            font-size: 10pt;
+        }
+        QPushButton
+        {
+            color: white;
+            background: #0577a8;
+            border: 1px #DADADA solid;
+            padding: 5px 10px;
+            border-radius: 2px;
+            font-weight: bold;
+            
+            outline: none;
+        }
+        
+        QRadioButton,QCheckBox{
+            color: white;
+            font-weight: bold;
+        }
+        QPushButton:hover{
+            border: 1px #C6C6C6 solid;
+            color: #fff;
+            background: #0892D0;
+        }
+
+        QLineEdit {
+            padding: 1px;
+            color: #fff;
+            border-style: solid;
+            border: 2px solid #fff;
+            border-radius: 8px;
+        }
+
+    """
+    app.setStyleSheet(style)
     entry_window = FirstWindow()
     entry_window.show()
     sys.exit(app.exec())
