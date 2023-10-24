@@ -11,14 +11,16 @@ import yaml
 import os
 import time, sys
 import subprocess
+import requests
+import shutil
 
 class FirstWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         #self.setupUi(self)
         self.setWindowTitle('MJO Teleconnections Diagnostics')
-        self.setGeometry(0, 0, 800, 400)  # Set window position and size
-        self.showMaximized()
+        self.setGeometry(200, 200, 800, 400)  # Set window position and size
+        self.show()
 
         #Create the weather image widget
         weather_image = QLabel(self)
@@ -32,9 +34,6 @@ class FirstWindow(QMainWindow):
         weather_image.setAlignment(Qt.AlignCenter)
         welcome_label = QLabel('Welcome to MJO Teleconnections Diagnostics', self)
         welcome_label.setAlignment(Qt.AlignCenter)
-        
-        
-        
         
         button2 = QPushButton('Start', self)
         button2.setFixedSize(70,30)
@@ -150,14 +149,13 @@ class EntryWindow(QMainWindow):
     def __init__(self,parent):
         super().__init__()
         #self.setupUi(self)
-        scroll_bar= QScrollBar(self)
+        
         self.scroll = QScrollArea()
         self.parent=parent
         self.setWindowTitle('MJO Teleconnections Diagnostics')
         self.setGeometry(0, 0, 800, 400)  
         self.showMaximized()
 
-       
         dir_in_ilabel = QLabel('DIR_IN: Please enter the input data directory path',self)
         start_date_ilabel = QLabel('START_DATE: Please enter the start date',self)
         end_date_ilabel = QLabel('END_DATE: Please enter the end date',self)
@@ -177,6 +175,8 @@ class EntryWindow(QMainWindow):
         start_date_label = QLabel('START_DATE:', self)
         self.start_date_text = QLineEdit(self)
         #calendar = QCalendarWidget(self)
+    
+
         self.era = True
         self.imerg = True
         end_date_label = QLabel('END_DATE:', self)
@@ -243,7 +243,6 @@ class EntryWindow(QMainWindow):
         left_layout.addWidget(era_ilabel)
         left_layout.addWidget(imerg_ilabel)
         left_layout.addStretch()
-        left_layout.addWidget(back,alignment=Qt.AlignLeft)
         
 
         #Create a layout for the right half (text widgets and button)
@@ -268,10 +267,8 @@ class EntryWindow(QMainWindow):
         right_layout.addWidget(imerg_label)
         right_layout.addWidget(groupbox2)
         right_layout.addStretch()
-        right_layout.addWidget(button2,alignment=Qt.AlignRight)
         
 
-        # Create a QSplitter to split the window equally
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(QWidget())
         splitter.addWidget(QWidget())
@@ -284,18 +281,21 @@ class EntryWindow(QMainWindow):
         # Set the right layout to the second widget of the splitter
         splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(splitter)
 
         # Create a central widget to hold the splitter
         central_widget = QWidget()
-        central_layout = QHBoxLayout()
-        central_layout.addWidget(splitter)
+        central_layout = QGridLayout()
+        central_layout.addWidget(self.scroll,0,0,1,13)
+        
+        central_layout.addWidget(back,1,0,alignment=Qt.AlignLeft)
+        central_layout.addWidget(button2,1,12,alignment=Qt.AlignRight)
         central_widget.setLayout(central_layout)
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setWidget(central_widget)
-        self.setCentralWidget(self.scroll)
-
+        
+        self.setCentralWidget(central_widget)
 
     def onERAClicked(self):
         radioButton = self.sender()
@@ -353,7 +353,7 @@ class EntryWindow(QMainWindow):
             dict_file['IMERG:'] = False
 
         
-        self.second_window = SecondWindow(self,self.dir_in_text.text(),self.era,dict_file)
+        self.second_window = modelInformation(self,self.dir_in_text.text(),self.era,dict_file)
         self.second_window.showMaximized()
         self.hide()
     
@@ -362,6 +362,178 @@ class EntryWindow(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
+
+class modelInformation(QMainWindow):
+    def __init__(self,parent,dir_in_text,era,dict_file):
+        super().__init__()
+        #self.setupUi(self)
+        scroll_bar= QScrollBar(self)
+        self.scroll = QScrollArea()
+        self.parent=parent
+        self.dir_in_text = dir_in_text
+        self.era = era
+        self.dict_file = dict_file
+        self.setWindowTitle("Model's  Information")
+        self.setGeometry(0, 0, 800, 400)  
+        self.showMaximized()
+
+        dir_in_ilabel = QLabel('DIR_IN: Please enter the input data directory path',self)
+        start_date_ilabel = QLabel('START_DATE: Please enter the start date',self)
+        end_date_ilabel = QLabel('END_DATE: Please enter the end date',self)
+        legthFor_ilabel = QLabel('Length of the forecats (in days): Please enter the length of the forecats in days',self)
+        num_ensm_ilabel = QLabel('Number of ensembles: Please enter the number of ensembles',self)
+        num_ini_ilabel = QLabel('Number of initial dates: Please enter the number of initial dates',self)
+        ini_dates_ilabel = QLabel('Initial dates: Please enter all the intial dates',self)
+        era_ilabel = QLabel('Use ERA_I for validation: Please check this box if ERA_I is used for validation',self)
+        imerg_ilabel = QLabel('Use IMERG for validation: Please check this box if IMERG is used for validation',self)
+
+        #Model name
+        model_label = QLabel('Model name:', self)
+        self.model_name = QLineEdit(self)
+
+        #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
+        daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
+        groupbox = QGroupBox()
+        vbox = QVBoxLayout()
+        groupbox.setLayout(vbox)
+        self.daily_mean_values_yes = QRadioButton("Yes")
+        self.daily_mean_values_yes.setChecked(True)
+        vbox.addWidget(self.daily_mean_values_yes )
+        self.daily_mean_values_no = QRadioButton("No")
+        vbox.addWidget(self.daily_mean_values_no)
+
+        #If "No" in 1, what is the forecast time step interval in the model data?
+        time_step_interval = QLabel('If "No" in 1, what is the forecast time step interval in the model data?', self)
+        groupbox1 = QGroupBox()
+        vbox = QVBoxLayout()
+        groupbox1.setLayout(vbox)
+        self.time_step_interval_6 = QRadioButton("Yes")
+        self.time_step_interval_6.setChecked(True)
+        vbox.addWidget(self.time_step_interval_6)
+        self.time_step_interval_24 = QRadioButton("No")
+        vbox.addWidget(self.time_step_interval_24)
+
+        
+        
+        #Does the model data include the initial conditions?
+        initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
+        groupbox2 = QGroupBox()
+        vbox = QVBoxLayout()
+        groupbox2.setLayout(vbox)
+        self.initial_conds_yes = QRadioButton("Yes")
+        self.initial_conds_yes.setChecked(True)
+        vbox.addWidget(self.initial_conds_yes)
+        self.initial_conds_no = QRadioButton("No")
+        vbox.addWidget(self.initial_conds_no)
+
+        #Smooth climatology
+        smooth_climatology_label = QLabel('Smooth climatology?', self)
+        groupbox3 = QGroupBox()
+        vbox = QVBoxLayout()
+        groupbox3.setLayout(vbox)
+        self.smooth_climatology_yes = QRadioButton("Yes")
+        self.smooth_climatology_yes.setChecked(True)
+        vbox.addWidget(self.smooth_climatology_yes)
+        self.smooth_climatology_no = QRadioButton("No")
+        vbox.addWidget(self.smooth_climatology_no)
+
+        button2 = QPushButton('Next', self)
+        button2.setFixedSize(70,30)
+        button2.clicked.connect(self.open_second_window)
+        back = QPushButton('Back', self)
+        back.setFixedSize(70,30)
+        back.clicked.connect(self.closee)
+
+        #Create a layout for the left half (weather image)
+        left_layout = QVBoxLayout()
+        help = QLabel('Help:',self)
+        
+        left_layout.addStretch()
+        left_layout.addWidget(help)
+
+        
+        
+        left_layout.addWidget(dir_in_ilabel)
+        left_layout.addWidget(start_date_ilabel)
+        left_layout.addWidget(end_date_ilabel)
+        left_layout.addWidget(legthFor_ilabel)
+        left_layout.addWidget(num_ensm_ilabel)
+        left_layout.addWidget(num_ini_ilabel)
+        left_layout.addWidget(ini_dates_ilabel)
+        left_layout.addWidget(era_ilabel)
+        left_layout.addWidget(imerg_ilabel)
+        left_layout.addStretch()
+        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        
+
+        #Create a layout for the right half (text widgets and button)
+        right_layout = QVBoxLayout()
+        right_layout.addStretch()
+        right_layout.addWidget(model_label)
+        right_layout.addWidget(self.model_name)
+        right_layout.addWidget(daily_mean_values_label)
+        right_layout.addWidget(groupbox)
+        right_layout.addWidget(time_step_interval)
+        right_layout.addWidget(groupbox1)
+        right_layout.addWidget(initial_conds_label)
+        right_layout.addWidget(groupbox2)
+        right_layout.addWidget(smooth_climatology_label)
+        right_layout.addWidget(groupbox3)
+        right_layout.addStretch()
+        right_layout.addWidget(button2,alignment=Qt.AlignRight)
+        
+
+        # Create a QSplitter to split the window equally
+        splitter = QSplitter(Qt.Horizontal)
+        splitter.addWidget(QWidget())
+        splitter.addWidget(QWidget())
+        splitter.setSizes([1, 1])
+
+        # Set the left layout to the first widget of the splitter
+        splitter.widget(0).setLayout(left_layout)
+        splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Set the right layout to the second widget of the splitter
+        splitter.widget(1).setLayout(right_layout)
+        splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Create a central widget to hold the splitter
+        central_widget = QWidget()
+        central_layout = QHBoxLayout()
+        central_layout.addWidget(splitter)
+        central_widget.setLayout(central_layout)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(central_widget)
+        self.setCentralWidget(self.scroll)
+
+
+    def open_second_window(self):
+        #commenting out the input validation
+        dict_file =self.dict_file
+        dict_file['model data daily-mean values?'] = self.daily_mean_values_yes.isChecked()
+        if self.time_step_interval_24.isChecked():
+            dict_file['forecast time step interval']= self.time_step_interval_24.isChecked()
+        else:
+            dict_file['forecast time step interval']= self.time_step_interval_6.isChecked()
+        
+        dict_file['model data include the initial conditions']= self.initial_conds_yes.isChecked()
+        dict_file['Smooth climatology:'] = self.smooth_climatology_yes.isChecked()
+        
+        self.dict_file = dict_file
+        
+        self.second_window = SecondWindow(self,self.dir_in_text,self.era,dict_file)
+        self.second_window.showMaximized()
+        self.hide()
+    
+
+    
+    def closee(self):
+        self.close()
+        self.parent.show()
+
+
 
 
 class SecondWindow(QMainWindow):
@@ -570,7 +742,7 @@ class ThirdWindow(QMainWindow):
         # Create the weather image widget
         weather_image = QLabel(self)
         pixmap = QPixmap('weather.jpg') 
-        
+        self.scroll = QScrollArea()
         #Replace with the actual path to your weather image file
         #Scale the pixmap to fit the size of the QLabel
         #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -587,10 +759,10 @@ class ThirdWindow(QMainWindow):
         self.all.setChecked(False)
         self.all.stateChanged.connect(self.method)
 
-        self.first = QCheckBox("STRIPE Index for geopotential height")
+        self.first = QCheckBox("STRIPES Index for geopotential height")
         self.first.setChecked(False)
 
-        self.second = QCheckBox("STRIPE Index for precipitation")
+        self.second = QCheckBox("STRIPES Index for precipitation")
         self.second.setChecked(False)
 
         self.third = QCheckBox("Pattern CC over the PNA region")
@@ -599,7 +771,7 @@ class ThirdWindow(QMainWindow):
         self.third_2 = QCheckBox("Pattern CC over the Euro-Atlantic sector")
         self.third_2.setChecked(False) #11
 
-        self.fourth = QCheckBox("Fraction of the observed STRIPE index for geopotential height")
+        self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
         self.fourth.setChecked(False)
 
         self.fifth = QCheckBox("Relative amplitude over PNA?")
@@ -635,7 +807,7 @@ class ThirdWindow(QMainWindow):
         left_layout = QVBoxLayout()
         left_layout.addWidget(weather_image)
         left_layout.addStretch()
-        left_layout.addWidget(back,alignment=Qt.AlignLeft)
+        
         
 
         # Create a layout for the right half (text widgets and button)
@@ -654,10 +826,9 @@ class ThirdWindow(QMainWindow):
         right_layout.addWidget(self.nine_two)
         right_layout.addWidget(self.ten)
         right_layout.addStretch()
-        right_layout.addWidget(but,alignment=Qt.AlignRight)
+      
         
 
-        # Create a QSplitter to split the window equally
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(QWidget())
         splitter.addWidget(QWidget())
@@ -670,13 +841,22 @@ class ThirdWindow(QMainWindow):
         # Set the right layout to the second widget of the splitter
         splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(splitter)
 
         # Create a central widget to hold the splitter
         central_widget = QWidget()
-        central_layout = QHBoxLayout()
-        central_layout.addWidget(splitter)
+        central_layout = QGridLayout()
+        central_layout.addWidget(self.scroll,0,0,1,13)
+        
+        central_layout.addWidget(back,1,0,alignment=Qt.AlignLeft)
+        central_layout.addWidget(but,1,12,alignment=Qt.AlignRight)
         central_widget.setLayout(central_layout)
+        
         self.setCentralWidget(central_widget)
+
     def closee(self):
         self.close()
         self.parent.show()
@@ -1147,7 +1327,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(precDataobs)
                             right_layout.addWidget(self.precDataTobs)
 
-                if 3 in selected or 11 in selected: #Fraction of the observed STRIPE
+                if 3 in selected or 11 in selected: #Fraction of the observed STRIPES
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1359,7 +1539,6 @@ class ThirdSubWindow(QMainWindow):
         # Create a layout for the right half (text widgets and button)
         
 
-        # Create a QSplitter to split the window equally
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(QWidget())
         splitter.addWidget(QWidget())
@@ -1368,17 +1547,24 @@ class ThirdSubWindow(QMainWindow):
         # Set the left layout to the first widget of the splitter
         splitter.widget(0).setLayout(left_layout)
         splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        vbox.addWidget(self.scroll)
+
         # Set the right layout to the second widget of the splitter
-        splitter.widget(1).setLayout(vbox)
+        splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(splitter)
 
         # Create a central widget to hold the splitter
-
         central_widget = QWidget()
-        central_layout = QHBoxLayout()
-        central_layout.addWidget(splitter)
+        central_layout = QGridLayout()
+        central_layout.addWidget(self.scroll,0,0,1,13)
+        
+        central_layout.addWidget(back,1,0,alignment=Qt.AlignLeft)
+        central_layout.addWidget(but,1,12,alignment=Qt.AlignRight)
         central_widget.setLayout(central_layout)
+        
         self.setCentralWidget(central_widget)
     
     def closee(self):
@@ -1510,10 +1696,10 @@ class FinalWindow(QMainWindow):
         # Set the size policy of the QLabel to expand and fill the available space
         weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
-        self.first = QRadioButton("STRIPE Index for geopotential height")
+        self.first = QRadioButton("STRIPES Index for geopotential height")
         self.first.setChecked(False) # 1
 
-        self.second = QRadioButton("STRIPE Index for precipitation")
+        self.second = QRadioButton("STRIPES Index for precipitation")
         self.second.setChecked(False) #2
 
         self.third = QRadioButton("Pattern CC over the PNA region")
@@ -1522,7 +1708,7 @@ class FinalWindow(QMainWindow):
         self.third_2 = QRadioButton("Pattern CC over the Euro-Atlantic sector")
         self.third_2.setChecked(False) #11
 
-        self.fourth = QRadioButton("Fraction of the observed STRIPE index for geopotential height")
+        self.fourth = QRadioButton("Fraction of the observed STRIPES index for geopotential height")
         self.fourth.setChecked(False) #4
 
         self.fifth = QRadioButton("Relative amplitude over PNA?")
@@ -1648,49 +1834,68 @@ class FinalWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def showResults(self):
-        self.hide()
+        #self.hide()
+        f=0
+        
         if self.first.isChecked():
             #open new window
+            f=1
             self.win1 = firstResult(self)
             self.win1.show()
 
         elif self.second.isChecked():
             print('I am here')
+            f=1
             self.win2 = secondResult(self)
             self.win2.show()
         
         elif self.third.isChecked():
             print('I am here')
+            f=1
             self.win2 = thirdResult(self)
             self.win2.show()
         elif self.third_2.isChecked():
             print('I am here')
+            f=1
             self.win2 = third2Result(self)
             self.win2.show()
         elif self.fourth.isChecked():
             print('I am here')
+            f=1
             self.win2 = fourthResult(self)
             self.win2.show()
         elif self.fifth.isChecked():
             print('I am here')
+            f=1
             self.win2 = fifthResult(self)
             self.win2.show()
         elif self.sixth.isChecked():
             print('I am here')
+            f=1
             self.win2 = sixthResult(self)
             self.win2.show()
         elif self.seventh.isChecked():
             print('I am here')
+            f=1
             self.win2 = seventhResult(self)
             self.win2.show()
         elif self.eight.isChecked():
-            
+            f=1
             self.win2 = eightResult(self)
             self.win2.show()
         elif self.nine.isChecked():
-            
+            f=1
             self.win2 = ninthResult(self)
             self.win2.show()
+        if f==0:
+            msg = QMessageBox()
+            msg.setWindowTitle("Nothing selected")
+            msg.setText("Select at least one to proceed")
+            x=msg.exec_()
+
+            return
+        else:
+            self.hide()
 
     def closee(self):
         self.close()
@@ -1731,6 +1936,8 @@ class ninthResult(QMainWindow):
         week7_8.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week7_8.clicked.connect(self.openweek7_8)
+
+        
        
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
@@ -1786,26 +1993,23 @@ class ninthResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -1901,26 +2105,24 @@ class eightResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
+
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2016,25 +2218,25 @@ class seventhResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2129,25 +2331,25 @@ class fifthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2241,25 +2443,25 @@ class sixthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2355,25 +2557,25 @@ class third2Result(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2468,25 +2670,25 @@ class fourthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2526,6 +2728,7 @@ class firstResult(QMainWindow):
         week7_8.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
         week7_8.clicked.connect(self.openweek7_8)
+
        
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
@@ -2574,6 +2777,8 @@ class firstResult(QMainWindow):
         central_layout.addWidget(back,alignment=Qt.AlignCenter)
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
+    
+    
 
     def closee(self):
         self.close()
@@ -2581,25 +2786,25 @@ class firstResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2694,25 +2899,25 @@ class secondResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2806,25 +3011,25 @@ class thirdResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             print('I am here')
-            self.viewImage1 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             print('I am here')
-            self.viewImage2 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             print('I am here')
-            self.viewImage3 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("OutputImgs/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2833,8 +3038,9 @@ class viewImage(QMainWindow):
     def __init__(self,imageP,title):
         super().__init__()
         print('Viewing image')
+        print('path',imageP)
         self.setWindowTitle(title)
-        self.setGeometry(200, 200, 500, 700)  # Set window position and size
+        self.setGeometry(200, 0, 800, 800)  # Set window position and size
         self.closed = pyqtSignal()
         scroll_bar = QScrollBar(self)
         self.scroll = QScrollArea()
@@ -2845,14 +3051,21 @@ class viewImage(QMainWindow):
         image.setPixmap(pixmap)
         
         image.setAlignment(Qt.AlignCenter)
-        
+        self.imagep = imageP
         left_layout = QVBoxLayout()
         left_layout.addWidget(image)
         left_layout.addStretch()
         
         right_layout = QVBoxLayout()
         helpText = QLabel('Here will be the help text on this image.')
+
+        download = QPushButton('Download image', self)
+        download.setFixedSize(300,30)
+        download.clicked.connect(self.download_image)
+
         right_layout.addWidget(helpText)
+        right_layout.addStretch()
+        right_layout.addWidget(download)
         
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(QWidget())
@@ -2878,6 +3091,27 @@ class viewImage(QMainWindow):
         self.scroll.setWidget(central_widget)
         #central_widget.setLayout(glayout)
         self.setCentralWidget(self.scroll)
+    def download_image(self):
+         # Replace with the image URL you want to download
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Specify the relative path to the image file
+        relative_path = self.imagep # Adjust the relative path as needed
+
+        # Construct the source path by joining the script directory and relative path
+        source_path = os.path.join(script_directory, relative_path)
+
+        if not source_path:
+            return
+
+        destination_path, _ = QFileDialog.getSaveFileName(self, "Save Image As", "", "Images (*.jpg *.png);;All Files (*)", options=QFileDialog.ReadOnly)
+
+        if destination_path:
+            try:
+                shutil.copy(source_path, destination_path)
+            except Exception as e:
+            
+                print("Failed to download the image.")
         
 
     
@@ -2939,7 +3173,7 @@ class OutputWindow(QMainWindow):
         glayout = QGridLayout()
         stripes = []
         for i in range(4):
-            path = 'OutputImgs/StripeIndexGeoPotHeight/Stripes_'+str(i+1)+'.png'
+            path = '../Output/StripeIndexGeoPotHeight/Stripes_'+str(i+1)+'.png'
             px1 = QPixmap(path)
             #px1.setDevicePixelRatio(0.5)
             stripes.append(px1)
