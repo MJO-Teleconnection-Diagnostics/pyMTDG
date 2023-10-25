@@ -2080,44 +2080,44 @@ class tenthResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../Output/T2m/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/T2m/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../Output/T2m/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/T2m/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../Output/T2m/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/T2m/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
 
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/T2m/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/T2m/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
     def openweek5(self):
         if self.viewImage5 == None or self.viewImage5.isVisible() == False:
-            self.viewImage5 = viewImage("../Output/T2m/Stripes_1.png",'Stripes - 5')
+            self.viewImage5 = viewImage("../output/T2m/Stripes_1.png",'Stripes - 5')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage5.show()
     def openweek6(self):
         if self.viewImage6 == None or self.viewImage6.isVisible() == False:
-            self.viewImage6 = viewImage("../Output/T2m/Stripes_1.png",'Stripes - 6')
+            self.viewImage6 = viewImage("../output/T2m/Stripes_1.png",'Stripes - 6')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage6.show()
     def openweek7(self):
         if self.viewImage7 == None or self.viewImage7.isVisible() == False:
-            self.viewImage7 = viewImage("../Output/T2m/Stripes_1.png",'Stripes - 7')
+            self.viewImage7 = viewImage("../output/T2m/Stripes_1.png",'Stripes - 7')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage7.show()
     def openweek8(self):
         if self.viewImage8 == None or self.viewImage8.isVisible() == False:
-            self.viewImage8 = viewImage("../Output/T2m/Stripes_1.png",'Stripes - 1')
+            self.viewImage8 = viewImage("../output/T2m/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage8.show()
 
@@ -2209,23 +2209,23 @@ class nine_twoResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../Output/MJO/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/MJO/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../Output/MJO/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/MJO/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../Output/MJO/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/MJO/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/MJO/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/MJO/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2319,23 +2319,23 @@ class ninthResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../Output/EKE/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/EKE/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../Output/EKE/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/EKE/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../Output/EKE/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/EKE/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/EKE/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/EKE/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2454,44 +2454,44 @@ class eightResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../Output/ET_Cyclone/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/ET_Cyclone/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../Output/ET_Cyclone/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/ET_Cyclone/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../Output/ET_Cyclone/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/ET_Cyclone/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
 
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/ET_Cyclone/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/ET_Cyclone/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
     def openweek5(self):
         if self.viewImage5 == None or self.viewImage5.isVisible() == False:
-            self.viewImage5 = viewImage("../Output/ET_Cyclone/Stripes_1.png",'Stripes - 5')
+            self.viewImage5 = viewImage("../output/ET_Cyclone/Stripes_1.png",'Stripes - 5')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage5.show()
     def openweek6(self):
         if self.viewImage6 == None or self.viewImage6.isVisible() == False:
-            self.viewImage6 = viewImage("../Output/ET_Cyclone/Stripes_1.png",'Stripes - 6')
+            self.viewImage6 = viewImage("../output/ET_Cyclone/Stripes_1.png",'Stripes - 6')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage6.show()
     def openweek7(self):
         if self.viewImage7 == None or self.viewImage7.isVisible() == False:
-            self.viewImage7 = viewImage("../Output/ET_Cyclone/Stripes_1.png",'Stripes - 7')
+            self.viewImage7 = viewImage("../output/ET_Cyclone/Stripes_1.png",'Stripes - 7')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage7.show()
     def openweek8(self):
         if self.viewImage8 == None or self.viewImage8.isVisible() == False:
-            self.viewImage8 = viewImage("../Output/ET_Cyclone/Stripes_1.png",'Stripes - 1')
+            self.viewImage8 = viewImage("../output/ET_Cyclone/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage8.show()
 
@@ -2587,25 +2587,25 @@ class seventhResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/Zonal_Wind_Hist/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/Zonal_Wind_Hist/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/Zonal_Wind_Hist/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/Zonal_Wind_Hist/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/Zonal_Wind_Hist/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/Zonal_Wind_Hist/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/Zonal_Wind_Hist/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/Zonal_Wind_Hist/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2686,25 +2686,25 @@ class fifthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/PNA_RelAmp/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/PNA_RelAmp/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/PNA_RelAmp/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/PNA_RelAmp/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/PNA_RelAmp/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/PNA_RelAmp/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/PNA_RelAmp/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/PNA_RelAmp/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2798,25 +2798,25 @@ class sixthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/Strat_Path/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/Strat_Path/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/Strat_Path/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/Strat_Path/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/Strat_Path/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/Strat_Path/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/Strat_Path/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/Strat_Path/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -2897,25 +2897,25 @@ class third2Result(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/StripeIndexGeoPotHeight/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/PatternCC_Atlantic/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/PatternCC_Atlantic/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/PatternCC_Atlantic/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/PatternCC_Atlantic/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/PatternCC_Atlantic/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/PatternCC_Atlantic/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -3010,25 +3010,25 @@ class fourthResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/StripesFraction/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/StripesFraction/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/StripesFraction/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/StripesFraction/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/StripesFraction/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/StripesFraction/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/StripesFraction/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/StripesFraction/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -3042,7 +3042,7 @@ class firstResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
-        self.setWindowTitle('STRIPE Index for geopotential height')
+        self.setWindowTitle('STRIPES Index for geopotential height')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
@@ -3126,25 +3126,25 @@ class firstResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/StripesGeopot/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/StripesGeopot/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/StripesGeopot/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/StripesGeopot/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/StripesGeopot/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/StripesGeopot/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/StripesGeopot/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/StripesGeopot/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -3157,7 +3157,7 @@ class secondResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
-        self.setWindowTitle('STRIPE Index for precipitation')
+        self.setWindowTitle('STRIPES Index for precipitation')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
@@ -3239,25 +3239,25 @@ class secondResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/StripesPrecip/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/StripesPrecip/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/StripesPrecip/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/StripesPrecip/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/StripesPrecip/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/StripesPrecip/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/StripesPrecip/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/StripesPrecip/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -3339,25 +3339,25 @@ class thirdResult(QMainWindow):
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
             
-            self.viewImage1 = viewImage("../Output/PatternCC_PNA/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage("../output/PatternCC_PNA/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
             
-            self.viewImage2 = viewImage("../Output/PatternCC_PNA/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage("../output/PatternCC_PNA/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
             
-            self.viewImage3 = viewImage("../Output/PatternCC_PNA/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage("../output/PatternCC_PNA/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
     def openweek7_8(self):
         if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../Output/PatternCC_PNA/Stripes_4.png",'Stripes - 4')
+            self.viewImage4 = viewImage("../output/PatternCC_PNA/Stripes_4.png",'Stripes - 4')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage4.show()
 
@@ -3500,7 +3500,7 @@ class OutputWindow(QMainWindow):
         glayout = QGridLayout()
         stripes = []
         for i in range(4):
-            path = '../Output/StripeIndexGeoPotHeight/Stripes_'+str(i+1)+'.png'
+            path = '../output/StripeIndexGeoPotHeight/Stripes_'+str(i+1)+'.png'
             px1 = QPixmap(path)
             #px1.setDevicePixelRatio(0.5)
             stripes.append(px1)
