@@ -3699,9 +3699,24 @@ QScrollBar:horizontal {
         }
         
         QRadioButton,QCheckBox{
-            color: white;
+            color:white;
             font-weight: bold;
         }
+        QRadioButton::indicator, QCheckBox::indicator{
+        background-color: white; 
+        border: 2px solid white;
+        border-radius: 8px;
+        width: 14px; /* Set the width and height of the indicator */
+        height: 14px;
+    }
+    QCheckBox::indicator{border-radius: 50%;}
+    QCheckBox::indicator:checked
+                                {
+                                border-image : url(check.png);
+                                }
+    QRadioButton::indicator:checked, QCheckBox::indicator:checked {
+        background-color: gray; /* Change background color when checked */
+    }
         QPushButton:hover{
             border: 1px #C6C6C6 solid;
             color: #fff;
