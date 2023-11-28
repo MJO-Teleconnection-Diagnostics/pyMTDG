@@ -1,18 +1,16 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter, QSizePolicy
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter, QSizePolicy
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 import yaml
+from PyQt5.QtCore import QObject, QThread, QRunnable,QThreadPool
 import os
 import time, sys
 import subprocess
 import shutil
-
 class FirstWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -61,8 +59,24 @@ class FirstWindow(QMainWindow):
         self.second_window = ViewRes_RunCal(self)
         self.hide()
     
-    
-
+diagnostics={'stripesgeopot':1,'stripesprecip':2,'stripesfraction':4,'patterncc_pna':3,'mjo':12,
+            'eke':9,'et_cyclone':8,'patterncc_atlantic':11,'t2m':10,'strat_path':6,'pna_relamp':5,'zonal_wind_hist':7}
+def get_model_diagnostics(model_name):
+    diags=[]
+    flag=0
+    selected=[]
+    for model in models:
+        name,diag=model.split()
+        if name == model_name:
+            diags.append(diag)
+            selected.append(diagnostics[diag])
+            flag=1
+    if flag==0:
+        return False,False
+        
+    return model_name,selected
+            
+        
 class ViewRes_RunCal(QMainWindow):
     def __init__(self,parent):
         super().__init__()
@@ -77,9 +91,6 @@ class ViewRes_RunCal(QMainWindow):
         ViewRes.setFixedSize(300,30)
         #button2.setGeometry(200, 150, 40, 40)
         ViewRes.clicked.connect(self.showInputDialog)
-
-       
-        
 
         runDiag = QPushButton('Run diagnostics first', self)
         runDiag.setFixedSize(300,30)
@@ -147,19 +158,20 @@ class ViewRes_RunCal(QMainWindow):
             result = dialog.exec_()
             if result == QDialog.Accepted:
                 self.model_name = dialog.input_text.text().lower()
-                print(models)
-                if self.model_name in models:
+                self.model_name,self.selected = get_model_diagnostics(self.model_name)
+                if self.model_name:
                     self.dict_file['model name'] = self.model_name
                     print(f"Accepted: {self.model_name}")
                     f=1
                     break  # Break the loop when valid input is provided
                 else:
+                    print(self.model_name)
                     self.showErrorMessage("There is no model with this name.")
             else:
                 print("Canceled")
                 break  # Break the loop if the user cancels the input dialog
         if f==1:
-            self.runFinal = FinalWindow(self,[0,],self.dict_file)
+            self.runFinal = FinalWindow(self,self.selected,self.dict_file)
             self.runFinal.showMaximized()
             self.close()
     def showErrorMessage(self, message):
@@ -179,14 +191,10 @@ class InputDialog(QDialog):
         self.input_label = QLabel('Enter the model name:')
         self.input_text = QLineEdit()
         self.ok_button = QPushButton('OK')
-        
-
         self.ok_button.clicked.connect(self.accept)
         layout.addWidget(self.input_label)
         layout.addWidget(self.input_text)
         layout.addWidget(self.ok_button)
-        
-
         self.setLayout(layout)
 
 class EntryWindow(QMainWindow):
@@ -681,7 +689,7 @@ class SecondWindow(QMainWindow):
 
         self.dirin = dirin
         prefix = self.dirin+"/OBS/"
-        print(prefix)
+        
         #change labels correctly.
         dir_in_label = QLabel('Path to OLR data files:', self)
         self.olrDataFiles = QLineEdit(self)
@@ -862,7 +870,6 @@ class ThirdWindow(QMainWindow):
         
         self.dirin = dirin
         self.era=era
-        
         self.all = QCheckBox("Select All")
         self.all.setChecked(False)
         self.all.stateChanged.connect(self.method)
@@ -934,8 +941,6 @@ class ThirdWindow(QMainWindow):
         right_layout.addWidget(self.nine_two)
         right_layout.addWidget(self.ten)
         right_layout.addStretch()
-      
-        
 
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(QWidget(objectName = 'left'))
@@ -955,7 +960,7 @@ class ThirdWindow(QMainWindow):
         self.scroll.setWidget(splitter)
         
 
-        # Create a central widget to hold the splitter
+        # Create a central widget to hold the scroll
         central_widget = QWidget()
         central_layout = QGridLayout()
         central_layout.addWidget(self.scroll,0,0,1,13)
@@ -1003,6 +1008,7 @@ class ThirdWindow(QMainWindow):
             msg.setText("Please choose the calculations you want to perform")
             x=msg.exec_()
             return
+        self.dict_file['selected']=selected
         self.ThirdSubWindow = ThirdSubWindow(self,selected,self.dirin,self.era,self.dict_file)
         self.ThirdSubWindow.showMaximized()
         self.hide()
@@ -1041,9 +1047,8 @@ class ThirdWindow(QMainWindow):
             self.nine.setChecked(False)
             self.nine_two.setChecked(False)
             self.ten.setChecked(False)
-
- 
-        
+    
+     
 
 
 class ThirdSubWindow(QMainWindow):
@@ -1053,7 +1058,7 @@ class ThirdSubWindow(QMainWindow):
         self.parent=parent
         self.selected = selected
         self.dict_file = dict_file
-        vbox = QHBoxLayout()
+        #vbox = QHBoxLayout()
         self.setWindowTitle('Third Sub Window')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
@@ -1061,7 +1066,7 @@ class ThirdSubWindow(QMainWindow):
         # Create the weather image widget
         #weather_image = QLabel(self)
         #pixmap = QPixmap('weather.jpg') 
-
+        self.threadpool = QThreadPool()
         help_label = QLabel('''
         DIR_IN: Please enter the input data directory path
         START_DATE: Please enter the start date
@@ -1091,12 +1096,11 @@ class ThirdSubWindow(QMainWindow):
 
         self.scroll = QScrollArea()             # Scroll Area which contains the widgets, set as the centralWidget
         self.widget = QWidget()                 # Widget that contains the collection of Vertical Box
-        right_layout = QVBoxLayout(self)
+        right_layout = QVBoxLayout()
 
         num_dates = dict_file['Number of initial dates:']
         dates = dict_file['Initial dates:' ]
-        print(dates)
-        print(num_dates)
+        
 
         self.num_dates = num_dates
         # Path to Z500 data files:
@@ -1626,24 +1630,10 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(self.zonalwind200Ts[i])
                         if era == False:
                             right_layout.addWidget(zonalwind200obs)
-                            right_layout.addWidget(self.zonalwind200Tobs)
-                
-
-                    
-                        
-
-                    
-                    
-
+                            right_layout.addWidget(self.zonalwind200Tobs)          
+        self.selected=selected       
         right_layout.addStretch()
         #right_layout.addWidget(but,alignment=Qt.AlignRight)    
-        
-        
-        self.widget.setLayout(right_layout)
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setWidget(self.widget)
 
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
@@ -1654,11 +1644,8 @@ class ThirdSubWindow(QMainWindow):
         left_layout.addWidget(help_label)
         left_layout.addStretch()
         #left_layout.addWidget(back,alignment=Qt.AlignLeft)
-        
-
         # Create a layout for the right half (text widgets and button)
         
-
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(QWidget(objectName = 'left'))
         splitter.addWidget(QWidget(objectName = 'right'))
@@ -1677,7 +1664,7 @@ class ThirdSubWindow(QMainWindow):
         self.scroll.setWidget(splitter)
         
 
-        # Create a central widget to hold the splitter
+        # Create a central widget to hold the scroll
         central_widget = QWidget()
         central_layout = QGridLayout()
         central_layout.addWidget(self.scroll,0,0,1,13)
@@ -1698,9 +1685,6 @@ class ThirdSubWindow(QMainWindow):
             dict_file['Path to z500 date files'].append(i.text())
 
         dict_file['Path to z500 observational files'] = self.z500Tobs.text()
-
-
-        
         dict_file['Path to z100 date files'] = []
         for i in self.z100Ts:
             dict_file['Path to z100 date files'].append(i.text())
@@ -1766,37 +1750,31 @@ class ThirdSubWindow(QMainWindow):
             dict_file['Model input file daily mean:'] = True
         else:
             dict_file['Model input file daily mean:'] = False
-        file = open(r'config.yml', 'w') 
-        yaml.dump(dict_file, file)
-        file.close()
-        self.hide()
+        #file = open(r'config.yml', 'w') 
+        #yaml.dump(dict_file, file)
+        #file.close()
+        #self.hide()
         #self.close()
-        #run_longtask()
-        '''
-        #running each calculation that was selected 
-        diagnostics_paths = ["../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py"]
         
-        
-        
-        
-        for i in selected:
-            with open(diagnostics_path[i]) as f:
-                exec(f.read())
-        '''
+        #run diagnostics
+        dict_file['login_node'] = False
+        if dict_file['login_node'] == True:
+            command="salloc  -p normal  -n 4  --cpus-per-task=12 --mem=8GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon; python main.py'"
+            ret = subprocess.Popen(command,  shell=True)
+        else:
+            command='python main.py'
+            ret = subprocess.Popen(command,  shell=True)
         self.OutputWindow = FinalWindow(self,self.selected,dict_file)
         self.OutputWindow.showMaximized()
         self.close()
+        
+            
+        
+        
+    
+            
+            
+
 
 class FinalWindow(QMainWindow):
     def __init__(self,parent,selected,dict_file):
@@ -2044,7 +2022,7 @@ class FinalWindow(QMainWindow):
         self.parent.show()
 
 class tenthResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2052,6 +2030,7 @@ class tenthResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Surface air temperature results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2199,7 +2178,7 @@ class tenthResult(QMainWindow):
 
 
 class nine_twoResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2208,6 +2187,7 @@ class nine_twoResult(QMainWindow):
         self.viewImage3 = None
         self.viewImage4 = None
         self.setWindowTitle('MJO')
+        self.model_name = dict_file['model name']
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
 
@@ -2309,7 +2289,7 @@ class nine_twoResult(QMainWindow):
 
 
 class ninthResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2317,6 +2297,7 @@ class ninthResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('EKE850-Z500 correlation')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2418,7 +2399,7 @@ class ninthResult(QMainWindow):
 
 
 class eightResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2426,6 +2407,7 @@ class eightResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Extratropical cyclone activity results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2573,7 +2555,7 @@ class eightResult(QMainWindow):
 
 
 class seventhResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2581,6 +2563,7 @@ class seventhResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Histogram of 10 hPa zonal wind results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2686,7 +2669,7 @@ class seventhResult(QMainWindow):
             self.viewImage4.show()
 
 class fifthResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2694,6 +2677,7 @@ class fifthResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Relative amplitude over PNA results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2785,7 +2769,7 @@ class fifthResult(QMainWindow):
             self.viewImage4.show()
 
 class sixthResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2793,6 +2777,7 @@ class sixthResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Stratospheric pathway')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2898,7 +2883,7 @@ class sixthResult(QMainWindow):
 
     
 class third2Result(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -2906,6 +2891,7 @@ class third2Result(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Pattern CC over the Euro-Atlantic sector')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -2996,7 +2982,7 @@ class third2Result(QMainWindow):
             self.viewImage4.show()
 
 class fourthResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -3004,6 +2990,7 @@ class fourthResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Fraction of the observed STRIPE index for geopotential height results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -3226,7 +3213,7 @@ class firstResult(QMainWindow):
             self.viewImage4.show()
 
 class secondResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -3234,6 +3221,7 @@ class secondResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('STRIPES Index for precipitation')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -3339,7 +3327,7 @@ class secondResult(QMainWindow):
             self.viewImage4.show()
 
 class thirdResult(QMainWindow):
-    def __init__(self,parent):
+    def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
@@ -3347,6 +3335,7 @@ class thirdResult(QMainWindow):
         self.viewImage2 = None
         self.viewImage3 = None
         self.viewImage4 = None
+        self.model_name = dict_file['model name']
         self.setWindowTitle('Pattern CC over the PNA region')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
@@ -3642,15 +3631,17 @@ class OutputWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     style = """
-
-QScrollBar:horizontal {              
-  border: none;
-  
-  height: 10px;
-  margin: 0px 0px 0px 0px;
-}
-    QWidget#left { border-width: 3px; border-style: solid; border-color: black white black black; }
-    QWidget#right { border-width: 3px; border-style: solid; border-color: black white black black; }
+        QScrollBar:horizontal {              
+          border: none;
+          height: 10px;
+          margin: 0px 0px 0px 0px;
+        }
+            QWidget#left { 
+            border-width: 3px; border-style: solid; border-color: black white black black; 
+            }
+            QWidget#right { 
+            border-width: 3px; border-style: solid; border-color: black white black black; 
+            }
         QScrollBar {
                 width: 12px;
             }
@@ -3694,7 +3685,6 @@ QScrollBar:horizontal {
             padding: 5px 10px;
             border-radius: 2px;
             font-weight: bold;
-            
             outline: none;
         }
         
@@ -3705,15 +3695,18 @@ QScrollBar:horizontal {
         QRadioButton::indicator, QCheckBox::indicator{
         background-color: white; 
         border: 2px solid white;
-        border-radius: 8px;
-        width: 14px; /* Set the width and height of the indicator */
-        height: 14px;
+        border-radius: 6px;
+        width: 10px; 
+        height: 10px;
     }
-    QCheckBox::indicator{border-radius: 50%;}
+    QCheckBox::indicator
+    {
+    border-radius: 50%;
+    }
     QCheckBox::indicator:checked
-                                {
-                                border-image : url(check.png);
-                                }
+    {
+    border-image : url(check.png);
+    }
     QRadioButton::indicator:checked, QCheckBox::indicator:checked {
         background-color: gray; /* Change background color when checked */
     }
@@ -3722,7 +3715,6 @@ QScrollBar:horizontal {
             color: #fff;
             background: #0892D0;
         }
-
         QLineEdit {
             padding: 1px;
             color: #fff;
