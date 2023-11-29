@@ -1761,7 +1761,7 @@ class ThirdSubWindow(QMainWindow):
             command='python main.py'
             #self.ret = subprocess.Popen(command,  shell=True)
         self.hide()
-        dialog=LoadingDialog(command,self.selected,dict_file)  
+        dialog=LoadingDialog(self,command,self.selected,dict_file)  
         #self.ret.wait()
         dialog.exec_()
         
@@ -1782,6 +1782,7 @@ class SubprocessRunner(QThread):
     def run(self):
         self.ret = subprocess.Popen(self.command, shell=True)
         self.ret.wait()
+        
 class InputDialog2(QDialog):
     def __init__(self):
         super().__init__()
@@ -1799,10 +1800,11 @@ class InputDialog2(QDialog):
         layout.addWidget(self.cancel_button,1,12,alignment=Qt.AlignRight)
         self.setLayout(layout)
 class LoadingDialog(QDialog):
-    def __init__(self, command,selected,dict_file):
+    def __init__(self, parent,command,selected,dict_file,):
         #super(LoadingDialog, self).__init__()
         super().__init__()
         self.selected=selected
+        self.parent=parent
         self.dict_file=dict_file
         self.subprocess_runner = SubprocessRunner(command)
         self.subprocess_runner.finished.connect(self.close)
@@ -1812,14 +1814,25 @@ class LoadingDialog(QDialog):
         self.progress_dialog.setCancelButton(None)
         self.progress_dialog.setRange(0, 0)  # Set to an indeterminate progress bar
         self.progress_dialog.setWindowTitle("Please wait")
+        self.progress_dialog.rejected.connect(self.close)
         self.subprocess_runner.start()
+    def on_rejected(self):
+        self.subprocess_runner.ret.terminate()
+        self.subprocess_runner.ret.wait()
+        self.subprocess_runner.terminate()  # Terminate the subprocess
+        print('terminated')
+        self.subprocess_runner.wait()  # Wait for the subprocess to finish
+        self.close()
 
     def closeEvent(self, event):
         if self.subprocess_runner.isRunning():
-            event.ignore()
+            print('terminated')
+            self.subprocess_runner.ret.terminate()
+            self.subprocess_runner.ret.wait()
+            self.close()
+            self.parent.show()
+            event.accept()
         else:
-            self.OutputWindow = FinalWindow(self,self.selected,self.dict_file)
-            self.OutputWindow.showMaximized()
             event.accept()   
 
 
