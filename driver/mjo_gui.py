@@ -470,8 +470,6 @@ class modelInformation(QMainWindow):
         self.time_step_interval_24.setChecked(True)
         vbox.addWidget(self.time_step_interval_24)
 
-        
-        
         #Does the model data include the initial conditions?
         self.initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
         self.groupbox2 = QGroupBox()
@@ -1164,9 +1162,6 @@ class ThirdSubWindow(QMainWindow):
             self.zonalwind850T = QLineEdit(self)
             self.zonalwind850T.setText(pref)
             self.zonalwind850T.setCursorPosition(len(pref))
-
-            
-
             zonalwind850s.append(zonalwind850)
             self.zonalwind850Ts.append(self.zonalwind850T)
             
@@ -1679,6 +1674,7 @@ class ThirdSubWindow(QMainWindow):
         self.close()
         self.parent.show()
     def submi(self):
+        slurm=self.showInputDialog()
         dict_file =self.dict_file
         dict_file['Path to z500 date files'] = []
         for i in self.z500Ts:
@@ -1750,31 +1746,84 @@ class ThirdSubWindow(QMainWindow):
             dict_file['Model input file daily mean:'] = True
         else:
             dict_file['Model input file daily mean:'] = False
-        #file = open(r'config.yml', 'w') 
-        #yaml.dump(dict_file, file)
-        #file.close()
-        #self.hide()
-        #self.close()
+        dict_file['selected']=self.selected
+        file = open(r'config.yml', 'w') 
+        yaml.dump(dict_file, file)
+        file.close()
         
         #run diagnostics
-        dict_file['login_node'] = False
-        if dict_file['login_node'] == True:
+        
+        if slurm:
             command="salloc  -p normal  -n 4  --cpus-per-task=12 --mem=8GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon; python main.py'"
-            ret = subprocess.Popen(command,  shell=True)
+            #self.ret = subprocess.Popen(command,  shell=True)
+            
         else:
             command='python main.py'
-            ret = subprocess.Popen(command,  shell=True)
-        self.OutputWindow = FinalWindow(self,self.selected,dict_file)
-        self.OutputWindow.showMaximized()
-        self.close()
+            #self.ret = subprocess.Popen(command,  shell=True)
+        self.hide()
+        dialog=LoadingDialog(command,self.selected,dict_file)  
+        #self.ret.wait()
+        dialog.exec_()
         
-            
         
-        
+    def showInputDialog(self):
+        dialog = InputDialog2()
+        result = dialog.exec_()
+        if result == QDialog.Accepted:
+            return True
+        else:
+            return False  
     
-            
-            
+class SubprocessRunner(QThread):
+    def __init__(self, command):
+        super(SubprocessRunner, self).__init__()
+        self.command = command
 
+    def run(self):
+        self.ret = subprocess.Popen(self.command, shell=True)
+        self.ret.wait()
+class InputDialog2(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        layout=QGridLayout()
+        self.input_label = QLabel('Are you using SLURM to run resource-intensive jobs?')
+        self.ok_button = QPushButton('Yes')
+        self.cancel_button = QPushButton('No')
+        self.ok_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
+        layout.addWidget(self.input_label,0,0)
+        layout.addWidget(self.ok_button,1,0,alignment=Qt.AlignLeft)
+        layout.addWidget(self.cancel_button,1,12,alignment=Qt.AlignRight)
+        self.setLayout(layout)
+class LoadingDialog(QDialog):
+    def __init__(self, command,selected,dict_file):
+        #super(LoadingDialog, self).__init__()
+        super().__init__()
+        self.selected=selected
+        self.dict_file=dict_file
+        self.subprocess_runner = SubprocessRunner(command)
+        self.subprocess_runner.finished.connect(self.close)
+
+        self.progress_dialog = QProgressDialog(self)
+        self.progress_dialog.setLabelText("Running diagnostics...")
+        self.progress_dialog.setCancelButton(None)
+        self.progress_dialog.setRange(0, 0)  # Set to an indeterminate progress bar
+        self.progress_dialog.setWindowTitle("Please wait")
+        self.subprocess_runner.start()
+
+    def closeEvent(self, event):
+        if self.subprocess_runner.isRunning():
+            event.ignore()
+        else:
+            self.OutputWindow = FinalWindow(self,self.selected,self.dict_file)
+            self.OutputWindow.showMaximized()
+            event.accept()   
+
+
+        
 
 class FinalWindow(QMainWindow):
     def __init__(self,parent,selected,dict_file):
