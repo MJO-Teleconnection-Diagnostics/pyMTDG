@@ -1,45 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt # matplotlib version 3.2 and custom version 3.3
 import proplot as plot
-
-def is_ndjfm(month):
-    return (month >= 11) | (month <= 3)
-import matplotlib.pyplot as plt # matplotlib version 3.2 and custom version 3.3
-import proplot as plot
-
-def is_day1(day):
-    return (day == 1)
-def is_day6(day):
-    return (day == 6)
-def is_day11(day):
-    return (day == 11)
-def is_day15(day):
-    return (day == 15)
-def is_day16(day):
-    return (day == 16)
-def is_day21(day):
-    return (day == 21)
-def is_day26(day):
-    return (day == 26)
-
-def is_date(days):
-    months=[11, 12, 1, 2, 3]
-    for mon in months:
-        for day in days:
-            if (mon==2 and day>=29) or (mon==11 and day ==31):
-                continue
-                
-            date_str=str(mon)+'/'+str(day)
+import os
             
+#def plotComposites(ds,levels,cmap,lon_0,lat_0,sig_map,fig_name):
+#    fig=plot.figure(refwidth=4.5)
+#    ax=fig.subplot(proj='npstere',proj_kw={'lon_0': lon_0})
+#    ax.contourf(ds,cmap=cmap,colorbar='b', lw=1,ec='none',extend='both',levels=levels)
+#    ax.contourf(ds.longitude,ds.latitude,sig_map,levels=[0,1],
+#                colors='None',hatches=['...',''])
+#    ax.format(coast='True',boundinglat=lat_0,grid=False)
+#    fig.savefig('../output/T2m/'+fig_name+'.jpg',dpi=300)
+#    return 
 
-def plotComposites(ds,levels,cmap,lon_0,lat_0,sig_map,fig_name):
-    fig=plot.figure(refwidth=4.5)
-    ax=fig.subplot(proj='npstere',proj_kw={'lon_0': lon_0})
-    ax.contourf(ds,cmap=cmap,colorbar='b', lw=1,ec='none',extend='both',levels=levels)
-    ax.contourf(ds.longitude,ds.latitude,sig_map,levels=[0,1],
-                colors='None',hatches=['...',''])
-    ax.format(coast='True',boundinglat=lat_0,grid=False)
-    fig.savefig('../output/t2m/'+fig_name+'.jpg',dpi=300)
+def plotComposites(ds,ds_names,levels,cmap,lon_0,lat_0,sig_map,rcorr,week,phase,fig_name):
+    with plot.rc.context(fontsize='20px'):
+        fig=plot.figure(refwidth=6.5)
+        axes=fig.subplots(nrows=1,ncols=2,proj='npstere',proj_kw={'lon_0': lon_0})
+        for p,ax in enumerate(axes):
+            h=ax.contourf(ds[p],cmap=cmap,lw=1,ec='none',extend='both',levels=levels)
+            ax.contourf(ds[p].longitude,ds[p].latitude,sig_map[p],levels=[0,1],
+                    colors='None',hatches=['...',''])
+            if (p==0):
+                ax.format(title=ds_names[p])
+            else:
+                ax.format(title=ds_names[p],rtitle='{:.2f}'.format(rcorr))
+    
+            ax.format(coast='True',boundinglat=lat_0,grid=False,suptitle=week+' after MJO '+phase)
+    
+        fig.colorbar(h, loc='b', extend='both', label='T2m anomaly',
+                      width='2em', extendsize='3em', shrink=0.8,
+                    )
+    if not os.path.exists('../output/T2m/'+ds_names[1]): 
+        os.mkdir('../output/T2m/'+ds_names[1])
+    fig.savefig('../output/T2m/'+ds_names[1]+'/'+fig_name+'.jpg',dpi=300)
     return 
 
 def correlate(obs,model,lat_min,lat_max,lon_min,lon_max):
