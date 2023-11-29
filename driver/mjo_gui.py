@@ -1835,7 +1835,7 @@ class LoadingDialog(QDialog):
         else:
             self.close()
             nextwindow=FinalWindow(self.parent,self.selected,self.dict_file)
-            nextwindowself.showMaximized()
+            nextwindow.showMaximized()
             event.accept()   
 
 
@@ -2200,18 +2200,18 @@ class tenthResult(QMainWindow):
 
     def openweek1_2(self):
         if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../output/T2m/Stripes_1.png",'Stripes - 1')
+            self.viewImage1 = viewImage(f"../output/T2m/{self.model_name}/Stripes_1.png",'Stripes - 1')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage1.show()
 
     def openweek3_4(self):
         if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../output/T2m/Stripes_2.png",'Stripes - 2')
+            self.viewImage2 = viewImage(f"../output/T2m/{self.model_name}/Stripes_2.png",'Stripes - 2')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage2.show()
     def openweek5_6(self):
         if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../output/T2m/Stripes_3.png",'Stripes - 3')
+            self.viewImage3 = viewImage(f"../output/T2m/{self.model_name}/Stripes_3.png",'Stripes - 3')
             #self.viewImage1.closed.connect(self.quit1)
             self.viewImage3.show()
 
@@ -3174,9 +3174,14 @@ class firstResult(QMainWindow):
         self.setWindowTitle('STRIPES Index for geopotential height')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        directory_path = f'../output/T2m/{self.model_name}'
         #Create the weather image widget
+        all_files = os.listdir(directory_path)
+        file_list = [file for file in all_files if os.path.isfile(os.path.join(directory_path, file))]
         
+        print("List of files:")
+        for file in file_list:
+            print(file)
         week1_2 = QPushButton('Week1 - 2', self)
         week1_2.setFixedSize(100,30)
         #button2.setGeometry(200, 150, 40, 40)
