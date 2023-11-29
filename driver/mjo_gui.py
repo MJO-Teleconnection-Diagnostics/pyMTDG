@@ -1833,6 +1833,9 @@ class LoadingDialog(QDialog):
             self.parent.show()
             event.accept()
         else:
+            self.close()
+            nextwindow=FinalWindow(self.parent,self.selected,self.dict_file)
+            nextwindowself.showMaximized()
             event.accept()   
 
 
