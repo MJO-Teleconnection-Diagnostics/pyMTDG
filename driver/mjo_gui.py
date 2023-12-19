@@ -2200,88 +2200,48 @@ class FinalWindow(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-
+        
 class tenthResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
-        self.viewImage5 = None
-        self.viewImage6 = None
-        self.viewImage7= None
-        self.viewImage8 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Surface air temperature results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        
-        week1_2 = QPushButton('T2m res - 1', self)
-        week1_2.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('T2m res - 2', self)
-        week3_4.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('T2m res - 3', self)
-        week5_6.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('T2m res - 4', self)
-        week7_8.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
-
-        week5 = QPushButton('T2m res - 5', self)
-        week5.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5.clicked.connect(self.openweek5)
-
-        week6 = QPushButton('T2m res - 6', self)
-        week6.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week6.clicked.connect(self.openweek6)
-
-        week7 = QPushButton('T2m res - 7', self)
-        week7.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7.clicked.connect(self.openweek7)
-
-        week8 = QPushButton('T2m res - 8', self)
-        week8.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week8.clicked.connect(self.openweek8)
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-
-        layout.addWidget(week5,alignment=Qt.AlignCenter)
-        layout.addWidget(week7,alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
-        ryt_layout.addWidget(week6,alignment=Qt.AlignCenter)
-        ryt_layout.addWidget(week8,alignment=Qt.AlignCenter)
+        
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -2314,52 +2274,21 @@ class tenthResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
 
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage(self.all_files[0],'T2m - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
 
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage(self.all_files[1],'T2m - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage(self.all_files[2],'T2m - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage(self.all_files[3],'T2m - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
-    def openweek5(self):
-        if self.viewImage5 == None or self.viewImage5.isVisible() == False:
-            self.viewImage5 = viewImage(self.all_files[4],'T2m - 5')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage5.show()
-    def openweek6(self):
-        if self.viewImage6 == None or self.viewImage6.isVisible() == False:
-            self.viewImage6 = viewImage(self.all_files[5],'T2m - 6')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage6.show()
-    def openweek7(self):
-        if self.viewImage7 == None or self.viewImage7.isVisible() == False:
-            self.viewImage7 = viewImage(self.all_files[6],'T2m - 7')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage7.show()
-    def openweek8(self):
-        if self.viewImage8 == None or self.viewImage8.isVisible() == False:
-            self.viewImage8 = viewImage(self.all_files[7],'T2m - 8')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage8.show()
 
 
 class nine_twoResult(QMainWindow):
@@ -2367,51 +2296,43 @@ class nine_twoResult(QMainWindow):
         super().__init__()
         #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.setWindowTitle('MJO')
         self.model_name = dict_file['model name']
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        week1_2 = QPushButton('MJO - 1', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('MJO - 2', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('MJO - 3', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        
-
-        
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-       
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
+        
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -2444,85 +2365,60 @@ class nine_twoResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage(self.all_files[0],'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage(self.all_files[1],'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage(self.all_files[2],'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage(self.all_files[3],'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
-
-
-
-
 class ninthResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('EKE850-Z500 correlation')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('EKE850-Z500 - 1', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('EKE850-Z500 - 2', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('EKE850-Z500 - 3', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        
-
-        
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-       
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
+        
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -2555,110 +2451,61 @@ class ninthResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../output/EKE/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../output/EKE/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../output/EKE/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/EKE/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
-
-
-
+        
 class eightResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Extratropical cyclone activity results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('ET Cyclone res - 1', self)
-        week1_2.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('ET Cyclone res - 2', self)
-        week3_4.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('ET Cyclone res - 3', self)
-        week5_6.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('ET Cyclone res - 4', self)
-        week7_8.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
-
-        week5 = QPushButton('ET Cyclone res - 5', self)
-        week5.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5.clicked.connect(self.openweek5)
-
-        week6 = QPushButton('ET Cyclone res - 6', self)
-        week6.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week6.clicked.connect(self.openweek6)
-
-        week7 = QPushButton('ET Cyclone res - 7', self)
-        week7.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7.clicked.connect(self.openweek7)
-
-        week8 = QPushButton('ET Cyclone res - 8', self)
-        week8.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week8.clicked.connect(self.openweek8)
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-
-        layout.addWidget(week5,alignment=Qt.AlignCenter)
-        layout.addWidget(week7,alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
-        ryt_layout.addWidget(week6,alignment=Qt.AlignCenter)
-        ryt_layout.addWidget(week8,alignment=Qt.AlignCenter)
+        
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -2691,107 +2538,60 @@ class eightResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            self.viewImage1 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            self.viewImage2 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            self.viewImage3 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
-    def openweek5(self):
-        if self.viewImage5 == None or self.viewImage5.isVisible() == False:
-            self.viewImage5 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_1.png",'Stripes - 5')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage5.show()
-    def openweek6(self):
-        if self.viewImage6 == None or self.viewImage6.isVisible() == False:
-            self.viewImage6 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_1.png",'Stripes - 6')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage6.show()
-    def openweek7(self):
-        if self.viewImage7 == None or self.viewImage7.isVisible() == False:
-            self.viewImage7 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_1.png",'Stripes - 7')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage7.show()
-    def openweek8(self):
-        if self.viewImage8 == None or self.viewImage8.isVisible() == False:
-            self.viewImage8 = viewImage("../output/ET_Cyclone/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage8.show()
-
-
 class seventhResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Histogram of 10 hPa zonal wind results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('Week1 - 2', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('Week3 - 4', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('Week5 - 6', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('Week7 - 8', self)
-        week7_8.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
         
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -2824,74 +2624,61 @@ class seventhResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/Zonal_Wind_Hist/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/Zonal_Wind_Hist/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/Zonal_Wind_Hist/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/Zonal_Wind_Hist/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
 class fifthResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Relative amplitude over PNA results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('PNA res - 1', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('PNA res - 2', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        ryt_layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
+        
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+        
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
+        
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -2924,88 +2711,61 @@ class fifthResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/PNA_RelAmp/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/PNA_RelAmp/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/PNA_RelAmp/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/PNA_RelAmp/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
 class sixthResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Stratospheric pathway')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('Week1 - 2', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('Week3 - 4', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('Week5 - 6', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('Week7 - 8', self)
-        week7_8.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
         
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -3038,74 +2798,63 @@ class sixthResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/Strat_Path/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/Strat_Path/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/Strat_Path/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/Strat_Path/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
     
 class third2Result(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Pattern CC over the Euro-Atlantic sector')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('Euro-Atlantic sector - 1', self)
-        week1_2.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('Euro-Atlantic sector - 2', self)
-        week3_4.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        ryt_layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
         
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+        
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
+        
+    
+
         frame = QFrame()
         frame.setLayout(layout)
         ryt_frame = QFrame()
@@ -3137,88 +2886,61 @@ class third2Result(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/StripeIndexGeoPotHeight/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/PatternCC_Atlantic/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/PatternCC_Atlantic/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/PatternCC_Atlantic/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
 class fourthResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Fraction of the observed STRIPE index for geopotential height results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('Week1 - 2', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('Week3 - 4', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('Week5 - 6', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('Week7 - 8', self)
-        week7_8.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
         
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -3251,93 +2973,62 @@ class fourthResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/StripesFraction/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/StripesFraction/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/StripesFraction/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/StripesFraction/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
 
 class firstResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
         self.model_name = dict_file['model name']
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.setWindowTitle('STRIPES Index for geopotential height')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-        directory_path = f'../output/T2m/{self.model_name}'
+        self.viewImages=[]
         #Create the weather image widget
-        all_files = os.listdir(directory_path)
-        file_list = [file for file in all_files if os.path.isfile(os.path.join(directory_path, file))]
-        
-        
-        week1_2 = QPushButton('Week1 - 2', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('Week3 - 4', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('Week5 - 6', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('Week7 - 8', self)
-        week7_8.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
-
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
         
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -3369,90 +3060,61 @@ class firstResult(QMainWindow):
         central_layout.addWidget(back,alignment=Qt.AlignCenter)
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
-    
-    
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/StripesGeopot/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/StripesGeopot/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/StripesGeopot/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/StripesGeopot/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
-
 class secondResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('STRIPES Index for precipitation')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('Week1 - 2', self)
-        week1_2.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('Week3 - 4', self)
-        week3_4.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
-
-        
-        week5_6 = QPushButton('Week5 - 6', self)
-        week5_6.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week5_6.clicked.connect(self.openweek5_6)
-
-        week7_8 = QPushButton('Week7 - 8', self)
-        week7_8.setFixedSize(100,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week7_8.clicked.connect(self.openweek7_8)
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(week3_4,alignment=Qt.AlignCenter)
         
-        ryt_layout.addWidget(week5_6,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
-        ryt_layout.addWidget(week7_8,alignment=Qt.AlignCenter)
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
         
+    
 
         frame = QFrame()
         frame.setLayout(layout)
@@ -3485,73 +3147,62 @@ class secondResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/StripesPrecip/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/StripesPrecip/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/StripesPrecip/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/StripesPrecip/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
 class thirdResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
-        #self.setupUi(self)
         self.parent = parent
-        self.viewImage1 = None
-        self.viewImage2 = None
-        self.viewImage3 = None
-        self.viewImage4 = None
         self.model_name = dict_file['model name']
         self.setWindowTitle('Pattern CC over the PNA region')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
-
+        self.viewImages=[]
         #Create the weather image widget
-        
-        week1_2 = QPushButton('PNA region - 1', self)
-        week1_2.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week1_2.clicked.connect(self.openweek1_2)
-
-        week3_4 = QPushButton('PNA region - 2', self)
-        week3_4.setFixedSize(200,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        week3_4.clicked.connect(self.openweek3_4)
+        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        print(len(self.all_files))
+        self.imagebuttons=[]
+        for i in range(len(self.all_files)):
+            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            
+            self.viewImages.append(False)
+            self.imagebuttons.append(buttonn)
+            
        
         back = QPushButton('Back', self)
-        back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+        back.setFixedSize(70,30)
+        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
-       
-        layout.addWidget(week1_2,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        ryt_layout.addWidget(week3_4,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
-      
+        
+        for i in range(len(self.all_files)//2):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+        
+        for i in range(len(self.all_files)//2,len(self.all_files)):
+            #print(self.imagebuttons[i])
+            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
+            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
+
+        
+    
+
         frame = QFrame()
         frame.setLayout(layout)
         ryt_frame = QFrame()
@@ -3583,33 +3234,19 @@ class thirdResult(QMainWindow):
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
 
+
+    def openweek1_2(self, path,i):
+        def clickk():
+            print(path,i)
+            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
+                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImages[i] = self.viewImage
+                #self.viewImage1.closed.connect(self.quit1)
+                self.viewImages[i].show()
+        return clickk
     def closee(self):
         self.close()
         self.parent.show()
-    def openweek1_2(self):
-        if self.viewImage1 == None or self.viewImage1.isVisible() == False:
-            
-            self.viewImage1 = viewImage("../output/PatternCC_PNA/"+self.model_name+"/Stripes_1.png",'Stripes - 1')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage1.show()
-
-    def openweek3_4(self):
-        if self.viewImage2 == None or self.viewImage2.isVisible() == False:
-            
-            self.viewImage2 = viewImage("../output/PatternCC_PNA/"+self.model_name+"/Stripes_2.png",'Stripes - 2')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage2.show()
-    def openweek5_6(self):
-        if self.viewImage3 == None or self.viewImage3.isVisible() == False:
-            
-            self.viewImage3 = viewImage("../output/PatternCC_PNA/"+self.model_name+"/Stripes_3.png",'Stripes - 3')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage3.show()
-    def openweek7_8(self):
-        if self.viewImage4 == None or self.viewImage4.isVisible() == False:
-            self.viewImage4 = viewImage("../output/PatternCC_PNA/"+self.model_name+"/Stripes_4.png",'Stripes - 4')
-            #self.viewImage1.closed.connect(self.quit1)
-            self.viewImage4.show()
 
 
 class viewImage(QMainWindow):
