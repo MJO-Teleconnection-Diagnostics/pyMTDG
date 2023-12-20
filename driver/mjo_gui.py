@@ -75,20 +75,22 @@ def get_model_diagnostics2(model_name):
         return False,False
         
     return model_name,selected
+def list_folders(path):
+    folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
+    return folders
 def get_model_diagnostics(model_name):
+    start_path = '../output/'
+    all_folders = list_folders(start_path)
     diags=[]
-    flag=0
-    selected=[]
-    for model in models:
-        name,diag=model.split()
-        if name == model_name:
-            diags.append(diag)
-            selected.append(diagnostics[diag])
-            flag=1
-    if flag==0:
-        return False,False
-        
-    return model_name,selected
+    for f in all_folders:
+        fm_path = os.path.join(start_path,f, model_name)
+        # Check if the item is a directory
+        print(fm_path)
+        if os.path.isdir(fm_path):
+            diags.append(diagnostics[f.lower()])
+    if diags == []:
+        return None, None
+    return model_name,diags
             
         
 class ViewRes_RunCal(QMainWindow):
@@ -171,7 +173,7 @@ class ViewRes_RunCal(QMainWindow):
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
-                self.model_name = dialog.input_text.text().lower()
+                self.model_name = dialog.input_text.text()
                 self.model_name,self.selected = get_model_diagnostics(self.model_name)
                 if self.model_name:
                     self.dict_file['model name'] = self.model_name
@@ -179,7 +181,6 @@ class ViewRes_RunCal(QMainWindow):
                     f=1
                     break  # Break the loop when valid input is provided
                 else:
-                    print(self.model_name)
                     self.showErrorMessage("There is no model with this name.")
             else:
                 print("Canceled")
@@ -1783,7 +1784,7 @@ class ThirdSubWindow(QMainWindow):
         if slurm != -1:
             paths,dict_file = self.close_yaml()
         if slurm == True:
-            command=f"salloc  -p normal  -n 4  --cpus-per-task=12 --mem=8GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
+            command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=16GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
             #self.ret = subprocess.Popen(command,  shell=True)
             self.hide()
             dialog=LoadingDialog(self,command,self.selected,dict_file)  
@@ -1966,7 +1967,7 @@ class runCal_View(QMainWindow):
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
-                self.model_name = dialog.input_text.text().lower()
+                self.model_name = dialog.input_text.text()#.lower()
                 self.model_name,self.selected = get_model_diagnostics(self.model_name)
                 if self.model_name:
                     self.dict_file['model name'] = self.model_name
@@ -2242,7 +2243,6 @@ class tenthResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m res - {i+1}', self)
@@ -3576,12 +3576,6 @@ if __name__ == "__main__":
 
     """
     app.setStyleSheet(style)
-    file_path = "../output/models.txt"
-    models=[]
-    with open(file_path, "r") as file:
-        for line in file:
-            models.append(line)
-            models[-1]=models[-1][:-1].lower()
     entry_window = FirstWindow()
     entry_window.show()
     sys.exit(app.exec())
