@@ -16,7 +16,7 @@ class FirstWindow(QMainWindow):
         super().__init__()
         #self.setupUi(self)
         self.setWindowTitle('MJO Teleconnections Diagnostics')
-        self.setGeometry(200, 200, 800, 400)  # Set window position and size
+        self.setGeometry(200, 100, 800, 400)  # Set window position and size
         self.show()
 
         #Create the weather image widget
@@ -61,7 +61,7 @@ class FirstWindow(QMainWindow):
     
 diagnostics={'stripesgeopot':1,'stripesprecip':2,'stripesfraction':4,'patterncc_pna':3,'mjo':12,
             'eke':9,'et_cyclone':8,'patterncc_atlantic':11,'t2m':10,'strat_path':6,'pna_relamp':5,'zonal_wind_hist':7}
-def get_model_diagnostics(model_name):
+def get_model_diagnostics2(model_name):
     diags=[]
     flag=0
     selected=[]
@@ -75,6 +75,22 @@ def get_model_diagnostics(model_name):
         return False,False
         
     return model_name,selected
+def list_folders(path):
+    folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
+    return folders
+def get_model_diagnostics(model_name):
+    start_path = '../output/'
+    all_folders = list_folders(start_path)
+    diags=[]
+    for f in all_folders:
+        fm_path = os.path.join(start_path,f, model_name)
+        # Check if the item is a directory
+        print(fm_path)
+        if os.path.isdir(fm_path):
+            diags.append(diagnostics[f.lower()])
+    if diags == []:
+        return None, None
+    return model_name,diags
             
         
 class ViewRes_RunCal(QMainWindow):
@@ -157,7 +173,7 @@ class ViewRes_RunCal(QMainWindow):
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
-                self.model_name = dialog.input_text.text().lower()
+                self.model_name = dialog.input_text.text()
                 self.model_name,self.selected = get_model_diagnostics(self.model_name)
                 if self.model_name:
                     self.dict_file['model name'] = self.model_name
@@ -165,7 +181,6 @@ class ViewRes_RunCal(QMainWindow):
                     f=1
                     break  # Break the loop when valid input is provided
                 else:
-                    print(self.model_name)
                     self.showErrorMessage("There is no model with this name.")
             else:
                 print("Canceled")
@@ -1671,8 +1686,7 @@ class ThirdSubWindow(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-    def submi(self):
-        slurm=self.showInputDialog()
+    def close_yaml(self):
         dict_file =self.dict_file
         dict_file['Path to z500 date files'] = []
         for i in self.z500Ts:
@@ -1763,22 +1777,32 @@ class ThirdSubWindow(QMainWindow):
         paths = 'python '+diagnostics_path[self.selected[0]]
         for i in self.selected[1:]:
             paths+=' & python '+diagnostics_path[i]
-        
-        if slurm:
-            command=f"salloc  -p normal  -n 4  --cpus-per-task=12 --mem=8GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
+        return paths, dict_file
+    
+    def submi(self):
+        slurm=self.showInputDialog()
+        if slurm != -1:
+            paths,dict_file = self.close_yaml()
+        if slurm == True:
+            command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=16GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
             #self.ret = subprocess.Popen(command,  shell=True)
+            self.hide()
+            dialog=LoadingDialog(self,command,self.selected,dict_file)  
+            #self.ret.wait()
+            dialog.exec_()
             
-        else:
-            
+        elif slurm == False:
             command = paths
-            
+            self.hide()
+            dialog=LoadingDialog(self,command,self.selected,dict_file)  
+            #self.ret.wait()
+            dialog.exec_()
+
             #command='cd ..; cd T2m_composites; python t2m_composites.py & python t2m_composites.py & python t2m_composites.py'
             #self.ret = subprocess.Popen(command,  shell=True)
         
-        self.hide()
-        dialog=LoadingDialog(self,command,self.selected,dict_file)  
-        #self.ret.wait()
-        dialog.exec_()
+        
+        
         
         
     def showResults(self):
@@ -1789,10 +1813,12 @@ class ThirdSubWindow(QMainWindow):
     def showInputDialog(self):
         dialog = InputDialog2()
         result = dialog.exec_()
-        if result == QDialog.Accepted:
+        if dialog.result == True:
             return True
+        elif dialog.result == False:
+            return False
         else:
-            return False  
+            return -1
     
 class SubprocessRunner(QThread):
     def __init__(self, command):
@@ -1818,6 +1844,7 @@ class SubprocessRunner(QThread):
 class InputDialog2(QDialog):
     def __init__(self):
         super().__init__()
+        self.result=None
         self.initUI()
 
     def initUI(self):
@@ -1825,12 +1852,18 @@ class InputDialog2(QDialog):
         self.input_label = QLabel('Are you using SLURM to run resource-intensive jobs?')
         self.ok_button = QPushButton('Yes')
         self.cancel_button = QPushButton('No')
-        self.ok_button.clicked.connect(self.accept)
-        self.cancel_button.clicked.connect(self.reject)
+        self.ok_button.clicked.connect(self.yes_clicked)
+        self.cancel_button.clicked.connect(self.no_clicked)
         layout.addWidget(self.input_label,0,0)
         layout.addWidget(self.ok_button,1,0,alignment=Qt.AlignLeft)
         layout.addWidget(self.cancel_button,1,12,alignment=Qt.AlignRight)
         self.setLayout(layout)
+    def yes_clicked(self):
+        self.result = True
+        self.accept()
+    def no_clicked(self):
+        self.result = False
+        self.accept()
         
 class LoadingDialog(QDialog):
     def __init__(self, parent,command,selected,dict_file,):
@@ -1839,10 +1872,8 @@ class LoadingDialog(QDialog):
         self.selected=selected
         self.parent=parent
         self.dict_file=dict_file
-        
         self.subprocess_runner = SubprocessRunner(command)
         self.subprocess_runner.finished.connect(self.close)
-
         self.progress_dialog = QProgressDialog(self)
         self.progress_dialog.setLabelText("Running diagnostics...")
         self.progress_dialog.setCancelButton(None)
@@ -1874,7 +1905,7 @@ class LoadingDialog(QDialog):
 
 
 def get_all_files_in_directory(directory):
-    # Check if the path is a directory
+    #Check if the path is a directory
     abs_directory = os.path.abspath(directory)
     
     # Check if the path is a directory
@@ -1936,7 +1967,7 @@ class runCal_View(QMainWindow):
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
-                self.model_name = dialog.input_text.text().lower()
+                self.model_name = dialog.input_text.text()#.lower()
                 self.model_name,self.selected = get_model_diagnostics(self.model_name)
                 if self.model_name:
                     self.dict_file['model name'] = self.model_name
@@ -2212,7 +2243,6 @@ class tenthResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m res - {i+1}', self)
@@ -3546,12 +3576,6 @@ if __name__ == "__main__":
 
     """
     app.setStyleSheet(style)
-    file_path = "../output/models.txt"
-    models=[]
-    with open(file_path, "r") as file:
-        for line in file:
-            models.append(line)
-            models[-1]=models[-1][:-1].lower()
     entry_window = FirstWindow()
     entry_window.show()
     sys.exit(app.exec())
