@@ -43,6 +43,41 @@ def calcAnom(ds,anom_name):
     anom['time']=time
     
     return anom
+
+def regrid_scalar_spharm_original ( data_in , grid_input , grid_output ) :
+    input_reorder  = np.transpose ( data_in , ( 1 , 2 , 0 ) )
+    regrid_data = spharm.regrid ( grid_input , grid_output , input_reorder )
+    regrid_reorder = np.transpose ( regrid_data , ( 2 , 0 , 1 ) )
+    return regrid_reorder
+
+def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
+    
+    #grid_type: "regular", "gaussian"
+    
+    # Coordinates of field to be regrided
+    nlon_in = len(ds_in.longitude)
+    nlat_in = len(ds_in.latitude)
+    
+    # Define the input and output grids
+    ingrid = spharm.Spharmt ( nlon_in  , nlat_in  , gridtype=grid_type )
+    outgrid = spharm.Spharmt ( nlon_out , nlat_out , gridtype=grid_type )
+    
+    delat = 180. / ( nlat_out - 1 )
+    lat_out = 90 - np.arange ( nlat_out ) * delat
+    delon = 360. / nlon_out
+    lon_out = np.arange ( nlon_out ) * delon
+    
+    data_in_pre_regrid=np.empty([1, nlat_in, nlon_in])
+    data_regrid=np.empty([len (ds_in.time),nlat_out,nlon_out])
+    for i in range(len (ds_in.time)):
+        data_in_pre_regrid[0,:,:]=ds_in[i,:,:]
+        data_regrid[i,:,:]=regrid_scalar_spharm(data_in_pre_regrid,ingrid,outgrid)
+    output_regrid=xr.DataArray(data_regrid, name=var_name,
+                               dims=[ 'time','latitude','longitude'],
+                               coords=dict(time=ds_in.time,latitude=lat_out,longitude=lon_out),
+                               attrs=ds_in.attrs)
+    output_regrid['time']=ds_in.time
+    return output_regrid 
   
 def regrid_scalar_spharm(data, lat_in, lon_in, lat_out, lon_out):
     '''

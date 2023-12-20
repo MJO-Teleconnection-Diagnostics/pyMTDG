@@ -40,10 +40,10 @@ def calcComposites(ds,mjo_events,week,name):
         sday = 21
     if week == 'week5':
         sday = 28
-    
+
     tStrt=pd.to_datetime(mjo_events.time,format="%Y/%m/%d")+timedelta(days=sday)
     tLast=pd.to_datetime(mjo_events.time,format="%Y/%m/%d")+timedelta(days=sday+6)
-    
+
     ds_anoms = []
     for i in range(len(mjo_events)):
         
@@ -51,13 +51,13 @@ def calcComposites(ds,mjo_events,week,name):
             anoms=ds.sel(time=slice(tStrt[i],tLast[i])).mean(dim='time')
             ds_anoms.append(anoms.to_dataset(name=name))
     ds_comp_anoms=xr.combine_nested(ds_anoms,concat_dim='mjo_events')
-    
+     
     return ds_comp_anoms
 
 def test_sig(ds,confidence_level,n_resamples):
     # ds shape: (time,longitude,latitude)
     rng = np.random.default_rng()
-    res=bootstrap(ds.to_array(),np.mean,axis=0,confidence_level=confidence_level, 
+    res=bootstrap((ds,),np.mean,axis=0,confidence_level=confidence_level, 
                  n_resamples=n_resamples,random_state=rng)
     ci_l,ci_u=res.confidence_interval
     
