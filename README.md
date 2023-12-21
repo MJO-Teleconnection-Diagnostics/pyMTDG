@@ -7,7 +7,7 @@ Stan, C., C. Zheng, E. K.-M. Chang, D. I. V. Domeisen, C. Garfienkel, A. M. Jenn
 Contents:
 1. [Software requirements](#Software requirements)
 2. [Obtaining the code](#Obtaining the code)
-<a name="Software requirements"/></a>
+<a name="Software requirements"></a>
 
 ## 1. Software requirements
 ....
