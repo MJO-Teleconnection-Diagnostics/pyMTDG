@@ -85,7 +85,7 @@ def convert_ymdh_to_ymd_list ( ymdh_list ) :
             ymd_list.append ( yyyymmdd_now )
     return ymd_list
                         
-def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , week_n , ensemble_total , if_multi_members , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth ) :
+def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , file_list , week_n , ensemble_total , if_multi_members , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth ) :
     ymd_list = convert_ymdh_to_ymd_list ( ymdh_list )
     eke_week_anomaly = np.full ( ( len ( ymd_list ) , 7 , len ( lat ) , len ( lon ) ) , np.nan , dtype=data_type )
     for day in range ( 7 ) :
@@ -109,7 +109,7 @@ def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , wee
                     for ens_n in range ( ensemble_total ) :
                         if if_multi_members : ens_string = "_e" + str ( ens_n ).zfill ( 2 )
                         else : ens_string = ""
-                        eke_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_eke_timestep ( u_file_heads , v_file_heads , ymdh_list [ ymdh_n ] , ens_string , timestep , interval_per_24h )
+                        eke_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_eke_timestep ( u_file_heads , v_file_heads , file_list [ ymdh_n ] , ens_string , timestep , interval_per_24h )
         eke_day_mean = np.nanmean ( eke_day , axis=(1,2,3) )
         eke_week_anomaly [ : , day , : , : ] = cal_anom ( eke_day_mean , ymd_list , if_smooth )
 #    del ( eke_day_mean )
@@ -118,7 +118,7 @@ def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , wee
 #    del ( eke_week_anomaly )
     return eke_week_anomaly_mean
 
-def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , week_n , ensemble_total , if_multi_members , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth , if_daily_mean ) :
+def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , file_list , week_n , ensemble_total , if_multi_members , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth , if_daily_mean ) :
     ymd_list = convert_ymdh_to_ymd_list ( ymdh_list )
     z500_week_anomaly = np.full ( ( len ( ymd_list ) , 7 , len ( lat ) , len ( lon ) ) , np.nan , dtype=data_type )
     for day in range ( 7 ) :
@@ -143,7 +143,7 @@ def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , wee
                         else : ens_string = ""
                         file_now = z500_file_heads [ 0 ] + str ( ymdh_list [ ymdh_n ] ) + ens_string + z500_file_heads [ 1 ]
                         if path.exists ( file_now ) :
-                            z500_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_data_timestep ( z500_file_heads , ymdh_list [ ymdh_n ] , ens_string , timestep , var_name )
+                            z500_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_data_timestep ( z500_file_heads , file_list [ ymdh_n ] , ens_string , timestep , var_name )
 
         z500_day_mean = np.nanmean ( z500_day , axis=(1,2,3) )
         z500_week_anomaly [ : , day , : , : ] = cal_anom ( z500_day_mean , ymd_list , if_smooth )

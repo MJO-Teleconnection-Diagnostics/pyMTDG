@@ -8,6 +8,9 @@ import os
 
 import yaml
 
+import sys
+sys.path.insert ( 0 , '../Utils' )
+
 from eke_util import get_model_latitude
 from eke_util import get_model_longitude
 from eke_util import get_model_weekly_eke_anomaly
@@ -24,7 +27,7 @@ from eke_util import get_plot_level_spacing
 from eke_util import plot_max_level
 
 ###### Input from yml file ( UFS )
-with open ( 'config.yml' , 'r' ) as file:
+with open ( '../driver/config.yml' , 'r' ) as file:
     yml_input = yaml.safe_load ( file )
 
 Model_name                   = yml_input [ 'model name' ]
@@ -56,9 +59,9 @@ if ERAI :
     ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
     ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
 
-#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
-#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
-#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.6hourly.nc" ]
+#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
+#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
+#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.6hourly.nc" ]
 Model_z500_varname = "z"
 
 if RMM :
@@ -141,35 +144,66 @@ model_u_file_list = glob.glob ( Model_u850_files [ 0 ] )
 model_u_file_list.sort ( )
 yyyymmddhh_list = [ ]
 u_files_head = Model_u850_files [ 0 ].split ( "*" , 1 )
-for file_n in model_u_file_list :
-    file_yyyymmddhh_str1 = file_n.replace ( u_files_head [ 0 ] , "" )
-    file_yyyymmddhh_str2 = file_yyyymmddhh_str1.replace ( u_files_head [ 1 ] , "" )
-    file_yyyymmddhh_str  = file_yyyymmddhh_str2.split ( "_" , 1 )
-    if len ( file_yyyymmddhh_str [ 0 ] ) == 10 :
-        yyyymmddhh_integer = int ( file_yyyymmddhh_str [ 0 ] )
-        mm = yyyymmddhh_integer // 10000 % 100
-        if mm > 12 :
-            print ( "error in file:" + file_n + " month=" + str ( mm ) )
-            exit ( )
-        dd = yyyymmddhh_integer // 100 % 100
-        if dd > 31 :
-            print ( "error in file:" + file_n + " day=" + str ( dd ) )
-            exit ( )
-        hh = yyyymmddhh_integer % 100
-        if hh > 18 or hh % 6 != 0 :
-            print ( "error in file:" + file_n + " only support 00, 06, 12 and 18 for initial hours" )
-            exit ( )
-        if yyyymmddhh_integer not in yyyymmddhh_list :
-            yyyymmddhh_list.append ( yyyymmddhh_integer )
-    else:
-        print ( "error in " + file_n + " format not matching yyyymmddhh or yyyymmddhh_exx" )
+file_yyyymmddhh_str1 = model_u_file_list [ 0 ].replace ( u_files_head [ 0 ] , "" )
+file_yyyymmddhh_str2 = file_yyyymmddhh_str1.replace ( u_files_head [ 1 ] , "" )
+file_yyyymmddhh_str  = file_yyyymmddhh_str2.split ( "_" , 1 )
+if len ( file_yyyymmddhh_str [ 0 ] ) == 10 : INCLUDE_HOUR = True
+elif len ( file_yyyymmddhh_str [ 0 ] ) == 8 : INCLUDE_HOUR = False
+else :
+    print ( "error in " + model_u_file_list [ 0 ] + " format not matching yyyymmddhh or yyyymmddhh_exx" )
+if INCLUDE_HOUR:
+    for file_n in model_u_file_list :
+        file_yyyymmddhh_str1 = file_n.replace ( u_files_head [ 0 ] , "" )
+        file_yyyymmddhh_str2 = file_yyyymmddhh_str1.replace ( u_files_head [ 1 ] , "" )
+        file_yyyymmddhh_str  = file_yyyymmddhh_str2.split ( "_" , 1 )
+        if len ( file_yyyymmddhh_str [ 0 ] ) == 10 :
+            yyyymmddhh_integer = int ( file_yyyymmddhh_str [ 0 ] )
+            mm = yyyymmddhh_integer // 10000 % 100
+            if mm > 12 :
+                print ( "error in file:" + file_n + " month=" + str ( mm ) )
+                exit ( )
+            dd = yyyymmddhh_integer // 100 % 100
+            if dd > 31 :
+                print ( "error in file:" + file_n + " day=" + str ( dd ) )
+                exit ( )
+            hh = yyyymmddhh_integer % 100
+            if hh > 18 or hh % 6 != 0 :
+                print ( "error in file:" + file_n + " only support 00, 06, 12 and 18 for initial hours" )
+                exit ( )
+            if yyyymmddhh_integer not in yyyymmddhh_list :
+                yyyymmddhh_list.append ( yyyymmddhh_integer )
+        else:
+            print ( "error in " + file_n + " format not matching yyyymmddhh or yyyymmddhh_exx" )
+else :
+    for file_n in model_u_file_list :
+        file_yyyymmddhh_str1 = file_n.replace ( u_files_head [ 0 ] , "" )
+        file_yyyymmddhh_str2 = file_yyyymmddhh_str1.replace ( u_files_head [ 1 ] , "" )
+        file_yyyymmddhh_str  = file_yyyymmddhh_str2.split ( "_" , 1 )
+        if len ( file_yyyymmddhh_str [ 0 ] ) == 8 :
+            yyyymmddhh_integer = int ( file_yyyymmddhh_str [ 0 ] )
+            mm = yyyymmddhh_integer // 100 % 100
+            if mm > 12 :
+                print ( "error in file:" + file_n + " month=" + str ( mm ) )
+                exit ( )
+            dd = yyyymmddhh_integer % 100
+            if dd > 31 :
+                print ( "error in file:" + file_n + " day=" + str ( dd ) )
+                exit ( )
+            yyyymmddhh_integer = yyyymmddhh_integer * 100
+            if yyyymmddhh_integer not in yyyymmddhh_list :
+                yyyymmddhh_list.append ( yyyymmddhh_integer )
+        else:
+            print ( "error in " + file_n + " format not matching yyyymmdd or yyyymmdd_exx" )
+
 yyyymmddhh_list.sort ( )
 yyyymmdd_list = convert_ymdh_to_ymd_list ( yyyymmddhh_list )
+if INCLUDE_HOUR : files_dates_list = yyyymmddhh_list
+else : files_dates_list = yyyymmdd_list
 v_files_head = Model_v850_files [ 0 ].split ( "*" , 1 )
 #read the first model file to get lat and lon dimension
 if Multiple_Ensemble_Members : ens_string = "_e00"
 else : ens_string = ""
-model_u850_file0 = xr.open_dataset ( u_files_head [ 0 ] + str ( yyyymmddhh_list [ 0 ] ) + ens_string + u_files_head [ 1 ] )
+model_u850_file0 = xr.open_dataset ( u_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + u_files_head [ 1 ] )
 model_u850_in = model_u850_file0 [ 'u' ]
 model_u850_in_dim = model_u850_in.dims
 model_lat_in = get_model_latitude ( model_u850_file0 , model_u850_in_dim )
@@ -181,7 +215,7 @@ model_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks 
 del ( model_input_u )
 del ( model_u850_in )
 for week_n in range ( total_weeks ) :
-    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , week_n , Ensemble_size , Multiple_Ensemble_Members , model_lat_in , model_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology )
+    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , model_lat_in , model_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology )
 
 ###### Read model z500 data
 #potential issue with data type of z500,uv850
@@ -190,7 +224,7 @@ for week_n in range ( total_weeks ) :
 z_files_head = Model_z500_files [ 0 ].split ( "*" , 1 )
 if Multiple_Ensemble_Members : ens_string = "_e00"
 else : ens_string = ""
-model_z500_file0 = xr.open_dataset ( z_files_head [ 0 ] + str ( yyyymmddhh_list [ 0 ] ) + ens_string + z_files_head [ 1 ] )
+model_z500_file0 = xr.open_dataset ( z_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + z_files_head [ 1 ] )
 model_z500_in = model_z500_file0 [ Model_z500_varname ]
 model_z500_file0.close ( )
 model_input_z = np.array ( model_z500_in )
@@ -198,7 +232,7 @@ model_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , 
 del ( model_input_z )
 del ( model_z500_in )
 for week_n in range ( total_weeks ) :
-    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , week_n , Ensemble_size , Multiple_Ensemble_Members , model_lat_in , model_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data )
+    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , model_lat_in , model_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data )
 
 ##### read reanalysis data for eke
 #potential issue with data type of erai/reanalysis
@@ -318,9 +352,6 @@ res_polar_color_z500.cnLevelSelectionMode = "ManualLevels"
 res_polar_color_z500.sfXArray             = np.array ( model_lon_in )
 res_polar_color_z500.sfYArray             = np.array ( model_lat_in )
 
-#wks_model = Ngl.open_wks ( "pdf" , plot_dir + "model" )
-#wks_reanalysis = Ngl.open_wks ( "pdf" , plot_dir + "reanalysis" )
-
 plot_levels = 8
 res_polar_color.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , res_polar_color.mpMinLatF , res_polar_color.mpMaxLatF , np.array ( model_lat_in ) )
 res_polar_color.cnMaxLevelValF  = plot_max_level ( plot_levels , res_polar_color.cnLevelSpacingF )
@@ -364,10 +395,6 @@ for phase_n in range ( len ( phase_names ) ) :
     Ngl.draw ( plot )
     Ngl.frame ( wks_model )
     Ngl.delete_wks ( wks_model )
-#Ngl.delete_wks ( wks_reanalysis )
-#Ngl.delete_wks ( wks_model )
-
-#wks_pattern_cc = Ngl.open_wks ( "png" , plot_dir + "pattern_corr" )
 
 res1                    = Ngl.Resources ( )
 res1.nglFrame           = False
@@ -410,6 +437,4 @@ for region_n in range ( len ( pattern_corr_regions ) ) :
     Ngl.draw ( plot )
     Ngl.frame ( wks_pattern_cc )
     Ngl.delete_wks ( wks_pattern_cc )
-
-#Ngl.delete_wks ( wks_pattern_cc )
 
