@@ -8,10 +8,10 @@ Contents:
 1. Software requirements
 2. Obtaining the code
 
-### 1. Software requirements
+## 1. Software requirements
+....
 
-
-### 2. Obtaining the code
+## 2. Obtaining the code
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
 
 a. Clone the repository.
