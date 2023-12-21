@@ -16,6 +16,7 @@ To checkout and run the code, no git knowledge is required. To obtain the code y
 
 a. Clone the repository.
 ~~~
-$ git clone https://github.com/cristianastan2/MJO-Teleconnections.git
+$ git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
-{: .language-bash} 
+
+This will create a directory MJO-Teleconnections in your current working directory. 
