@@ -8,10 +8,10 @@ Contents:
 1. [Software requirements](#introduction)
 2. [Obtaining the code](#code)
 
-1. Software requirements <a name="introduction"></a>
+## 1. Software requirements <a name="introduction"></a>
 Some text
 
-2. Obtaining the code <a name="code"></a>
+## 2. Obtaining the code <a name="code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
 
 a. Clone the repository.
