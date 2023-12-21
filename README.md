@@ -7,12 +7,11 @@ Stan, C., C. Zheng, E. K.-M. Chang, D. I. V. Domeisen, C. Garfienkel, A. M. Jenn
 Contents:
 1. [Software requirements](#Software requirements)
 2. [Obtaining the code](#Obtaining the code)
-<a name="Software requirements"></a>
 
-## 1. Software requirements
+## 1. Software requirements <a name="Software requirements"></a>
 ....
 
-## 2. Obtaining the code
+## 2. Obtaining the code <a name="Obtaining the code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
 
 a. Clone the repository.
