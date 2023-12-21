@@ -19,4 +19,11 @@ a. Clone the repository.
 git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
 
-This will create a directory `MJO-Teleconnections/` in your current working directory. 
+This will create a directory `MJO-Teleconnections/` in your current working directory.
+
+b. Go into th enewly created MJO-Teleconnections repository to create the environment required to run the package from the `mjo_telecon.yml` file included in the pckage.
+~~~
+cd MJO-Teleconnections
+conda env create -n mjo_telecon -- file mjo_telecon.yml
+~~~
+
