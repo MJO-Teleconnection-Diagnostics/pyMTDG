@@ -15,4 +15,7 @@ Contents:
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
 
 a. Clone the repository.
-  git clone 
+  ~~~
+$ git clone  
+~~~
+{: .language-bash} 
