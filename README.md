@@ -14,10 +14,13 @@ Some text
 ## 2. Obtaining the code <a name="code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
 
-a. Clone the repository or only the  devlop branch
+a. Clone the repository.
+  a.1 Clone the repository: master and all other branches
 ~~~
 git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
-git clone --branch develop https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
+~~~
+  a.2 Clone the repository and fetch only a single branch
+git clone --branch develop --single-branch  https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
 
 This will create a directory `MJO-Teleconnections/` in your current working directory.
