@@ -17,6 +17,7 @@ To checkout and run the code, no git knowledge is required. To obtain the code y
 a. Clone the repository.
 
   a.1 Clone the repository: master and all other branches
+  
 ~~~
 git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
