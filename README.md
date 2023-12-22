@@ -32,7 +32,7 @@ This will create a directory `MJO-Teleconnections/` in your current working dire
 b. Go into the newly created MJO-Teleconnections repository to create the environment required to run the package from the `mjo_telecon.yml` file included in the pckage.
 ~~~
 cd MJO-Teleconnections
-conda env create -n mjo_telecon -- file mjo_telecon.yml
+conda env create -n mjo_telecon --file mjo_telecon.yml
 ~~~
 
 c. Go to the `driver` directory to run the code.
