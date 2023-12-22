@@ -20,6 +20,7 @@ a. Clone the repository.
 git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
   a.2 Clone the repository and fetch only a single branch
+~~~
 git clone --branch develop --single-branch  https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
 
