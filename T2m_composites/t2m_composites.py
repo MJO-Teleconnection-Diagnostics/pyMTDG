@@ -1,10 +1,13 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import xarray as xr
 import numpy as np
+import pandas as pd
 import datetime
 from datetime import date, timedelta
 import yaml
 import gc
-
 
 import sys
 sys.path.insert(0, '../Utils')
@@ -13,21 +16,22 @@ from obs_utils import *
 from fcst_utils import *
 from t2m_utils import *
 
+print(f'Compute T2m diagnostic')
 
-print('Compute T2m diagnostic')
-
-
-config_file=Path('../driver/config.work.yml').resolve()
+config_file=Path('../driver/config.yml').resolve()
 with open(config_file,'r') as file:
     try:
         dictionary = yaml.safe_load(file)
     except yaml.YAMLError as e:
         print(e)
 
+
 if (dictionary['RMM:']==False):
     fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
 
+
 ds_rmm=xr.open_dataset(fil_rmm_erai,decode_times=False)
+
 
 times=ds_rmm['amplitude'].time
 init_time=date(1960,1,1)+timedelta(int(times[0]))
@@ -35,26 +39,17 @@ time=[]
 for i in range(len(times)):
         time.append(init_time+timedelta(i))
 
-import pandas as pd
 ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
 
 
 # ERA-Interim data covers 01/01/1979-08/31/2019, 7 years and 8 months, 14853 days
 
 if (dictionary['ERAI:']==True):
-    fil_t2m_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t2m/erai.T2m.day.mean.1979-2019.nc'
+    fil_t2m_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t2m/t2m.ei.oper.an.sfc.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
 if (dictionary['ERAI:']==False):
     ds_obs_name='OBS'
 ds_t2m_obs=xr.open_dataset(fil_t2m_obs)
-
-
-# * Rename lon,lat to match the forecast - useful for plotting
-# * Reverse latitude of ERA-I from S->N to N->S
-
-ds_t2m_obs=ds_t2m_obs.rename({'lon': 'longitude','lat': 'latitude'})
-ds_t2m_obs=ds_t2m_obs.reindex(latitude=list(reversed(ds_t2m_obs.latitude)))
-
 
 # Calculate anomalies of observations for the provided Start_Date -- End_Date period
 
@@ -68,11 +63,13 @@ if (dictionary['Daily Anomaly:'] == True):
 
 # Select all days in November-December-January-February-March
 
+
 rmm_obs_ndjfm  = ds_rmm['amplitude'].sel(time=ds_rmm['amplitude'].time.dt.month.isin([1, 2, 3, 11, 12]))
 pha_obs_ndjfm  = ds_rmm['phase'].sel(time=ds_rmm['phase'].time.dt.month.isin([1, 2, 3, 11, 12]))
 
 
 # Generate time limits for each initial condition 
+
 
 nyrs=int(tEnd[0:4])-int(tBegin[0:4])+1
 yrStrt=int(tBegin[0:4])
@@ -91,8 +88,10 @@ for i in range(len(initial_days)):
 
 init_dates=dictionary['Number of initial dates:']
 fcst_files=dictionary['Path to T2m model data files for date']
-ds_fcst_name=dictionary['model name']
+ds_fcst_name='UFS5'
 ds_names=[ds_obs_name,ds_fcst_name]
+
+# Pre-define objects for phase 3 and 7
 
 master_data_obs_p3=[]
 master_data_obs_p7=[]
@@ -101,17 +100,19 @@ master_data_fcst_p7=[]
 
 for ndate,idate in enumerate(initial_days):
 
-    ds_t2m_fcst=xr.open_mfdataset(fcst_files[ndate],combine='nested',concat_dim='time',parallel=True,engine='h5netcdf')
+    ds_t2m_fcst=xr.open_mfdataset(fcst_files[ndate],combine='nested',concat_dim='time',
+                                  parallel=True,engine='h5netcdf')
     
     # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
     rgrd_t2m_fcst=regrid_scalar_spharm(ds_t2m_fcst['t2m'],ds_t2m_fcst.latitude,ds_t2m_fcst.longitude,
                                                         ds_t2m_obs.latitude,ds_t2m_obs.longitude)
-    #del ds_t2m_fcst
+    del ds_t2m_fcst
+    gc.collect()
     
     # Calculate forecast anomalies
     t2m_fcst_anom=calcAnom(rgrd_t2m_fcst,'t2m_anom')
     
-    #del rgrd_t2m_fcst
+    del rgrd_t2m_fcst
     gc.collect()
     
     # Select the time period of the forecast (dStrt-dEnd) for MJO amplitude and phase in OBS
@@ -131,9 +132,7 @@ for ndate,idate in enumerate(initial_days):
     for phase in phases:
         ds=select_mjo_event(rmm_fcst,pha_fcst,phase)
         mjo_event_phases.append(ds)
-        #print('ndate=',ndate,'idate=',idate,'phase=',phase,'mjo_event_pahses=',ds)
     rmm_events=xr.concat(mjo_event_phases, dim='phase')
-    #print('ndate=',ndate,'idate=',idate,'phase=',phase,'rmm_events=',rmm_events)
 
     # Calculate phase composites of observations and forecast for a given week for each phase
     weeks=['week3','week4']
@@ -146,15 +145,14 @@ for ndate,idate in enumerate(initial_days):
         obs_comp_anom_week=[]
         fcst_comp_anom_week=[]
         for p,phase in enumerate(phases):
-            #print('idate=', idate,'phase=',phase,'week=',
-            #week,rmm_events[p,:],'rmm_events_time=',rmm_events[p,:].time)
-            print('idate=',idate,'phase=',phase, 'week=',week)
+
             ds_obs_phase=calcComposites(t2m_obs_anom,
                                         rmm_events[p,:].dropna(dim='time',how='any'),
                                         week,var_name)                       
             ds_fcst_phase=calcComposites(t2m_fcst_anom,
                                          rmm_events[p,:].dropna(dim='time',how='any'),
                                          week,var_name)
+            
             obs_comp_anom_week.append(ds_obs_phase)
             fcst_comp_anom_week.append(ds_fcst_phase)
             
@@ -186,6 +184,7 @@ fcst_comp_anom_p7=xr.concat([master_data_fcst_p7[p] for p in range(len(phases))]
 del ds_t2m_obs
 gc.collect()
 
+# Define bounds for plottinng 
 
 lon_0 = 270
 lat_0 = 20
@@ -233,22 +232,12 @@ for week in range(len(weeks)):
         r_p7= correlate(obs_comp_anom_p7['t2m_anom'][week,:,:,:].mean(dim='mjo_events'),
                 fcst_comp_anom_p7['t2m_anom'][week,:,:,:].mean(dim='mjo_events'),
                         lat_min,lat_max,lon_min,lon_max)
-
-        print('week=', week)
-        print('r_p3=',r_p3[0,1])
-        print('r_p7=',r_p7[0,1])
         
         comp_anom_p3=[obs_comp_anom_p3['t2m_anom'][week,:,:,:].mean(dim='mjo_events'),
                         fcst_comp_anom_p3['t2m_anom'][week,:,:,:].mean(dim='mjo_events')]
         
-        #del obs_comp_anom_p3, fcst_comp_anom_p3
-        #gc.collect()
-        
         comp_anom_p7=[obs_comp_anom_p7['t2m_anom'][week,:,:,:].mean(dim='mjo_events'),
                         fcst_comp_anom_p7['t2m_anom'][week,:,:,:].mean(dim='mjo_events')]
-        
-        #del obs_comp_anom_p7, fcst_comp_anom_p7
-        #gc.collect()
 
         plotComposites(comp_anom_p3, ds_names,
                         clevs, cmap, lon_0, lat_0,
@@ -261,7 +250,7 @@ for week in range(len(weeks)):
                         weeks[week].capitalize(),' P7','t2m_'+weeks[week]+'_p7')
 
 
-print('Finished T2m diagnostic')
+
 
 
 
