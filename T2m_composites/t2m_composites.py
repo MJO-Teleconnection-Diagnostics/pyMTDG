@@ -101,7 +101,7 @@ master_data_fcst_p7=[]
 for ndate,idate in enumerate(initial_days):
 
     ds_t2m_fcst=xr.open_mfdataset(fcst_files[ndate],combine='nested',concat_dim='time',
-                                  parallel=True,engine='h5netcdf')
+                                  parallel=True)
     
     # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
     rgrd_t2m_fcst=regrid_scalar_spharm(ds_t2m_fcst['t2m'],ds_t2m_fcst.latitude,ds_t2m_fcst.longitude,
