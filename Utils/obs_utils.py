@@ -48,7 +48,8 @@ def calcComposites(ds,mjo_events,week,name):
     for i in range(len(mjo_events)):
         
         if tLast[i].month != 4:
-            anoms=ds.sel(time=slice(tStrt[i],tLast[i])).mean(dim='time')
+            #anoms=ds.sel(time=slice(tStrt[i],tLast[i])).mean(dim='time') # doesn't work for non-unique label
+            anoms=ds.where((ds['time'] >= tStrt[i]) & (ds['time'] <= tLast[i])).mean(dim='time')
             ds_anoms.append(anoms.to_dataset(name=name))
     ds_comp_anoms=xr.combine_nested(ds_anoms,concat_dim='mjo_events')
      
