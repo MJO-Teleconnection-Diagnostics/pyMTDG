@@ -11,48 +11,45 @@ import os
 import time, sys
 import subprocess
 import shutil
-class FirstWindow(QMainWindow):
+
+class StartWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        #self.setupUi(self)
         self.setWindowTitle('MJO Teleconnections Diagnostics')
-        self.setGeometry(200, 100, 800, 400)  # Set window position and size
+        self.setGeometry(200, 100, 800, 400) #position and size
         self.show()
-
-        #Create the weather image widget
-        weather_image = QLabel(self)
+        
+        ## Logo widget
+        logo_image = QLabel(self)
         pixmap = QPixmap('logo1.jpg') 
-
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
-        # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # Create the text widgets
-        weather_image.setAlignment(Qt.AlignCenter)
+        logo_image.setPixmap(pixmap)
+        logo_image.resize(pixmap.width(),pixmap.height())
+        #Set the size policy of the QLabel to expand and fill the available space
+        logo_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        logo_image.setAlignment(Qt.AlignCenter)
+        
+        ## Welcome label
         welcome_label = QLabel('Welcome to MJO Teleconnections Diagnostics', self)
         welcome_label.setAlignment(Qt.AlignCenter)
         
-        button2 = QPushButton('Start', self)
-        button2.setFixedSize(70,30)
-        #button2.setGeometry(200, 150, 40, 40)
-        button2.clicked.connect(self.open_second_window)
+        ## Start button
+        start = QPushButton('Start', self)
+        start.setFixedSize(70,30)
+        #start.setGeometry(200, 150, 40, 40)
+        start.clicked.connect(self.open_second_window)
         
-       
+        ## Layout
+        layout = QVBoxLayout()
+        layout.addWidget(welcome_label)
+        layout.addStretch()
+        layout.addWidget(logo_image)
+        layout.addStretch()
+        layout.addWidget(start,alignment=Qt.AlignCenter)
+        layout.addStretch()
         
-        #Create a layout for the left half (weather image)
-        left_layout = QVBoxLayout()
-        
-        left_layout.addWidget(welcome_label)
-        left_layout.addStretch()
-        left_layout.addWidget(weather_image)
-        
-        widgetB = QWidget()
-        left_layout.addStretch()
-        
-        left_layout.addWidget(button2,alignment=Qt.AlignCenter)
-        left_layout.addStretch()
+        ## Central widget
         central_widget = QWidget()
-        central_widget.setLayout(left_layout)
+        central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
     def open_second_window(self):
@@ -85,7 +82,6 @@ def get_model_diagnostics(model_name):
     for f in all_folders:
         fm_path = os.path.join(start_path,f, model_name)
         # Check if the item is a directory
-        print(fm_path)
         if os.path.isdir(fm_path):
             diags.append(diagnostics[f.lower()])
     if diags == []:
@@ -96,27 +92,29 @@ def get_model_diagnostics(model_name):
 class ViewRes_RunCal(QMainWindow):
     def __init__(self,parent):
         super().__init__()
-        #self.setupUi(self)
         self.dict_file={}
         self.parent = parent
         self.setWindowTitle('MJO Teleconnections Diagnostics')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         self.show()
         
+        ## View Result button
         ViewRes= QPushButton('View results from previous calculations', self)
         ViewRes.setFixedSize(300,30)
-        #button2.setGeometry(200, 150, 40, 40)
         ViewRes.clicked.connect(self.showInputDialog)
-
+        
+        ## Run Dialog button
         runDiag = QPushButton('Run diagnostics first', self)
         runDiag.setFixedSize(300,30)
         #button2.setGeometry(200, 150, 40, 40)
         runDiag.clicked.connect(self.openrunDiag)
        
+        ## back button to start window
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
-        #Create a layout for the left half (weather image)
+        
+        ## Layouts
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
        
@@ -127,14 +125,16 @@ class ViewRes_RunCal(QMainWindow):
         ryt_layout.addWidget(runDiag,alignment=Qt.AlignCenter)
         ryt_layout.addStretch()
         
+        ## Frames
         frame = QFrame()
         frame.setLayout(layout)
         ryt_frame = QFrame()
         ryt_frame.setLayout(ryt_layout)
-        #Create a layout for the right half (text widgets and button)
+     
         frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
         ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-
+        
+        # Horizontal layout for frames
         lay = QHBoxLayout()
         lay.addWidget(frame)
         lay.addWidget(ryt_frame)
@@ -143,17 +143,11 @@ class ViewRes_RunCal(QMainWindow):
 
         fr = QFrame()
         fr.setLayout(lay)
-        # Create a central widget to hold the splitter
         main_widget = QWidget()
 
-        
         central_layout = QVBoxLayout()
         central_layout.addWidget(fr)
-        back.setStyleSheet("""
-        QPushButton:hover {
-            background-color: gray;
-        }
-    """)
+
         central_layout.addWidget(back,alignment=Qt.AlignCenter)
         main_widget.setLayout(central_layout)
         self.setCentralWidget(main_widget)
@@ -162,33 +156,39 @@ class ViewRes_RunCal(QMainWindow):
         self.close()
         self.parent.show()
 
-
     def openrunDiag(self):
         self.runDiagnostics = EntryWindow(self,self.dict_file)
         self.runDiagnostics.showMaximized()
         self.hide()
+        
     def showInputDialog(self):
-        f=0
+        modelname_exists=0
         while True:
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
+                print('Accepted')
                 self.model_name = dialog.input_text.text()
-                self.model_name,self.selected = get_model_diagnostics(self.model_name)
-                if self.model_name:
-                    self.dict_file['model name'] = self.model_name
-                    print(f"Accepted: {self.model_name}")
-                    f=1
-                    break  # Break the loop when valid input is provided
+                if len(self.model_name)>0:
+                    self.model_name,self.selected = get_model_diagnostics(self.model_name)
+                    if self.model_name: 
+                        self.dict_file['model name'] = self.model_name
+                        print(f"Accepted: {self.model_name}")
+                        modelname_exists=1
+                        break  # Break the loop when valid input is provided
+                    else:
+                        self.showErrorMessage("There is no model with this name.")
                 else:
-                    self.showErrorMessage("There is no model with this name.")
+                    self.showErrorMessage("Empty text")
             else:
-                print("Canceled")
+                print("Exiting dialog box")
                 break  # Break the loop if the user cancels the input dialog
-        if f==1:
+                
+        if modelname_exists==1:
             self.runFinal = FinalWindow(self,self.selected,self.dict_file)
             self.runFinal.showMaximized()
             self.close()
+            
     def showErrorMessage(self, message):
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Critical)
@@ -200,6 +200,7 @@ class InputDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.setGeometry(400, 220, 300, 100)
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -207,9 +208,10 @@ class InputDialog(QDialog):
         self.input_text = QLineEdit()
         self.ok_button = QPushButton('OK')
         self.ok_button.clicked.connect(self.accept)
+        self.ok_button.setFixedSize(70,30)
         layout.addWidget(self.input_label)
         layout.addWidget(self.input_text)
-        layout.addWidget(self.ok_button)
+        layout.addWidget(self.ok_button,alignment=Qt.AlignCenter)
         self.setLayout(layout)
 
 class EntryWindow(QMainWindow):
@@ -223,15 +225,6 @@ class EntryWindow(QMainWindow):
         self.setGeometry(0, 0, 800, 400)  
         self.showMaximized()
 
-        #dir_in_ilabel = QLabel('DIR_IN: Please enter the input data directory path\nuyuiy',self)
-        #start_date_ilabel = QLabel('START_DATE: Please enter the start date',self)
-        #end_date_ilabel = QLabel('END_DATE: Please enter the end date',self)
-        #legthFor_ilabel = QLabel('Length of the forecats (in days): Please enter the length of the forecats in days',self)
-        #num_ensm_ilabel = QLabel('Number of ensembles: Please enter the number of ensembles',self)
-        #num_ini_ilabel = QLabel('Number of initial dates: Please enter the number of initial dates',self)
-        #ini_dates_ilabel = QLabel('Initial dates: Please enter all the intial dates',self)
-        #era_ilabel = QLabel('Use ERA_I for validation: Please check this box if ERA_I is used for validation',self)
-        #imerg_ilabel = QLabel('Use IMERG for validation: Please check this box if IMERG is used for validation',self)
 
         help_label = QLabel('''
                                 DIR_IN: Please enter the input data directory path
@@ -1784,7 +1777,7 @@ class ThirdSubWindow(QMainWindow):
         if slurm != -1:
             paths,dict_file = self.close_yaml()
         if slurm == True:
-            command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=16GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
+            command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=24GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
             #self.ret = subprocess.Popen(command,  shell=True)
             self.hide()
             dialog=LoadingDialog(self,command,self.selected,dict_file)  
@@ -3576,6 +3569,6 @@ if __name__ == "__main__":
 
     """
     app.setStyleSheet(style)
-    entry_window = FirstWindow()
+    entry_window = StartWindow()
     entry_window.show()
     sys.exit(app.exec())
