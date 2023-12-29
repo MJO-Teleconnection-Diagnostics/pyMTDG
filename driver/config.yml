@@ -12,8 +12,8 @@ DIR_IN: /projects/cstan
 'Number of initial dates:': 2
 'Path to OLR data files:': /projects/cstan/OBS/
 Path to T2m model data files for date:
-- /projects/cstan/ufs5/daily/mean/t2m/t2m_*01.nc
-- /projects/cstan/ufs5/daily/mean/t2m/t2m_*15.nc
+- /projects/cstan/ufs6/daily/mean/t2m/t2m_*01.nc
+- /projects/cstan/ufs6/daily/mean/t2m/t2m_*15.nc
 'Path to T2m observational data files:': /projects/cstan/OBS/
 Path to meridional wind at 500 hPa date files:
 - /projects/cstan/
@@ -58,7 +58,7 @@ Path to zonalwind850 observational files: /projects/cstan/OBS/
 forecast time step: 24
 'length of forecasts:': '35'
 model initial conditions: false
-model name: UFS5
+model name: UFS6
 selected:
 - 10
 'smooth climatology:': false
