@@ -1,7 +1,7 @@
 'Compute the z500 anomalies:': false
 DIR_IN: /projects/cstan
 'Daily Anomaly:': true
-'END_DATE:': '2018-04-19'
+'END_DATE:': '20180419'
 'ERAI:': true
 'IMERG:': true
 'Initial dates:':
@@ -53,7 +53,7 @@ Path to zonalwind850 date files:
 - /projects/cstan/
 Path to zonalwind850 observational files: /projects/cstan/OBS/
 'RMM:': false
-'START_DATE:': '2011-04-01'
+'START_DATE:': '20110401'
 'Select weeks:': ''
 forecast time step: 24
 'length of forecasts:': '35'
