@@ -1670,7 +1670,7 @@ class ThirdSubWindow(QMainWindow):
         central_layout.addWidget(self.scroll,0,0,1,13)
         
         central_layout.addWidget(back,1,0,alignment=Qt.AlignLeft)
-        central_layout.addWidget(showRes,1,5,alignment=Qt.AlignCenter)
+        #central_layout.addWidget(showRes,1,5,alignment=Qt.AlignCenter)
         central_layout.addWidget(but,1,12,alignment=Qt.AlignRight)
         central_widget.setLayout(central_layout)
         
@@ -1779,18 +1779,19 @@ class ThirdSubWindow(QMainWindow):
         if slurm == True:
             command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=24GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
             #self.ret = subprocess.Popen(command,  shell=True)
-            self.hide()
-            dialog=LoadingDialog(self,command,self.selected,dict_file)  
-            #self.ret.wait()
-            dialog.exec_()
             
         elif slurm == False:
             command = paths
-            self.hide()
-            dialog=LoadingDialog(self,command,self.selected,dict_file)  
+            
+        dialog=LoadingDialog(self,command,self.selected,dict_file)  
             #self.ret.wait()
-            dialog.exec_()
-
+        result = dialog.exec_()
+        if result == QDialog.Accepted:
+            self.showResults()
+        else:
+            #display a window saying process is terminated
+            QMessageBox.warning(self, "Process stopped", "Process execution terminated.")
+            print("Process terminated")
             #command='cd ..; cd T2m_composites; python t2m_composites.py & python t2m_composites.py & python t2m_composites.py'
             #self.ret = subprocess.Popen(command,  shell=True)
         
@@ -1799,6 +1800,7 @@ class ThirdSubWindow(QMainWindow):
         
         
     def showResults(self):
+        QMessageBox.information(self, "Process Finished", "Process execution done!")
         self.nextwindow=FinalWindow(self,self.selected,self.dict_file)
         self.nextwindow.showMaximized()
         self.hide()
@@ -1865,15 +1867,19 @@ class LoadingDialog(QDialog):
         self.selected=selected
         self.parent=parent
         self.dict_file=dict_file
+        self.resize(400,200)
         self.subprocess_runner = SubprocessRunner(command)
         self.subprocess_runner.finished.connect(self.close)
         self.progress_dialog = QProgressDialog(self)
+        
         self.progress_dialog.setLabelText("Running diagnostics...")
+        self.progress_dialog.resize(400, 200)
         self.progress_dialog.setCancelButton(None)
         self.progress_dialog.setRange(0, 0)  # Set to an indeterminate progress bar
         self.progress_dialog.setWindowTitle("Please wait")
         self.progress_dialog.rejected.connect(self.close)
         self.subprocess_runner.start()
+        
     def on_rejected(self):
         self.subprocess_runner.ret.terminate()
         self.subprocess_runner.ret.wait()
@@ -1888,12 +1894,13 @@ class LoadingDialog(QDialog):
             self.subprocess_runner.ret.terminate()
             self.subprocess_runner.ret.wait()
             self.close()
-            self.parent.show()
+            #self.parent.show()
             event.accept()
         else:
             print('About to close the loading page')
+            super().accept()
             self.close()
-            self.parent.show()
+            #self.parent.show()
             event.accept()
 
 
@@ -3097,6 +3104,7 @@ class firstResult(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
+        
 class secondResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
@@ -3277,51 +3285,34 @@ class viewImage(QMainWindow):
         super().__init__()
         imageP = os.path.abspath(imageP)
         self.setWindowTitle(title)
-        self.setGeometry(200, 0, 800, 800)  # Set window position and size
+        self.setGeometry(200, 0, 850, 500)  # Set window position and size
         self.closed = pyqtSignal()
         #scroll_bar = QScrollBar(self)
         self.scroll = QScrollArea()
         #Create the weather image widget
         image = QLabel(self)
         pixmap = QPixmap(imageP) 
-        pixmap= pixmap.scaled(450, 700,Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap= pixmap.scaled(800, 600,Qt.KeepAspectRatio, Qt.SmoothTransformation)
         image.setPixmap(pixmap)
-        
         image.setAlignment(Qt.AlignCenter)
         self.imagep = imageP
-        left_layout = QVBoxLayout()
-        left_layout.addWidget(image)
-        left_layout.addStretch()
         
-        right_layout = QVBoxLayout()
+        
         helpText = QLabel('Here will be the help text on this image.')
 
         download = QPushButton('Download image', self)
         download.setFixedSize(300,30)
         download.clicked.connect(self.download_image)
 
-        right_layout.addWidget(helpText)
-        right_layout.addStretch()
-        right_layout.addWidget(download)
         
-        splitter = QSplitter(Qt.Horizontal)
-        splitter.addWidget(QWidget())
-        splitter.addWidget(QWidget())
-        splitter.setSizes([1, 1])
-
-        # Set the left layout to the first widget of the splitter
-        splitter.widget(0).setLayout(left_layout)
-        splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        # Set the right layout to the second widget of the splitter
-        splitter.widget(1).setLayout(right_layout)
-        splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
+        layout = QVBoxLayout()
+        layout.addWidget(image)
+        layout.addWidget(helpText,alignment=Qt.AlignCenter)
+        layout.addWidget(download,alignment=Qt.AlignCenter)
+        
         # Create a central widget to hold the splitter
         central_widget = QWidget()
-        central_layout = QHBoxLayout()
-        central_layout.addWidget(splitter)
-        central_widget.setLayout(central_layout)
+        central_widget.setLayout(layout)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
