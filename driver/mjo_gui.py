@@ -227,15 +227,28 @@ class EntryWindow(QMainWindow):
 
 
         help_label = QLabel('''
-                                DIR_IN: Please enter the input data directory path
-                                START_DATE: Please enter the start date
-                                END_DATE: Please enter the end date
-                                Length of the forecats (in days): Please enter the length of the forecats in days
-                                Number of ensembles: Please enter the number of ensembles
-                                Number of initial dates: Please enter the number of initial dates
-                                Initial dates: Please enter all the intial dates
-                                Use ERA_I for validation: Please check this box if ERA_I is used for validation
-                                Use IMERG for validation: Please check this box if IMERG is used for validation
+        The MJO-Diagnostics package computes diagnostics that require the meteorological fields listed below. User must prepare their files (one parameter per file) using the name and units listed in parenthesis. Meterological fields can be either total fields or anomalies.
+        Meteorological parameters:
+        Geopotential at 500mb (???,??) and 100mb(???,??)
+        Precipitation rate (???, mm/day)
+        Zonal and meridional winds at 850mb
+        Zonal wind at 10mb
+        Meridional wind at 500mb
+        Air temperature at 100mb 
+        2-metre Temperature (t2m, K)
+
+        DIR_IN: is the path of the directory (/project/$user) containing all input data including forecast and verification data. If the user downloads the ERA-Interim data included for verification in the Package (mjo_diagnostics_data/) must be located here. 
+        START_DATE: YYYYMMDD is the start date of forecast data.  
+        END_DATE: YYYYMMDD is the last date of forecast data  
+        Length of the forecats (in days): number of forecast leads  
+        Number of ensembles:  
+        Number of initial dates: the number of initial conditions for the forecasts
+                                 - if the forecast is initialized, for example 2 times month enter 2
+                                 - if the forecast is initialized one particuar days of the week, enter 1
+        Initial dates: DD, days of initialization
+                       - if the forecast is initialized 3 times a month, for example on 1st and 15th, enter 1 15. 
+        Use ERA_I for validation: Check this box if ERA-Interim data set provided with the package is used for validation
+        Use IMERG for validation: Check this box if IMERG data set provided with the package is used for validation
                             ''')
 
         # Create the text widgets
