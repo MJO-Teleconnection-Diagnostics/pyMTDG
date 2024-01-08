@@ -262,7 +262,7 @@ To run the package, the user needs to specify:
                         - Select 'No' if user provided dataset will be used for verification(user verification dataset must be placed in the directory 'DIR_IN/OBS')
 
 *Use IMERG for validation: 
-                        - Select 'Yes' (default) if IMERG dataset provided with the package is used for validation (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg')
+                        - Select 'Yes' (default) if IMERG dataset provided with the package is used for verification (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg')
                         - Select 'No' if user provided dataset will be used for verification (user verification dataset must be placed in the directory 'DIR_IN/OBS')
 ''')
 
@@ -462,22 +462,26 @@ class modelInformation(QMainWindow):
         self.showMaximized()
 
         help_label = QLabel('''
-        DIR_IN: Please enter the input data directory path
-        START_DATE: Please enter the start date
-        END_DATE: Please enter the end date
-        Length of the forecats (in days): Please enter the length of the forecats in days
-        Number of ensembles: Please enter the number of ensembles
-        Number of initial dates: Please enter the number of initial dates
-        Initial dates: Please enter all the intial dates
-        Use ERA_I for validation: Please check this box if ERA_I is used for validation
-        Use IMERG for validation: Please check this box if IMERG is used for validation
+The package can be applied to one forecast model. The name of the model will apear on the figures and will be required when the package is used to display existing results.
+
+* Model name: enter the model name, e.g., UFS or ufs
+ 
+* Model initial condition: 
+                    - Select 'Yes' for ....
+                    - Select 'No' for ....
+
+* Smooth climatology:
+                  - Select 'Yes' for ....
+                  - Select 'No' for ....
+
+
                             ''')
         help_label.setWordWrap(True)
         #Model name
         model_label = QLabel('Model name:', self)
         self.model_name = QLineEdit(self)
 
-        '''#Are the model data daily-mean values? (Otherwise the data are instantaneous values)
+        #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
         daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
         groupbox = QGroupBox()
         vbox = QVBoxLayout()
@@ -499,7 +503,7 @@ class modelInformation(QMainWindow):
         vbox.addWidget(self.time_step_interval_6)
         self.time_step_interval_24 = QRadioButton("24")
         self.time_step_interval_24.setChecked(True)
-        vbox.addWidget(self.time_step_interval_24)'''
+        vbox.addWidget(self.time_step_interval_24)
 
         #Does the model data include the initial conditions?
         self.initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
@@ -546,8 +550,8 @@ class modelInformation(QMainWindow):
         right_layout.addStretch()
         right_layout.addWidget(model_label)
         right_layout.addWidget(self.model_name)
-        #right_layout.addWidget(daily_mean_values_label)
-        #right_layout.addWidget(groupbox)
+        right_layout.addWidget(daily_mean_values_label)
+        right_layout.addWidget(groupbox)
         
         right_layout.addWidget(self.initial_conds_label)
         right_layout.addWidget(self.groupbox2)
@@ -623,10 +627,10 @@ class modelInformation(QMainWindow):
         dict_file =self.dict_file
         dict_file['model name'] = self.model_name.text()
         #dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
-        '''if self.time_step_interval and self.time_step_interval_24.isChecked():
+        if self.time_step_interval and self.time_step_interval_24.isChecked():
             dict_file['forecast time step']= 24
         else:
-            dict_file['forecast time step']= 6'''
+            dict_file['forecast time step']= 6
         
         dict_file['model initial conditions']= self.initial_conds_yes.isChecked()
         dict_file['smooth climatology:'] = self.smooth_climatology_yes.isChecked()
@@ -662,15 +666,16 @@ class SecondWindow(QMainWindow):
         self.era = era
 
         help_label = QLabel('''
-        DIR_IN: Please enter the input data directory path
-        START_DATE: Please enter the start date
-        END_DATE: Please enter the end date
-        Length of the forecats (in days): Please enter the length of the forecats in days
-        Number of ensembles: Please enter the number of ensembles
-        Number of initial dates: Please enter the number of initial dates
-        Initial dates: Please enter all the intial dates
-        Use ERA_I for validation: Please check this box if ERA_I is used for validation
-        Use IMERG for validation: Please check this box if IMERG is used for validation
+       
+
+
+* Compute daily anomalies:
+                    - Select 'Yes' if forecast data is provided as daily mean values
+                    - Select 'No' if forecast data is provided as daily anomaly values
+
+* Compute the RMM index: The selction of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 1984). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1979-08/31/2019. 
+    - Select 'No' to use the RMM index included in the Package
+    - Select 'Yes' to compute the RMM index using new datasets; the user is required to provide the paths of these datasets, which must be staged in 'DIR_IN/OBS'
                             ''')
         help_label.setWordWrap(True)
        
@@ -877,15 +882,10 @@ class ThirdWindow(QMainWindow):
         #pixmap = QPixmap('weather.jpg') 
 
         help_label = QLabel('''
-        DIR_IN: Please enter the input data directory path
-        START_DATE: Please enter the start date
-        END_DATE: Please enter the end date
-        Length of the forecats (in days): Please enter the length of the forecats in days
-        Number of ensembles: Please enter the number of ensembles
-        Number of initial dates: Please enter the number of initial dates
-        Initial dates: Please enter all the intial dates
-        Use ERA_I for validation: Please check this box if ERA_I is used for validation
-        Use IMERG for validation: Please check this box if IMERG is used for validation
+
+
+On this page, the user can select all diagnostics, one diagnostic or multiple diagnostics. On the next page, the user will be prompted to provide additional information about the forecast data files required for each of the diagnostics.
+
                             ''')
         help_label.setWordWrap(True)
         
