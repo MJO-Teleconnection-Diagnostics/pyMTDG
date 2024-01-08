@@ -227,29 +227,44 @@ class EntryWindow(QMainWindow):
 
 
         help_label = QLabel('''
-        The MJO-Diagnostics package computes diagnostics that require the meteorological fields listed below. User must prepare their files (one parameter per file) using the name and units listed in parenthesis. Meterological fields can be either total fields or anomalies.
-        Meteorological parameters:
-        Geopotential at 500mb (???,??) and 100mb(???,??)
-        Precipitation rate (???, mm/day)
-        Zonal and meridional winds at 850mb
-        Zonal wind at 10mb
-        Meridional wind at 500mb
-        Air temperature at 100mb 
-        2-metre Temperature (t2m, K)
+The MJO-Diagnostics Package computes metrics that require the meteorological fields listed below. User must prepare their files (one variable per file) using the name and units listed in parenthesis. Meterological fields can be either total fields or anomalies.
+----------------------------------------------------
+ Meteorological parameters:
+----------------------------------------------------
+* Geopotential at 500mb (???,??) and 100mb(???,??)
+* Precipitation rate (???, mm/day)
+* Zonal and meridional winds at 850mb
+* Zonal wind at 10mb
+* Meridional wind at 500mb
+* Air temperature at 100mb 
+* 2-metre Temperature (t2m, K)
 
-        DIR_IN: is the path of the directory (/project/$user) containing all input data including forecast and verification data. If the user downloads the ERA-Interim data included for verification in the Package (mjo_diagnostics_data/) must be located here. 
-        START_DATE: YYYYMMDD is the start date of forecast data.  
-        END_DATE: YYYYMMDD is the last date of forecast data  
-        Length of the forecats (in days): number of forecast leads  
-        Number of ensembles:  
-        Number of initial dates: the number of initial conditions for the forecasts
-                                 - if the forecast is initialized, for example 2 times month enter 2
-                                 - if the forecast is initialized one particuar days of the week, enter 1
-        Initial dates: DD, days of initialization
-                       - if the forecast is initialized 3 times a month, for example on 1st and 15th, enter 1 15. 
-        Use ERA_I for validation: Check this box if ERA-Interim data set provided with the package is used for validation
-        Use IMERG for validation: Check this box if IMERG data set provided with the package is used for validation
-                            ''')
+To run the package, the user needs to specify: 
+* DIR_IN: the path of the directory (e.g., /project/$user) containing all input data including forecast and verification data. If the user downloads the ERA-Interim dataset made available with the Package the directory 'mjo_teleconnections_data/' must be located here. 
+
+* START_DATE: the start date of forecast data in the format YYYYMMDD 
+
+* END_DATE: the last date of forecast data in the format YYYYMMDD  
+
+* Length of the forecats (in days): number of forecast leads  
+
+* Number of ensembles: ensemble members  
+
+* Number of initial dates: the number of initial conditions for the forecasts
+                         - if the forecast is initialized, for example 2 times month enter 2
+                         - if the forecast is initialized on particular days of the week, enter 1
+
+* Initial dates: days of initialization in the format D or DD
+               - if the forecast is initialized 2 times a month, for example on the 1st and 15th, enter 1 15 
+
+*Use ERA_I for validation: 
+                        - Select 'Yes' (default) if ERA-Interim dataset provided with the package is used for verification (dataset must be downloaded in placed in the 'DIR_IN/mjo_teleconnections_data/erai')
+                        - Select 'No' if user provided dataset will be used for verification(user verification dataset must be placed in the directory 'DIR_IN/OBS')
+
+*Use IMERG for validation: 
+                        - Select 'Yes' (default) if IMERG dataset provided with the package is used for validation (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg')
+                        - Select 'No' if user provided dataset will be used for verification (user verification dataset must be placed in the directory 'DIR_IN/OBS')
+''')
 
         # Create the text widgets
         help_label.setWordWrap(True) 
