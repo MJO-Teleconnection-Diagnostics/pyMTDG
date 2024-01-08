@@ -252,6 +252,7 @@ class EntryWindow(QMainWindow):
                             ''')
 
         # Create the text widgets
+        help_label.setWordWrap(True) 
         dir_in_label = QLabel('DIR_IN:', self)
         self.dir_in_text = QLineEdit(self)
         self.dir_in_text.setProperty("mandatoryField", False)
@@ -456,6 +457,7 @@ class modelInformation(QMainWindow):
         Use ERA_I for validation: Please check this box if ERA_I is used for validation
         Use IMERG for validation: Please check this box if IMERG is used for validation
                             ''')
+        help_label.setWordWrap(True)
         #Model name
         model_label = QLabel('Model name:', self)
         self.model_name = QLineEdit(self)
@@ -655,6 +657,7 @@ class SecondWindow(QMainWindow):
         Use ERA_I for validation: Please check this box if ERA_I is used for validation
         Use IMERG for validation: Please check this box if IMERG is used for validation
                             ''')
+        help_label.setWordWrap(True)
        
         #Scale the pixmap to fit the size of the QLabel
         #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -869,6 +872,7 @@ class ThirdWindow(QMainWindow):
         Use ERA_I for validation: Please check this box if ERA_I is used for validation
         Use IMERG for validation: Please check this box if IMERG is used for validation
                             ''')
+        help_label.setWordWrap(True)
         
         self.scroll = QScrollArea()
         #Replace with the actual path to your weather image file
@@ -1090,6 +1094,7 @@ class ThirdSubWindow(QMainWindow):
         Use ERA_I for validation: Please check this box if ERA_I is used for validation
         Use IMERG for validation: Please check this box if IMERG is used for validation
                             ''')
+        help_label.setWordWrap(True)
         
         #Replace with the actual path to your weather image file
         #Scale the pixmap to fit the size of the QLabel
@@ -2032,6 +2037,7 @@ class FinalWindow(QMainWindow):
         # Set the size policy of the QLabel to expand and fill the available space
         weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         '''
+        help_label.setWordWrap(True)
         self.first = QRadioButton("STRIPES Index for geopotential height")
         self.first.setChecked(False) # 1
 
