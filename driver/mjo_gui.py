@@ -477,7 +477,7 @@ class modelInformation(QMainWindow):
         model_label = QLabel('Model name:', self)
         self.model_name = QLineEdit(self)
 
-        #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
+        '''#Are the model data daily-mean values? (Otherwise the data are instantaneous values)
         daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
         groupbox = QGroupBox()
         vbox = QVBoxLayout()
@@ -499,7 +499,7 @@ class modelInformation(QMainWindow):
         vbox.addWidget(self.time_step_interval_6)
         self.time_step_interval_24 = QRadioButton("24")
         self.time_step_interval_24.setChecked(True)
-        vbox.addWidget(self.time_step_interval_24)
+        vbox.addWidget(self.time_step_interval_24)'''
 
         #Does the model data include the initial conditions?
         self.initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
@@ -546,8 +546,8 @@ class modelInformation(QMainWindow):
         right_layout.addStretch()
         right_layout.addWidget(model_label)
         right_layout.addWidget(self.model_name)
-        right_layout.addWidget(daily_mean_values_label)
-        right_layout.addWidget(groupbox)
+        #right_layout.addWidget(daily_mean_values_label)
+        #right_layout.addWidget(groupbox)
         
         right_layout.addWidget(self.initial_conds_label)
         right_layout.addWidget(self.groupbox2)
@@ -623,10 +623,10 @@ class modelInformation(QMainWindow):
         dict_file =self.dict_file
         dict_file['model name'] = self.model_name.text()
         #dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
-        if self.time_step_interval and self.time_step_interval_24.isChecked():
+        '''if self.time_step_interval and self.time_step_interval_24.isChecked():
             dict_file['forecast time step']= 24
         else:
-            dict_file['forecast time step']= 6
+            dict_file['forecast time step']= 6'''
         
         dict_file['model initial conditions']= self.initial_conds_yes.isChecked()
         dict_file['smooth climatology:'] = self.smooth_climatology_yes.isChecked()
