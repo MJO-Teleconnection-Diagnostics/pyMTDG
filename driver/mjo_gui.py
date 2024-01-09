@@ -1314,6 +1314,32 @@ class ThirdSubWindow(QMainWindow):
         self.temperature500Tobs.setText(prefix)
         self.temperature500Tobs.setCursorPosition(len(prefix))
 
+        #EKE
+        #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
+        daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
+        groupbox = QGroupBox()
+        vbox = QVBoxLayout()
+        groupbox.setLayout(vbox)
+        self.daily_mean_values_yes = QRadioButton("Yes")
+        self.daily_mean_values_yes.setChecked(True)
+        vbox.addWidget(self.daily_mean_values_yes )
+        self.daily_mean_values_no = QRadioButton("No")
+        self.daily_mean_values_no.toggled.connect(self.clickedNo)
+        vbox.addWidget(self.daily_mean_values_no)
+
+        #If "No" in 1, what is the forecast time step interval in the model data?
+        self.time_step_interval = QLabel('What is the forecast time step interval in the model data?', self)
+        self.groupbox1 = QGroupBox()
+        vbox = QVBoxLayout()
+        self.groupbox1.setLayout(vbox)
+        self.time_step_interval_6 = QRadioButton("6")
+        
+        vbox.addWidget(self.time_step_interval_6)
+        self.time_step_interval_24 = QRadioButton("24")
+        self.time_step_interval_24.setChecked(True)
+        vbox.addWidget(self.time_step_interval_24)
+
+
 
         # Path to T2m data files:
         t2ms = []
@@ -1612,11 +1638,10 @@ class ThirdSubWindow(QMainWindow):
                         if era == False:
                             right_layout.addWidget(z500obs)
                             right_layout.addWidget(self.z500Tobs)
-                    
 
 
                     
-                if 9 in selected: #Surface air temperature
+                if 9 in selected: #Eke
                     if 'dailyMean' not in rendered:
                         rendered.append('dailyMean')
                         right_layout.addWidget(self.dailyMean)
@@ -1636,6 +1661,8 @@ class ThirdSubWindow(QMainWindow):
                         if era == False:
                             right_layout.addWidget(meridionalwind850obs)
                             right_layout.addWidget(self.meridionalwind850Tobs)
+                    right_layout.addWidget(daily_mean_values_label)
+                    right_layout.addWidget(groupbox)
                 if 10 in selected:
                     rendered.append('t2mT')
                     for i in range(num_dates):
@@ -1663,7 +1690,8 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(self.zonalwind200Ts[i])
                         if era == False:
                             right_layout.addWidget(zonalwind200obs)
-                            right_layout.addWidget(self.zonalwind200Tobs)          
+                            right_layout.addWidget(self.zonalwind200Tobs)  
+        self.right_layout = right_layout        
         self.selected=selected       
         right_layout.addStretch()
         #right_layout.addWidget(but,alignment=Qt.AlignRight)    
@@ -1708,12 +1736,39 @@ class ThirdSubWindow(QMainWindow):
         central_widget.setLayout(central_layout)
         
         self.setCentralWidget(central_widget)
+    def clickedNo(self):
+        radioButton = self.sender()
+        if radioButton.isChecked():
+            if not self.time_step_interval or not self.groupbox1:
+                self.time_step_interval = QLabel('What is the forecast time step interval in the model data?', self)
+                self.groupbox1 = QGroupBox()
+                vbox = QVBoxLayout()
+                self.groupbox1.setLayout(vbox)
+                self.time_step_interval_6 = QRadioButton("6")
+                
+                vbox.addWidget(self.time_step_interval_6)
+                self.time_step_interval_24 = QRadioButton("24")
+                self.time_step_interval_24.setChecked(True)
+                vbox.addWidget(self.time_step_interval_24)
+            self.right_layout.insertWidget(7,self.time_step_interval)
+            self.right_layout.insertWidget(8,self.groupbox1)
+        else:
+            self.right_layout.removeWidget(self.time_step_interval)
+            self.time_step_interval.deleteLater()
+            self.time_step_interval = None
+            self.right_layout.removeWidget(self.groupbox1)
+            self.groupbox1.deleteLater()
+            self.groupbox1 = None
     
     def closee(self):
         self.close()
         self.parent.show()
     def close_yaml(self):
         dict_file =self.dict_file
+        if self.time_step_interval and self.time_step_interval_24.isChecked():
+            dict_file['forecast time step']= 24
+        else:
+            dict_file['forecast time step']= 6
         dict_file['Path to z500 date files'] = []
         for i in self.z500Ts:
             dict_file['Path to z500 date files'].append(i.text())
@@ -1809,6 +1864,8 @@ class ThirdSubWindow(QMainWindow):
         slurm=self.showInputDialog()
         if slurm != -1:
             paths,dict_file = self.close_yaml()
+        else:
+            return
         if slurm == True:
             command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=24GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
             #self.ret = subprocess.Popen(command,  shell=True)
