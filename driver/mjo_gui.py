@@ -264,6 +264,10 @@ To run the package, the user needs to specify:
 *Use IMERG for validation: 
                         - Select 'Yes' (default) if IMERG dataset provided with the package is used for verification (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg')
                         - Select 'No' if user provided dataset will be used for verification (user verification dataset must be placed in the directory 'DIR_IN/OBS')
+
+
+
+
 ''')
 
         # Create the text widgets
@@ -286,7 +290,6 @@ To run the package, the user needs to specify:
         num_initial_dates = QLabel('Number of initial dates:', self)
         self.initial_dates = QLineEdit(self)
 
-        
         initial_dates = QLabel('Initial dates:', self)
         self.initial_dates_values = QLineEdit(self)
         
@@ -308,8 +311,6 @@ To run the package, the user needs to specify:
         self.era_no = QRadioButton("No")
         vbox.addWidget(self.era_no)
 
-        
-
         #IMERG
         imerg_label = QLabel('Use IMERG for validation:', self)
         groupbox2 = QGroupBox()
@@ -321,7 +322,6 @@ To run the package, the user needs to specify:
         vbox.addWidget(self.imerg_yes )
         self.imerg_no = QRadioButton("No")
         vbox.addWidget(self.imerg_no)
-        
         
 
         #Create a layout for the left half (weather image)
@@ -403,24 +403,33 @@ To run the package, the user needs to specify:
 
 
     def open_second_window(self):
-
-        #commenting out the input validation
-        
-        '''if self.initial_dates.text() == '' or self.initial_dates_values.text() == '' or self.dir_in_text.text() == '' or self.start_date_text.text() == '' or self.end_date_text.text() == '' or self.num_ensm.text() == '':
-            msg = QMessageBox()
-            msg.setWindowTitle("Enter all values")
-            msg.setText("Please enter all values")
-            x=msg.exec_()
+        if self.dir_in_text.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the input directory")
+            return 
+        if  self.start_date_text.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the start date")
+            return 
+        if self.end_date_text.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the end date")
+            return 
+        if self.lengthFor_text.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the length of forecasts.")
+            return 
+        if self.num_ensm.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the number of ensembles")
             return
-        
+        if self.initial_dates.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the number of initial dates ")
+            return
+        if self.initial_dates_values.text() == '':
+            QMessageBox.warning(self,'Missing fields!',"Please enter the initial dates ")
+            return
         num_exp = int(self.initial_dates.text())
         num_given = len(list(map(int,self.initial_dates_values.text().split())))
         if num_exp != num_given:
-            msg = QMessageBox()
-            msg.setWindowTitle("Number of initial dates should match the give number")
-            msg.setText("Please enter "+str(num_exp)+" initial dates")
-            x=msg.exec_()
-            return'''
+            QMessageBox.warning(self,"Number of initial dates should match the give number","Please enter "+str(num_exp)+" initial date(s)")
+            return
+        
 
         dict_file=self.dict_file
         dict_file['DIR_IN'] = self.dir_in_text.text()
@@ -481,7 +490,7 @@ The package can be applied to one forecast model. The name of the model will ape
         model_label = QLabel('Model name:', self)
         self.model_name = QLineEdit(self)
 
-        #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
+        '''#Are the model data daily-mean values? (Otherwise the data are instantaneous values)
         daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
         groupbox = QGroupBox()
         vbox = QVBoxLayout()
@@ -503,7 +512,7 @@ The package can be applied to one forecast model. The name of the model will ape
         vbox.addWidget(self.time_step_interval_6)
         self.time_step_interval_24 = QRadioButton("24")
         self.time_step_interval_24.setChecked(True)
-        vbox.addWidget(self.time_step_interval_24)
+        vbox.addWidget(self.time_step_interval_24)'''
 
         #Does the model data include the initial conditions?
         self.initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
@@ -550,8 +559,8 @@ The package can be applied to one forecast model. The name of the model will ape
         right_layout.addStretch()
         right_layout.addWidget(model_label)
         right_layout.addWidget(self.model_name)
-        right_layout.addWidget(daily_mean_values_label)
-        right_layout.addWidget(groupbox)
+        #right_layout.addWidget(daily_mean_values_label)
+        #right_layout.addWidget(groupbox)
         
         right_layout.addWidget(self.initial_conds_label)
         right_layout.addWidget(self.groupbox2)
@@ -617,20 +626,16 @@ The package can be applied to one forecast model. The name of the model will ape
             self.right_layout.removeWidget(self.groupbox1)
             self.groupbox1.deleteLater()
             self.groupbox1 = None
-        
-        
-
-
 
     def open_second_window(self):
         #commenting out the input validation
         dict_file =self.dict_file
         dict_file['model name'] = self.model_name.text()
-        #dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
+        '''dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
         if self.time_step_interval and self.time_step_interval_24.isChecked():
             dict_file['forecast time step']= 24
         else:
-            dict_file['forecast time step']= 6
+            dict_file['forecast time step']= 6'''
         
         dict_file['model initial conditions']= self.initial_conds_yes.isChecked()
         dict_file['smooth climatology:'] = self.smooth_climatology_yes.isChecked()
@@ -642,7 +647,6 @@ The package can be applied to one forecast model. The name of the model will ape
         self.hide()
     
 
-    
     def closee(self):
         self.close()
         self.parent.show()
@@ -932,8 +936,8 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         self.eight = QCheckBox("Extratropical cyclone activity")
         self.eight.setChecked(False)
 
-        self.nine = QCheckBox("EKE850-Z500 correlation")
-        self.nine.setChecked(False)
+        #self.nine = QCheckBox("EKE850-Z500 correlation")
+        #self.nine.setChecked(False)
 
         self.nine_two = QCheckBox("MJO")
         self.nine_two.setChecked(False) #12
@@ -968,7 +972,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         right_layout.addWidget(self.sixth)
         right_layout.addWidget(self.seventh)
         right_layout.addWidget(self.eight)
-        right_layout.addWidget(self.nine)
+        #right_layout.addWidget(self.nine)
         right_layout.addWidget(self.nine_two)
         right_layout.addWidget(self.ten)
         right_layout.addStretch()
@@ -1027,8 +1031,8 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
                 selected.append(7)
             if self.eight.isChecked():
                 selected.append(8)
-            if self.nine.isChecked():
-                selected.append(9)
+            #if self.nine.isChecked():
+             #   selected.append(9)
             if self.nine_two.isChecked():
                 selected.append(12)
             if self.ten.isChecked():
@@ -1061,7 +1065,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.sixth.setChecked(True)
             self.seventh.setChecked(True)
             self.eight.setChecked(True)
-            self.nine.setChecked(True)
+            #self.nine.setChecked(True)
             self.nine_two.setChecked(True)
             self.ten.setChecked(True)
         else:
@@ -1075,7 +1079,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.sixth.setChecked(False)
             self.seventh.setChecked(False)
             self.eight.setChecked(False)
-            self.nine.setChecked(False)
+            #self.nine.setChecked(False)
             self.nine_two.setChecked(False)
             self.ten.setChecked(False)
     
@@ -1111,15 +1115,6 @@ class ThirdSubWindow(QMainWindow):
                             ''')
         help_label.setWordWrap(True)
         
-        #Replace with the actual path to your weather image file
-        #Scale the pixmap to fit the size of the QLabel
-        #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        '''weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
-        # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)'''
-        # Create the text widgets
-        
         self.dirin = dirin
         pref = self.dirin+"/"
         prefix = self.dirin+"/OBS/"
@@ -1138,7 +1133,6 @@ class ThirdSubWindow(QMainWindow):
         # Path to Z500 data files:
         z500s=[]
         self.z500Ts = []
-        
         self.z500Tobss = []
 
         for i in range(num_dates):
@@ -1216,8 +1210,6 @@ class ThirdSubWindow(QMainWindow):
             self.zonalwind200T.setText(pref)
             self.zonalwind200T.setCursorPosition(len(pref))
 
-            
-
             zonalwind200s.append(zonalwind200)
             self.zonalwind200Ts.append(self.zonalwind200T)
             
@@ -1238,8 +1230,6 @@ class ThirdSubWindow(QMainWindow):
             self.zonalwind10T = QLineEdit(self)
             self.zonalwind10T.setText(pref)
             self.zonalwind10T.setCursorPosition(len(pref))
-
-            
 
             zonalwind10s.append(zonalwind10)
             self.zonalwind10Ts.append(self.zonalwind10T)
@@ -1270,7 +1260,6 @@ class ThirdSubWindow(QMainWindow):
         self.meridionalwind850Tobs = QLineEdit(self)
         self.meridionalwind850Tobs.setText(prefix)
         self.meridionalwind850Tobs.setCursorPosition(len(prefix))
-
 
         # Path to meridional wind at 500 hPa data files:
 
@@ -1339,7 +1328,7 @@ class ThirdSubWindow(QMainWindow):
         self.time_step_interval_24.setChecked(True)
         vbox.addWidget(self.time_step_interval_24)
 
-
+        diag_help_texts = ['']*12
 
         # Path to T2m data files:
         t2ms = []
@@ -1390,7 +1379,7 @@ class ThirdSubWindow(QMainWindow):
         self.z500anomalies = QCheckBox("Compute the z500 anomalies")
         self.z500anomalies.setChecked(False)
 
-        self.dailyMean= QCheckBox("Model input file daily mean?")
+        self.dailyMean= QCheckBox("Are the model data daily-mean values?")
         self.dailyMean.setChecked(False)
 
         but = QPushButton('Run', self)
@@ -1611,7 +1600,8 @@ class ThirdSubWindow(QMainWindow):
 
                 if 8 in selected: #Extratropical cyclone activity
                     rendered.append('dailyMean')
-                    right_layout.addWidget(self.dailyMean)
+                    right_layout.addWidget(daily_mean_values_label)
+                    right_layout.addWidget(groupbox)
                     if 'zonalwind850T' not in rendered:
                         rendered.append('zonalwind850T')
                         for i in range(num_dates):
@@ -1641,28 +1631,6 @@ class ThirdSubWindow(QMainWindow):
 
 
                     
-                if 9 in selected: #Eke
-                    if 'dailyMean' not in rendered:
-                        rendered.append('dailyMean')
-                        right_layout.addWidget(self.dailyMean)
-                    if 'zonalwind850T' not in rendered:
-                        rendered.append('zonalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind850s[i])
-                            right_layout.addWidget(self.zonalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind850obs)
-                            right_layout.addWidget(self.zonalwind850Tobs)
-                    if 'meridionalwind850T' not in rendered:
-                        rendered.append('meridionalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(meridionalwind850s[i])
-                            right_layout.addWidget(self.meridionalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(meridionalwind850obs)
-                            right_layout.addWidget(self.meridionalwind850Tobs)
-                    right_layout.addWidget(daily_mean_values_label)
-                    right_layout.addWidget(groupbox)
                 if 10 in selected:
                     rendered.append('t2mT')
                     for i in range(num_dates):
@@ -1736,6 +1704,7 @@ class ThirdSubWindow(QMainWindow):
         central_widget.setLayout(central_layout)
         
         self.setCentralWidget(central_widget)
+
     def clickedNo(self):
         radioButton = self.sender()
         if radioButton.isChecked():
@@ -1745,13 +1714,12 @@ class ThirdSubWindow(QMainWindow):
                 vbox = QVBoxLayout()
                 self.groupbox1.setLayout(vbox)
                 self.time_step_interval_6 = QRadioButton("6")
-                
                 vbox.addWidget(self.time_step_interval_6)
                 self.time_step_interval_24 = QRadioButton("24")
                 self.time_step_interval_24.setChecked(True)
                 vbox.addWidget(self.time_step_interval_24)
-            self.right_layout.insertWidget(7,self.time_step_interval)
-            self.right_layout.insertWidget(8,self.groupbox1)
+            self.right_layout.insertWidget(2,self.time_step_interval)
+            self.right_layout.insertWidget(3,self.groupbox1)
         else:
             self.right_layout.removeWidget(self.time_step_interval)
             self.time_step_interval.deleteLater()
@@ -1765,6 +1733,7 @@ class ThirdSubWindow(QMainWindow):
         self.parent.show()
     def close_yaml(self):
         dict_file =self.dict_file
+        dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
         if self.time_step_interval and self.time_step_interval_24.isChecked():
             dict_file['forecast time step']= 24
         else:
@@ -2137,8 +2106,8 @@ class FinalWindow(QMainWindow):
         self.eight = QRadioButton("Extratropical cyclone activity")
         self.eight.setChecked(False) #8
 
-        self.nine = QRadioButton("EKE850-Z500 correlation")
-        self.nine.setChecked(False) #9
+        #self.nine = QRadioButton("EKE850-Z500 correlation")
+        #self.nine.setChecked(False) #9
 
         self.nine_two = QRadioButton("MJO")
         self.nine_two.setChecked(False) #12
@@ -2181,7 +2150,7 @@ class FinalWindow(QMainWindow):
                 right_layout.addWidget(self.sixth)
                 right_layout.addWidget(self.seventh)
                 right_layout.addWidget(self.eight)
-                right_layout.addWidget(self.nine)
+                #right_layout.addWidget(self.nine)
                 right_layout.addWidget(self.nine_two)
                 right_layout.addWidget(self.ten)
                 
@@ -2213,8 +2182,8 @@ class FinalWindow(QMainWindow):
                 if i==8:
                     right_layout.addWidget(self.eight)
                     
-                if i==9:
-                    right_layout.addWidget(self.nine)
+                #if i==9:
+                    #right_layout.addWidget(self.nine)
                     
                 if i==12:
                     right_layout.addWidget(self.nine_two)
@@ -2296,10 +2265,6 @@ class FinalWindow(QMainWindow):
         elif self.eight.isChecked():
             f=1
             self.win2 = eightResult(self,self.dict_file)
-            self.win2.show()
-        elif self.nine.isChecked():
-            f=1
-            self.win2 = ninthResult(self,self.dict_file)
             self.win2.show()
         elif self.nine_two.isChecked():
             f=1
@@ -3544,7 +3509,7 @@ class OutputWindow(QMainWindow):
             self.sixth.setChecked(True)
             self.seventh.setChecked(True)
             self.eight.setChecked(True)
-            self.nine.setChecked(True)
+            #self.nine.setChecked(True)
             self.nine_two.setChecked(True)
             self.ten.setChecked(True)
         else:
