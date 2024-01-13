@@ -7,6 +7,10 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 from datetime import timedelta
+import glob
+from fcst_utils import *
+from obs_utils import *
+import gc
 
 # ===============================================================================================
 def calc_lagged_composite(data, amp, phase, maxlag, minlag=0, nphases=8, obs=False):
@@ -237,4 +241,115 @@ def bootstrapSTRIPES(anoms, nboot, rmm, minlag, maxlag):
     stripes_boot = np.stack(stripes_boot)
     
     return stripes_boot
+# ===============================================================================================
+def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, varname, t0, t1):
+    '''
+        Compute the STRIPES index for observations and forecast data
+
+            Parameters
+                fc_dir: directory where forecasts are located
+                obs_dir: directory where observations are located
+                frmm: rmm file containing phase and amplitude information
+                varname: what the forecast variable is named in the files
+                t0: START_DATE (string)
+                t1: END_DATE (string)
+            Returns
+                stripes_obs: list of length 3 of xarray dataArrays of observed stripes index
+                stripes_fc: list of length 3 of xarray dataArrays of forecast stripes index
+
+    '''
     
+    lags = [[0,13],  # week 1-2
+            [7,20],  # week 2-3
+            [14,27]] # week 3-4
+
+    # -------- Open data --------
+    rmm = xr.open_dataset(frmm)
+
+    # forecast
+    files = np.sort(glob.glob(fc_dir))
+    fc = xr.open_mfdataset(files, combine='nested',
+                           concat_dim='time',parallel='true')[varname]
+
+    # obs
+    if varname == 'gh':
+        obs = xr.open_mfdataset(obs_dir).z/9.81
+        obs.attrs['units']='m'
+    if varname == 'prate':
+        # !!! Note: if observed precipitation data is not IMERG, then there
+        #           might be an issue reading the data (because of the name
+        #           of the variable) and also with units
+        obs = xr.open_mfdataset(obs_dir).precipitationCal
+        fc = fc*86400 # mm/s to mm/day
+    
+    # subset time
+    obs = obs.sel(time=slice(t0,t1))
+    # make sure obs is organized time x lat x lon
+    obs = obs.transpose('time','latitude','longitude')
+
+    # -------- Calculate anomalies --------
+    obs_anom=calcAnomObs(obs, varname)
+    obs_anom.attrs['units']=obs.units
+    del obs
+    gc.collect()
+
+    fc_anom = calcAnom(fc,varname)
+    # Reshape 1D time dimension of UFS anomalies to 2D
+    fc_anom = reshape_forecast(fc_anom, nfc=int(len(fc_anom.time)/len(files)))
+    del fc
+    gc.collect()
+
+    # -------- Subset RMM and forecast data to winter --------
+    rmm = rmm.sel(time=is_ndjfm(rmm['time.month']) & rmm.time.isin(fc_anom.time))
+    fc_anom=fc_anom.sel(time=is_ndjfm(fc_anom['time.month']))
+
+    # -------- Calculate STRIPES index --------
+    stripes_obs = []
+    stripes_fc = []
+    for minlag, maxlag in lags:
+
+        # ----- Obs -----
+        lagcomp = calc_lagged_composite(obs_anom,
+                                        rmm.amplitude > 1.0,
+                                        rmm.phase.values, 
+                                        maxlag = maxlag,
+                                        minlag = minlag, 
+                                        obs = True)
+        stripes=compSTRIPES(lagcomp.values, [5,6,7,8])
+        stripes_obs.append(xr.DataArray(stripes,
+                                        attrs={'long_name': 'STRIPES', 
+                                                'units': obs_anom.units},
+                                        dims=['latitude','longitude'],
+                                        coords={"latitude": obs_anom.latitude,
+                                                "longitude": obs_anom.longitude}))
+        del stripes
+        del lagcomp
+
+        # ----- Forecast -----
+        lagcomp = calc_lagged_composite(fc_anom,
+                                        rmm.amplitude > 1.0,
+                                        rmm.phase.values, 
+                                        maxlag = maxlag,
+                                        minlag = minlag, 
+                                        obs = False)
+        stripes=compSTRIPES(lagcomp.values, [5,6,7,8])
+        stripes=xr.DataArray(stripes, 
+                             attrs={'long_name': 'STRIPES', 
+                                    'units': obs_anom.units},
+                             dims=['latitude','longitude'],
+                             coords={"latitude": fc_anom.latitude,
+                                     "longitude": fc_anom.longitude})
+        # regrid if needed
+        if not len(fc_anom.latitude)==len(obs_anom.latitude):
+            stripes = regrid_scalar_spharm_AJ(stripes, 
+                                              stripes.latitude,
+                                              stripes.longitude,
+                                              obs_anom.latitude,
+                                              obs_anom.longitude)
+
+        stripes_fc.append(stripes)
+        del lagcomp
+        del stripes
+        gc.collect()
+        
+    return stripes_obs, stripes_fc
