@@ -6,11 +6,14 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 import yaml
+
 from PyQt5.QtCore import QObject, QThread, QRunnable,QThreadPool
 import os
 import time, sys
 import subprocess
 import shutil
+
+
 
 class StartWindow(QMainWindow):
     def __init__(self):
@@ -18,7 +21,7 @@ class StartWindow(QMainWindow):
         self.setWindowTitle('MJO Teleconnections Diagnostics')
         self.setGeometry(200, 100, 800, 400) #position and size
         self.show()
-        
+        self.setStyleSheet("QMainWindow{background: #262D37;color: #fff;}")
         ## Logo widget
         logo_image = QLabel(self)
         pixmap = QPixmap('logo1.jpg') 
@@ -31,6 +34,7 @@ class StartWindow(QMainWindow):
         ## Welcome label
         welcome_label = QLabel('Welcome to MJO Teleconnections Diagnostics', self)
         welcome_label.setAlignment(Qt.AlignCenter)
+        welcome_label.setStyleSheet("QLabel { font-weight: bold; color: white; }")
         
         ## Start button
         start = QPushButton('Start', self)
@@ -269,12 +273,13 @@ To run the package, the user needs to specify:
 
 
 ''')
+        help_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
         # Create the text widgets
         help_label.setWordWrap(True) 
         dir_in_label = QLabel('DIR_IN:', self)
         self.dir_in_text = QLineEdit(self)
-        self.dir_in_text.setProperty("mandatoryField", False)
+        #self.dir_in_text.setProperty("mandatoryField", True)
         start_date_label = QLabel('START_DATE:', self)
         self.start_date_text = QLineEdit(self)
         #calendar = QCalendarWidget(self)
@@ -283,8 +288,10 @@ To run the package, the user needs to specify:
         self.imerg = True
         end_date_label = QLabel('END_DATE:', self)
         self.end_date_text = QLineEdit(self)
+
         lengthFor = QLabel('Length of the forecasts (in days):', self)
         self.lengthFor_text = QLineEdit(self)
+
         num_ensm_label = QLabel('Number of ensembles:', self)
         self.num_ensm = QLineEdit(self)
         num_initial_dates = QLabel('Number of initial dates:', self)
@@ -393,13 +400,8 @@ To run the package, the user needs to specify:
             self.era = True
         else:
             self.era = False
+    
 
-    def onIMERGClicked(self):
-        radioButton = self.sender()
-        if radioButton.isChecked():
-            self.era = True
-        else:
-            self.era = False
 
 
     def open_second_window(self):
@@ -429,8 +431,6 @@ To run the package, the user needs to specify:
         if num_exp != num_given:
             QMessageBox.warning(self,"Number of initial dates should match the give number","Please enter "+str(num_exp)+" initial date(s)")
             return
-        
-
         dict_file=self.dict_file
         dict_file['DIR_IN'] = self.dir_in_text.text()
         dict_file['START_DATE:']= self.start_date_text.text()
@@ -451,7 +451,6 @@ To run the package, the user needs to specify:
         self.second_window = modelInformation(self,self.dir_in_text.text(),self.era,dict_file)
         self.second_window.showMaximized()
         self.hide()
-
     def closee(self):
         self.close()
         self.parent.show()
@@ -722,7 +721,7 @@ class SecondWindow(QMainWindow):
         self.dirin=dirin
         but = QPushButton('Next', self)
         but.setFixedSize(70,30)
-        but.clicked.connect(self.openThirdWindow)
+        but.clicked.connect(self.openSelectDiagWindow)
 
         
 
@@ -749,7 +748,7 @@ class SecondWindow(QMainWindow):
 
         but = QPushButton('Next', self)
         but.setFixedSize(70,30)
-        but.clicked.connect(self.openThirdWindow)
+        but.clicked.connect(self.openSelectDiagWindow)
 
         self.groupbox = QGroupBox()
         vbox = QVBoxLayout()
@@ -838,7 +837,7 @@ class SecondWindow(QMainWindow):
             self.groupbox.setParent(None)
 
 
-    def openThirdWindow(self):
+    def openSelectDiagWindow(self):
         dict_file=self.dict_file
         if self.dailyAnomaly:
             dict_file['Daily Anomaly:'] = True
@@ -853,7 +852,7 @@ class SecondWindow(QMainWindow):
         dict_file['Path to zonal wind at 200 hPa data files:'] = self.zonalpath200T.text()
 
         
-        self.third_window = ThirdWindow(self,self.dirin,self.era,dict_file)
+        self.third_window = SelectDiagWindow(self,self.dirin,self.era,dict_file)
         self.third_window.showMaximized()
         self.hide()
         
@@ -872,7 +871,7 @@ class SecondWindow(QMainWindow):
 
 
 
-class ThirdWindow(QMainWindow):
+class SelectDiagWindow(QMainWindow):
     def __init__(self,parent,dirin,era,dict_file):
         super().__init__()
         #self.setupUi(self)
@@ -909,8 +908,8 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         self.all.setChecked(False)
         self.all.stateChanged.connect(self.method)
 
-        self.first = QCheckBox("STRIPES Index for geopotential height")
-        self.first.setChecked(False)
+        self.stripesgeopot = QCheckBox("STRIPES Index for geopotential height")
+        self.stripesgeopot.setChecked(False)
 
         self.second = QCheckBox("STRIPES Index for precipitation")
         self.second.setChecked(False)
@@ -963,7 +962,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         # Create a layout for the right half (text widgets and button)
         right_layout = QVBoxLayout()
         right_layout.addWidget(self.all)
-        right_layout.addWidget(self.first)
+        right_layout.addWidget(self.stripesgeopot)
         right_layout.addWidget(self.second)
         right_layout.addWidget(self.third)
         right_layout.addWidget(self.third_2)
@@ -1013,7 +1012,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         if(self.all.isChecked()):
             selected.append(0)
         else:
-            if self.first.isChecked():
+            if self.stripesgeopot.isChecked():
                 selected.append(1)
             if self.second.isChecked():
                 selected.append(2)
@@ -1056,7 +1055,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         # printing the checked status
         if checked:
             self.all.setChecked(True)
-            self.first.setChecked(True)
+            self.stripesgeopot.setChecked(True)
             self.second.setChecked(True)
             self.third.setChecked(True)
             self.third_2.setChecked(True)
@@ -1070,7 +1069,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.ten.setChecked(True)
         else:
             self.all.setChecked(False)
-            self.first.setChecked(False)
+            self.stripesgeopot.setChecked(False)
             self.second.setChecked(False)
             self.third.setChecked(False)
             self.third_2.setChecked(False)
@@ -1102,6 +1101,7 @@ class ThirdSubWindow(QMainWindow):
         #weather_image = QLabel(self)
         #pixmap = QPixmap('weather.jpg') 
         self.threadpool = QThreadPool()
+        
         help_label = QLabel('''
         DIR_IN: Please enter the input data directory path
         START_DATE: Please enter the start date
@@ -1328,7 +1328,41 @@ class ThirdSubWindow(QMainWindow):
         self.time_step_interval_24.setChecked(True)
         vbox.addWidget(self.time_step_interval_24)
 
-        diag_help_texts = ['']*12
+        diag_help_texts = ['']*13
+
+        diag_help_texts[1] = '''
+        Help text for STRIPES Index for geopotential height
+        '''
+        diag_help_texts[2] = '''
+        Help text for STRIPES Index for precipitation
+'''
+        diag_help_texts[3] = '''
+        Help text for Pattern CC over the PNA region
+'''
+        diag_help_texts[4] = '''
+        Help text for Fraction of the observed STRIPES index for geopotential height
+'''
+        diag_help_texts[5] = '''
+        Help text for Relative amplitude over PNA?
+'''
+        diag_help_texts[6] = '''
+        Help text for Stratospheric pathway
+'''
+        diag_help_texts[7] = '''
+        Help text for Histogram of 10 hPa zonal wind
+'''
+        diag_help_texts[8] = '''
+        Help text for Extratropical cyclone activity
+'''
+        diag_help_texts[10] = '''
+        Help text for Surface air temperature
+'''
+        diag_help_texts[11] = '''
+        Help text for Pattern CC over the Euro-Atlantic sector
+'''
+        diag_help_texts[12] = '''
+        Help text for MJO
+'''
 
         # Path to T2m data files:
         t2ms = []
@@ -1389,10 +1423,11 @@ class ThirdSubWindow(QMainWindow):
         showRes = QPushButton('Show results', self)
         showRes.setFixedSize(100,30)
         showRes.clicked.connect(self.showResults)
-        
+        helptext=''''''
         rendered=[]
         if(len(selected)>=1):
             if (selected[0]==0):
+                helptext+='\n'.join(diag_help_texts)
                 rendered.append('z500T')
                 for i in range(num_dates):
                     right_layout.addWidget(z500s[i])
@@ -1480,6 +1515,7 @@ class ThirdSubWindow(QMainWindow):
 
             else:
                 if 1 in selected:
+                    helptext+=diag_help_texts[1]+'\n\n'
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1490,6 +1526,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(self.z500Tobs)
             
                 if 2 in selected:
+                    helptext+=diag_help_texts[2]+'\n\n'
                     if 'precDataT' not in rendered:
                         rendered.append('precDataT')
                         for i in range(num_dates):
@@ -1500,6 +1537,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(self.precDataTobs)
 
                 if 3 in selected or 11 in selected: #Fraction of the observed STRIPES
+                    helptext+=diag_help_texts[3]+'\n\n'
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1515,6 +1553,7 @@ class ThirdSubWindow(QMainWindow):
 
                     
                 if 4 in selected: #Pattern CC over
+                    helptext+=diag_help_texts[4]+'\n\n'
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1528,6 +1567,7 @@ class ThirdSubWindow(QMainWindow):
             
                 
                 if 5 in selected: #relative amplitude over PNA
+                    helptext+=diag_help_texts[5]+'\n\n'
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1538,6 +1578,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(self.z500Tobs)
                     
                 if 6 in selected:
+                    helptext+=diag_help_texts[6]+'\n\n'
                     if 'z500T' not in rendered:
                         rendered.append('z500T')
                         for i in range(num_dates):
@@ -1547,6 +1588,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(z500obs)
                             right_layout.addWidget(self.z500Tobs)
                     if 'z100T' not in rendered:
+                        
                         rendered.append('z100T')
                         for i in range(num_dates):
                             right_layout.addWidget(z100s[i])
@@ -1556,6 +1598,7 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(self.z100Tobs)
 
                     if 'meridionalwind500T' not in rendered:
+                        
                         rendered.append('meridionalwind500T')
                         for i in range(num_dates):
                             right_layout.addWidget(meridionalwind500s[i])
@@ -1588,6 +1631,7 @@ class ThirdSubWindow(QMainWindow):
                     
 
                 if 7 in selected: #histogram of 10hpa zonal wind
+                    helptext+=diag_help_texts[7]+'\n\n'
                     if 'zonalwind10T' not in rendered:
                         rendered.append('zonalwind10T')
                         for i in range(num_dates):
@@ -1599,6 +1643,7 @@ class ThirdSubWindow(QMainWindow):
                     
 
                 if 8 in selected: #Extratropical cyclone activity
+                    helptext+=diag_help_texts[8]+'\n\n'
                     rendered.append('dailyMean')
                     right_layout.addWidget(daily_mean_values_label)
                     right_layout.addWidget(groupbox)
@@ -1632,6 +1677,7 @@ class ThirdSubWindow(QMainWindow):
 
                     
                 if 10 in selected:
+                    helptext+=diag_help_texts[10]+'\n\n'
                     rendered.append('t2mT')
                     for i in range(num_dates):
                         right_layout.addWidget(t2ms[i])
@@ -1640,6 +1686,7 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(t2mobs)
                         right_layout.addWidget(self.t2mTobs)
                 if 12 in selected:
+                    helptext+=diag_help_texts[12]+'\n\n'
                     rendered.append('dirOLR') #doesn't have a yaml entry
                     right_layout.addWidget(dir_OLR_label)
                     right_layout.addWidget(self.olrDataFiles)
@@ -1667,6 +1714,8 @@ class ThirdSubWindow(QMainWindow):
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
+
+        help_label = QLabel(helptext)
 
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
@@ -1854,10 +1903,7 @@ class ThirdSubWindow(QMainWindow):
             #command='cd ..; cd T2m_composites; python t2m_composites.py & python t2m_composites.py & python t2m_composites.py'
             #self.ret = subprocess.Popen(command,  shell=True)
         
-        
-        
-        
-        
+      
     def showResults(self):
         QMessageBox.information(self, "Process Finished", "Process execution done!")
         self.nextwindow=FinalWindow(self,self.selected,self.dict_file)
@@ -2079,8 +2125,8 @@ class FinalWindow(QMainWindow):
         weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         '''
         help_label.setWordWrap(True)
-        self.first = QRadioButton("STRIPES Index for geopotential height")
-        self.first.setChecked(False) # 1
+        self.stripesgeopot = QRadioButton("STRIPES Index for geopotential height")
+        self.stripesgeopot.setChecked(False) # 1
 
         self.second = QRadioButton("STRIPES Index for precipitation")
         self.second.setChecked(False) #2
@@ -2141,7 +2187,7 @@ class FinalWindow(QMainWindow):
         for i in selected:
             if i == 0:
 
-                right_layout.addWidget(self.first)
+                right_layout.addWidget(self.stripesgeopot)
                 right_layout.addWidget(self.second)
                 right_layout.addWidget(self.third)
                 right_layout.addWidget(self.third_2)
@@ -2156,7 +2202,7 @@ class FinalWindow(QMainWindow):
                 
             else:
                 if i == 1:
-                    right_layout.addWidget(self.first)
+                    right_layout.addWidget(self.stripesgeopot)
                     
                 if i == 2:
                     right_layout.addWidget(self.second)
@@ -2180,18 +2226,13 @@ class FinalWindow(QMainWindow):
                     right_layout.addWidget(self.seventh)
                     
                 if i==8:
-                    right_layout.addWidget(self.eight)
-                    
+                    right_layout.addWidget(self.eight)   
                 #if i==9:
-                    #right_layout.addWidget(self.nine)
-                    
+                    #right_layout.addWidget(self.nine)    
                 if i==12:
-                    right_layout.addWidget(self.nine_two)
-                    
+                    right_layout.addWidget(self.nine_two)   
                 if i==10:
                     right_layout.addWidget(self.ten)
-                    
-
         right_layout.addStretch() 
         right_layout.addWidget(next,alignment=Qt.AlignRight)
         #right_layout.addWidget(but,alignment=Qt.AlignRight)
@@ -2229,7 +2270,7 @@ class FinalWindow(QMainWindow):
     def showResults(self):
         #self.hide()
         f=0
-        if self.first.isChecked():
+        if self.stripesgeopot.isChecked():
             #open new window
             f=1
             self.win1 = firstResult(self,self.dict_file)
@@ -3500,7 +3541,7 @@ class OutputWindow(QMainWindow):
         # printing the checked status
         if checked:
             self.all.setChecked(True)
-            self.first.setChecked(True)
+            self.stripesgeopot.setChecked(True)
             self.second.setChecked(True)
             self.third.setChecked(True)
             self.third_2.setChecked(True)
@@ -3518,6 +3559,18 @@ class OutputWindow(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
+def set_text_selectable_recursive(widget):
+    if isinstance(widget, (QLabel,QLineEdit)):
+        widget.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
+    for child_widget in widget.findChildren(QWidget):
+        set_text_selectable_recursive(child_widget)
+
+def set_text_selectable_for_all_windows():
+    app = QApplication.instance()
+    if app is not None:
+        for top_level_widget in app.topLevelWidgets():
+            set_text_selectable_recursive(top_level_widget)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -3554,13 +3607,8 @@ if __name__ == "__main__":
                 subcontrol-position: top;
                 subcontrol-origin: margin;
             }
-        QWidget{
-            background: #262D37;
-        }
         
-        QLabel{
-            color: #fff;
-        }
+       
 
         QLabel#round_count_label, QLabel#highscore_count_label{
             border: 1px solid #fff;
@@ -3570,7 +3618,7 @@ if __name__ == "__main__":
         }
         QPushButton
         {
-            color: white;
+            color: black;
             background: #0577a8;
             border: 1px #DADADA solid;
             padding: 5px 10px;
@@ -3579,28 +3627,7 @@ if __name__ == "__main__":
             outline: none;
         }
         
-        QRadioButton,QCheckBox{
-            color:white;
-            font-weight: bold;
-        }
-        QRadioButton::indicator, QCheckBox::indicator{
-        background-color: white; 
-        border: 2px solid white;
-        border-radius: 6px;
-        width: 10px; 
-        height: 10px;
-    }
-    QCheckBox::indicator
-    {
-    border-radius: 50%;
-    }
-    QCheckBox::indicator:checked
-    {
-    border-image : url(check.png);
-    }
-    QRadioButton::indicator:checked, QCheckBox::indicator:checked {
-        background-color: gray; /* Change background color when checked */
-    }
+        
         QPushButton:hover{
             border: 1px #C6C6C6 solid;
             color: #fff;
@@ -3608,14 +3635,16 @@ if __name__ == "__main__":
         }
         QLineEdit {
             padding: 1px;
-            color: #fff;
+            color: black;
             border-style: solid;
             border: 2px solid #fff;
             border-radius: 8px;
         }
 
     """
+     
     app.setStyleSheet(style)
     entry_window = StartWindow()
     entry_window.show()
+    set_text_selectable_for_all_windows()
     sys.exit(app.exec())
