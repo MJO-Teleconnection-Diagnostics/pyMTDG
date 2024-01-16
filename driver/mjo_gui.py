@@ -3559,18 +3559,7 @@ class OutputWindow(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-def set_text_selectable_recursive(widget):
-    if isinstance(widget, (QLabel,QLineEdit)):
-        widget.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
-    for child_widget in widget.findChildren(QWidget):
-        set_text_selectable_recursive(child_widget)
-
-def set_text_selectable_for_all_windows():
-    app = QApplication.instance()
-    if app is not None:
-        for top_level_widget in app.topLevelWidgets():
-            set_text_selectable_recursive(top_level_widget)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -3646,5 +3635,4 @@ if __name__ == "__main__":
     app.setStyleSheet(style)
     entry_window = StartWindow()
     entry_window.show()
-    set_text_selectable_for_all_windows()
     sys.exit(app.exec())
