@@ -1347,7 +1347,7 @@ class ThirdSubWindow(QMainWindow):
         Help text for Extratropical cyclone activity
 '''
         diag_help_texts[10] = '''
-        Help text for Surface air temperature
+* Path to T2m model data files for date D or DD: complete the full path and names of files containing daily mean (if daily anomalies are need to be computed) or daily anomalies (if daily anomalies are provided) for the initial condition corresponding to date D or DD. E.g., for the forecasts initialized on 1st of the month: /project/$user/$user_dir/file_name_*01.nc or /project/$user/$user_dir/file_name_*.nc; for forecasts initialized on the 15th of the month: /project/$user/$user_dir/file_name_*15 or /project/$user/$user_dir/file_name_*.nc.
 '''
         diag_help_texts[11] = '''
         Help text for Pattern CC over the Euro-Atlantic sector
