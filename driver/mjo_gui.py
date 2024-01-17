@@ -6,14 +6,11 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 import yaml
-
 from PyQt5.QtCore import QObject, QThread, QRunnable,QThreadPool
 import os
 import time, sys
 import subprocess
 import shutil
-
-
 
 class StartWindow(QMainWindow):
     def __init__(self):
@@ -489,29 +486,6 @@ The package can be applied to one forecast model. The name of the model will ape
         model_label = QLabel('Model name:', self)
         self.model_name = QLineEdit(self)
 
-        '''#Are the model data daily-mean values? (Otherwise the data are instantaneous values)
-        daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
-        groupbox = QGroupBox()
-        vbox = QVBoxLayout()
-        groupbox.setLayout(vbox)
-        self.daily_mean_values_yes = QRadioButton("Yes")
-        self.daily_mean_values_yes.setChecked(True)
-        vbox.addWidget(self.daily_mean_values_yes )
-        self.daily_mean_values_no = QRadioButton("No")
-        self.daily_mean_values_no.toggled.connect(self.clickedNo)
-        vbox.addWidget(self.daily_mean_values_no)
-
-        #If "No" in 1, what is the forecast time step interval in the model data?
-        self.time_step_interval = QLabel('What is the forecast time step interval in the model data?', self)
-        self.groupbox1 = QGroupBox()
-        vbox = QVBoxLayout()
-        self.groupbox1.setLayout(vbox)
-        self.time_step_interval_6 = QRadioButton("6")
-        
-        vbox.addWidget(self.time_step_interval_6)
-        self.time_step_interval_24 = QRadioButton("24")
-        self.time_step_interval_24.setChecked(True)
-        vbox.addWidget(self.time_step_interval_24)'''
 
         #Does the model data include the initial conditions?
         self.initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
@@ -1114,23 +1088,24 @@ class ThirdSubWindow(QMainWindow):
         Use IMERG for validation: Please check this box if IMERG is used for validation
                             ''')
         help_label.setWordWrap(True)
-        
         self.dirin = dirin
         pref = self.dirin+"/"
         prefix = self.dirin+"/OBS/"
         
+        self.pref=pref 
+        self.prefix = prefix
         #change labels correctly.
 
         self.scroll = QScrollArea()             # Scroll Area which contains the widgets, set as the centralWidget
         self.widget = QWidget()                 # Widget that contains the collection of Vertical Box
         right_layout = QVBoxLayout()
-
         num_dates = dict_file['Number of initial dates:']
         dates = dict_file['Initial dates:' ]
-        
-
+        self.dates = dates
         self.num_dates = num_dates
         # Path to Z500 data files:
+        self.num_dates = num_dates
+        self.era=era
         z500s=[]
         self.z500Ts = []
         self.z500Tobss = []
@@ -1154,6 +1129,26 @@ class ThirdSubWindow(QMainWindow):
         self.olrDataFiles = QLineEdit(self)
         self.olrDataFiles.setText(prefix)
         self.olrDataFiles.setCursorPosition(len(prefix))
+
+        #Path to Extratropical z500 data files
+        self.Ez500s=[]
+        self.Ez500Ts = []
+        self.Ez500Tobss = []
+
+        for i in range(num_dates):
+            self.Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files for date {self.dates[i]}:', self)
+            self.Ez500T = QLineEdit(self)
+            self.Ez500T.setText(pref)
+            self.Ez500T.setCursorPosition(len(pref))
+
+            self.Ez500s.append(self.Ez500)
+            self.Ez500Ts.append(self.Ez500T)
+         
+        
+        self.Ez500obs = QLabel(f'Path to Extratropical Cyclone Activity Z500 observational data files:', self)
+        self.Ez500Tobs = QLineEdit(self)
+        self.Ez500Tobs.setText(prefix)
+        self.Ez500Tobs.setCursorPosition(len(prefix))
 
 
         # Path to Z100 data files:
@@ -1292,9 +1287,6 @@ class ThirdSubWindow(QMainWindow):
             self.temperature500T = QLineEdit(self)
             self.temperature500T.setText(pref)
             self.temperature500T.setCursorPosition(len(pref))
-
-            
-
             temperature500s.append(temperature500)
             self.temperature500Ts.append(self.temperature500T)
             
@@ -1428,6 +1420,9 @@ class ThirdSubWindow(QMainWindow):
         if(len(selected)>=1):
             if (selected[0]==0):
                 helptext+='\n'.join(diag_help_texts)
+                rendered.append('dailyMean')
+                right_layout.addWidget(daily_mean_values_label)
+                right_layout.addWidget(groupbox)
                 rendered.append('z500T')
                 for i in range(num_dates):
                     right_layout.addWidget(z500s[i])
@@ -1514,6 +1509,37 @@ class ThirdSubWindow(QMainWindow):
                     right_layout.addWidget(self.precDataTobs)
 
             else:
+                if 8 in selected: #Extratropical cyclone activity
+                    helptext+=diag_help_texts[8]+'\n\n'
+                    rendered.append('dailyMean')
+                    right_layout.addWidget(daily_mean_values_label)
+                    right_layout.addWidget(groupbox)
+                    if 'zonalwind850T' not in rendered:
+                        rendered.append('zonalwind850T')
+                        for i in range(num_dates):
+                            right_layout.addWidget(zonalwind850s[i])
+                            right_layout.addWidget(self.zonalwind850Ts[i])
+                        if era == False:
+                            right_layout.addWidget(zonalwind850obs)
+                            right_layout.addWidget(self.zonalwind850Tobs)
+                    if 'z500T' not in rendered:
+                        rendered.append('z500T')
+                        for i in range(num_dates):
+                            right_layout.addWidget(z500s[i])
+                            right_layout.addWidget(self.z500Ts[i])
+                        if era == False:
+                            right_layout.addWidget(z500obs)
+                            right_layout.addWidget(self.z500Tobs)
+                    if 'meridionalwind850T' not in rendered:
+                        rendered.append('meridionalwind850T')
+                        for i in range(num_dates):
+                            right_layout.addWidget(meridionalwind850s[i])
+                            right_layout.addWidget(self.meridionalwind850Ts[i])
+                        if era == False:
+                            right_layout.addWidget(meridionalwind850obs)
+                            right_layout.addWidget(self.meridionalwind850Tobs)
+                    
+                    
                 if 1 in selected:
                     helptext+=diag_help_texts[1]+'\n\n'
                     if 'z500T' not in rendered:
@@ -1549,9 +1575,7 @@ class ThirdSubWindow(QMainWindow):
 
                     right_layout.addWidget(weeks)
                     right_layout.addWidget(self.selectweeks)
-            
 
-                    
                 if 4 in selected: #Pattern CC over
                     helptext+=diag_help_texts[4]+'\n\n'
                     if 'z500T' not in rendered:
@@ -1625,11 +1649,6 @@ class ThirdSubWindow(QMainWindow):
                             right_layout.addWidget(zonalwind10obs)
                             right_layout.addWidget(self.zonalwind10Tobs)
 
-
-
-
-                    
-
                 if 7 in selected: #histogram of 10hpa zonal wind
                     helptext+=diag_help_texts[7]+'\n\n'
                     if 'zonalwind10T' not in rendered:
@@ -1640,40 +1659,6 @@ class ThirdSubWindow(QMainWindow):
                         if era == False:
                             right_layout.addWidget(zonalwind10obs)
                             right_layout.addWidget(self.zonalwind10Tobs)
-                    
-
-                if 8 in selected: #Extratropical cyclone activity
-                    helptext+=diag_help_texts[8]+'\n\n'
-                    rendered.append('dailyMean')
-                    right_layout.addWidget(daily_mean_values_label)
-                    right_layout.addWidget(groupbox)
-                    if 'zonalwind850T' not in rendered:
-                        rendered.append('zonalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind850s[i])
-                            right_layout.addWidget(self.zonalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind850obs)
-                            right_layout.addWidget(self.zonalwind850Tobs)
-                    
-                    if 'meridionalwind850T' not in rendered:
-                        rendered.append('meridionalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(meridionalwind850s[i])
-                            right_layout.addWidget(self.meridionalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(meridionalwind850obs)
-                            right_layout.addWidget(self.meridionalwind850Tobs)
-                    
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-
 
                     
                 if 10 in selected:
@@ -1706,9 +1691,12 @@ class ThirdSubWindow(QMainWindow):
                         if era == False:
                             right_layout.addWidget(zonalwind200obs)
                             right_layout.addWidget(self.zonalwind200Tobs)  
+                
+                    
+
         self.right_layout = right_layout        
         self.selected=selected       
-        right_layout.addStretch()
+        self.right_layout.addStretch()
         #right_layout.addWidget(but,alignment=Qt.AlignRight)    
 
         back = QPushButton('Back', self)
@@ -1757,7 +1745,7 @@ class ThirdSubWindow(QMainWindow):
     def clickedNo(self):
         radioButton = self.sender()
         if radioButton.isChecked():
-            if not self.time_step_interval or not self.groupbox1:
+            if not self.time_step_interval or not self.groupbox1 or not self.Ez500T:
                 self.time_step_interval = QLabel('What is the forecast time step interval in the model data?', self)
                 self.groupbox1 = QGroupBox()
                 vbox = QVBoxLayout()
@@ -1767,8 +1755,35 @@ class ThirdSubWindow(QMainWindow):
                 self.time_step_interval_24 = QRadioButton("24")
                 self.time_step_interval_24.setChecked(True)
                 vbox.addWidget(self.time_step_interval_24)
+                self.Ez500s=[]
+                self.Ez500Ts = []
+                self.Ez500Tobss = []
+
+                for i in range(self.num_dates):
+                    self.Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files for date {self.dates[i]}:', self)
+                    self.Ez500T = QLineEdit(self)
+                    self.Ez500T.setText(self.pref)
+                    self.Ez500T.setCursorPosition(len(self.pref))
+
+                    self.Ez500s.append(self.Ez500)
+                    self.Ez500Ts.append(self.Ez500T)
+                
+        
+                self.Ez500obs = QLabel(f'Path to Extratropical Cyclone Activity Z500 observational data files:', self)
+                self.Ez500Tobs = QLineEdit(self)
+                self.Ez500Tobs.setText(self.prefix)
+                self.Ez500Tobs.setCursorPosition(len(self.prefix))
+
+            for i in range(self.num_dates):
+                self.right_layout.addWidget(self.Ez500s[i])
+                self.right_layout.addWidget(self.Ez500Ts[i])
+            if self.era == False:
+                self.right_layout.addWidget(self.Ez500obs)
+                self.right_layout.addWidget(self.Ez500Tobs)
+    
             self.right_layout.insertWidget(2,self.time_step_interval)
             self.right_layout.insertWidget(3,self.groupbox1)
+            self.right_layout.addStretch()
         else:
             self.right_layout.removeWidget(self.time_step_interval)
             self.time_step_interval.deleteLater()
@@ -1776,6 +1791,18 @@ class ThirdSubWindow(QMainWindow):
             self.right_layout.removeWidget(self.groupbox1)
             self.groupbox1.deleteLater()
             self.groupbox1 = None
+
+            for i in range(self.num_dates):
+                self.right_layout.removeWidget(self.Ez500s[i])
+                self.Ez500s[i].deleteLater()
+                self.right_layout.removeWidget(self.Ez500Ts[i])
+                self.Ez500Ts[i].deleteLater()
+            self.Ez500T = None
+            if self.era == False:
+                self.right_layout.removeWidget(self.Ez500obs)
+                self.Ez500obs[i].deleteLater()
+                self.right_layout.removeWidget(self.Ez500Tobs)
+                self.Ez500Tobs[i].deleteLater()
     
     def closee(self):
         self.close()
@@ -2449,13 +2476,9 @@ class nine_twoResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
         
