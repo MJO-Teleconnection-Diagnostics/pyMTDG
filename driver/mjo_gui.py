@@ -1704,7 +1704,7 @@ class ThirdSubWindow(QMainWindow):
         back.clicked.connect(self.closee)
 
         help_label = QLabel(helptext)
-
+        help_label.setWordWrap(True)
         # Create a layout for the left half (weather image)
         left_layout = QVBoxLayout()
         left_layout.addWidget(help_label)
