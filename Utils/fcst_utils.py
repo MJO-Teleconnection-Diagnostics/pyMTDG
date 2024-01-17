@@ -3,6 +3,7 @@
 import numpy as np
 import xarray as xr
 import spharm
+import _spherepack
 
 def calcAnom(ds,anom_name):
     # Save the original dates 
