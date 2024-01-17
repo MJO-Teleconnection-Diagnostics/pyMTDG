@@ -2,6 +2,7 @@ import xarray as xr
 import numpy as np
 import netCDF4
 import Ngl
+import spharm
 
 import glob
 import os
@@ -55,14 +56,21 @@ Model_z500_files             = yml_input [ 'Path to z500 date files' ]
 #Smooth_climatology           = False
 #ERAI                         = True
 if ERAI :
-    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
+#    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+#    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+#    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
+    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/u850.19790101-20190831.nc"
+    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
+    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
 
 #Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
 #Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
 #Model_z500_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.6hourly.nc" ]
+#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/u.850-isobaricInhPa.*.f000-840.nc" ]
+#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/v.850-isobaricInhPa.*.f000-840.nc" ]
+#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/gh.500-isobaricInhPa.*.f000-840.nc" ]
 Model_z500_varname = "z"
+#Model_z500_varname = "gh"
 
 if RMM :
     RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
@@ -109,7 +117,7 @@ if not os.path.isdir ( plot_dir ) :
 #Model_z500_files = "/data0/czheng/ECMWF/ECMWF_z_*.nc"
 #Model_z500_varname = "gh"
 
-RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
+#RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
 
 ###### Pre-set parameters
 total_weeks = 4
@@ -138,6 +146,16 @@ else :
     time_step_per_24h = 24 // Forecast_time_step_interval
 if Ensemble_size == 1 : Multiple_Ensemble_Members = False
 else: Multiple_Ensemble_Members = True
+
+###### Get Reanalysis lat,lon
+ERA_u850_file_in = xr.open_dataset ( ERA_u850_file )
+reanalysis_lat_in = np.array ( ERA_u850_file_in [ "latitude" ] )
+reanalysis_lon_in = np.array ( ERA_u850_file_in [ "longitude" ] )
+ERA_u850_file_in.close ( )
+delta_reanalysis_lat = reanalysis_lat_in [ 1 ] - reanalysis_lat_in [ 0 ]
+delta_reanalysis_lon = reanalysis_lon_in [ 1 ] - reanalysis_lon_in [ 0 ]
+dim_reanalysis_lat = len ( reanalysis_lat_in )
+dim_reanalysis_lon = len ( reanalysis_lon_in )
 
 ###### Read model u,v data
 model_u_file_list = glob.glob ( Model_u850_files [ 0 ] )
@@ -200,7 +218,8 @@ yyyymmdd_list = convert_ymdh_to_ymd_list ( yyyymmddhh_list )
 if INCLUDE_HOUR : files_dates_list = yyyymmddhh_list
 else : files_dates_list = yyyymmdd_list
 v_files_head = Model_v850_files [ 0 ].split ( "*" , 1 )
-#read the first model file to get lat and lon dimension
+
+######read the first model u file to get lat and lon dimension
 if Multiple_Ensemble_Members : ens_string = "_e00"
 else : ens_string = ""
 model_u850_file0 = xr.open_dataset ( u_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + u_files_head [ 1 ] )
@@ -210,12 +229,42 @@ model_lat_in = get_model_latitude ( model_u850_file0 , model_u850_in_dim )
 model_lon_in = get_model_longitude ( model_u850_file0 , model_u850_in_dim )
 model_u850_file0.close ( )
 model_input_u = np.array ( model_u850_in )
-#read model data and calculate eke anomaly
-model_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=model_input_u.dtype )
+
+######regrid set-up
+delta_model_lat = model_lat_in [ 1 ] - model_lat_in [ 0 ]
+delta_model_lon = model_lon_in [ 1 ] - model_lon_in [ 0 ]
+dim_model_lat = len ( model_lat_in )
+dim_model_lon = len ( model_lon_in )
+REGRID_MODEL = False
+REGRID_REANALYSIS = False
+if dim_model_lat > dim_reanalysis_lat :
+    REGRID_MODEL = True
+elif dim_model_lat < dim_reanalysis_lat :
+    REGRID_REANALYSIS = True
+else:
+    if dim_model_lon > dim_reanalysis_lon :
+        REGRID_MODEL = True
+    elif dim_model_lon < dim_reanalysis_lon :
+        REGRID_REANALYSIS = True
+if delta_model_lat * delta_reanalysis_lat < 0 : REVERSE_REANALYSIS_LAT = True
+else : REVERSE_REANALYSIS_LAT = False
+if REGRID_MODEL :
+    ingrid = spharm.Spharmt ( len ( model_lon_in ) , len ( model_lat_in ) , gridtype='regular' )
+    outgrid = spharm.Spharmt ( len ( reanalysis_lon_in ) , len ( reanalysis_lat_in ) , gridtype='regular' )
+    data_lat_in = reanalysis_lat_in
+    data_lon_in = reanalysis_lon_in
+else:
+    ingrid = spharm.Spharmt ( len ( reanalysis_lon_in ) , len ( reanalysis_lat_in ) , gridtype='regular' )
+    outgrid = spharm.Spharmt ( len ( model_lon_in ) , len ( model_lat_in ) , gridtype='regular' )
+    data_lat_in = model_lat_in
+    data_lon_in = model_lon_in
+
+######read model u,v data and calculate eke anomaly
+model_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_input_u.dtype )
 del ( model_input_u )
 del ( model_u850_in )
 for week_n in range ( total_weeks ) :
-    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , model_lat_in , model_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology )
+    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , REGRID_MODEL , ingrid , outgrid )
 
 ###### Read model z500 data
 #potential issue with data type of z500,uv850
@@ -228,20 +277,20 @@ model_z500_file0 = xr.open_dataset ( z_files_head [ 0 ] + str ( files_dates_list
 model_z500_in = model_z500_file0 [ Model_z500_varname ]
 model_z500_file0.close ( )
 model_input_z = np.array ( model_z500_in )
-model_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=model_input_z.dtype )
+model_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_input_z.dtype )
 del ( model_input_z )
 del ( model_z500_in )
 for week_n in range ( total_weeks ) :
-    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , model_lat_in , model_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data )
+    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data , REGRID_MODEL , ingrid , outgrid )
 
 ##### read reanalysis data for eke
 #potential issue with data type of erai/reanalysis
 if ERAI :
-    reanlaysis_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=model_eke850_forecast_anomaly.dtype )
-    reanlaysis_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
+    reanlaysis_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_eke850_forecast_anomaly.dtype )
+    reanlaysis_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
     for week_n in range ( total_weeks ) :
-        reanlaysis_eke850_forecast_anomaly [ : , week_n , : , : ] = get_erai_weekly_eke_anomaly ( ERA_u850_file , ERA_v850_file , yyyymmddhh_list , week_n , model_lat_in , model_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , ERAI_timesteps_per_day )
-        reanlaysis_z500_forecast_anomaly [ : , week_n , : , : ] = get_erai_weekly_z500_anomaly ( ERA_z500_file , yyyymmddhh_list , week_n , model_lat_in , model_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , ERAI_timesteps_per_day )
+        reanlaysis_eke850_forecast_anomaly [ : , week_n , : , : ] = get_erai_weekly_eke_anomaly ( ERA_u850_file , ERA_v850_file , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , ERAI_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT )
+        reanlaysis_z500_forecast_anomaly [ : , week_n , : , : ] = get_erai_weekly_z500_anomaly ( ERA_z500_file , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , ERAI_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT )
 
 ##### read rmm index
 rmm_file = xr.open_dataset ( RMM_ERA_file )
@@ -258,10 +307,10 @@ rmm_file.close ( )
 rmm_list = get_rmm_composite_list ( phase_names , yyyymmdd_list , rmm_yyyymmdd , rmm_phase_in , rmm_amplitude_in , compoiste_amplitude_threshold , composite_start_month , composite_end_month )
 
 ##### make composites
-model_eke850_composite = np.full ( ( len ( phase_names ) , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=model_eke850_forecast_anomaly.dtype )
-model_z500_composite = np.full ( ( len ( phase_names ) , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
-reanalysis_eke850_composite = np.full ( ( len ( phase_names ) , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=reanlaysis_eke850_forecast_anomaly.dtype )
-reanalysis_z500_composite = np.full ( ( len ( phase_names ) , len ( model_lat_in ) , len ( model_lon_in ) ) , np.nan , dtype=reanlaysis_z500_forecast_anomaly.dtype )
+model_eke850_composite = np.full ( ( len ( phase_names ) , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_eke850_forecast_anomaly.dtype )
+model_z500_composite = np.full ( ( len ( phase_names ) , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
+reanalysis_eke850_composite = np.full ( ( len ( phase_names ) , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=reanlaysis_eke850_forecast_anomaly.dtype )
+reanalysis_z500_composite = np.full ( ( len ( phase_names ) , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=reanlaysis_z500_forecast_anomaly.dtype )
 for phase_n in range ( len ( phase_names ) ) :
     model_eke850_composite [ phase_n , : , : ]      = get_composite ( model_eke850_forecast_anomaly , rmm_list [ phase_n ] , composite_start_week , composite_end_week )
     model_z500_composite [ phase_n , : , : ]        = get_composite ( model_z500_forecast_anomaly , rmm_list [ phase_n ] , composite_start_week , composite_end_week )
@@ -289,8 +338,8 @@ pattern_correlation_eke850 = np.empty ( ( len ( pattern_corr_regions ) , len ( p
 pattern_correlation_z500   = np.empty ( ( len ( pattern_corr_regions ) , len ( phase_names ) ) , dtype=model_z500_composite.dtype )
 for region_n in range ( len ( pattern_corr_regions ) ) :
     for phase_n in range ( len ( phase_names ) ) :
-        pattern_correlation_eke850 [ region_n , phase_n ] = calcPatCorr ( reanalysis_eke850_composite [ phase_n , : , : ] , model_eke850_composite [ phase_n , : , : ] , np.array ( model_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( model_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
-        pattern_correlation_z500 [ region_n , phase_n ] = calcPatCorr ( reanalysis_z500_composite [ phase_n , : , : ] , model_z500_composite [ phase_n , : , : ] , np.array ( model_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( model_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
+        pattern_correlation_eke850 [ region_n , phase_n ] = calcPatCorr ( reanalysis_eke850_composite [ phase_n , : , : ] , model_eke850_composite [ phase_n , : , : ] , np.array ( data_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( data_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
+        pattern_correlation_z500 [ region_n , phase_n ] = calcPatCorr ( reanalysis_z500_composite [ phase_n , : , : ] , model_z500_composite [ phase_n , : , : ] , np.array ( data_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( data_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
 
 ##### make plots
 res_polar_color                      = Ngl.Resources ( )
@@ -312,8 +361,8 @@ res_polar_color.cnLevelSelectionMode = "ManualLevels"
 #res_polar_color.cnMinLevelValF       = -34.
 #res_polar_color.cnMaxLevelValF       = 34.
 #res_polar_color.cnLevelSpacingF      = 4.
-res_polar_color.sfXArray             = np.array ( model_lon_in )
-res_polar_color.sfYArray             = np.array ( model_lat_in )
+res_polar_color.sfXArray             = np.array ( data_lon_in )
+res_polar_color.sfYArray             = np.array ( data_lat_in )
 
 res_significance                     = Ngl.Resources ( )
 res_significance.nglFrame            = False
@@ -325,8 +374,8 @@ res_significance.cnLevelSelectionMode = "ManualLevels"
 res_significance.cnMinLevelValF      = test_confidence_level * .5
 res_significance.cnMaxLevelValF      = 1 - test_confidence_level * .5
 res_significance.cnLevelSpacingF     = res_significance.cnMaxLevelValF - res_significance.cnMinLevelValF
-res_significance.sfXArray            = np.array ( model_lon_in )
-res_significance.sfYArray            = np.array ( model_lat_in )
+res_significance.sfXArray            = np.array ( data_lon_in )
+res_significance.sfYArray            = np.array ( data_lat_in )
 res_significance.cnInfoLabelOn       = False
 res_significance.cnLineThicknessF    = 1.5
 
@@ -349,14 +398,14 @@ res_polar_color_z500.cnLevelSelectionMode = "ManualLevels"
 #res_polar_color_z500.cnMinLevelValF       = -125
 #res_polar_color_z500.cnMaxLevelValF       = 125.
 #res_polar_color_z500.cnLevelSpacingF      = 10.
-res_polar_color_z500.sfXArray             = np.array ( model_lon_in )
-res_polar_color_z500.sfYArray             = np.array ( model_lat_in )
+res_polar_color_z500.sfXArray             = np.array ( data_lon_in )
+res_polar_color_z500.sfYArray             = np.array ( data_lat_in )
 
 plot_levels = 8
-res_polar_color.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , res_polar_color.mpMinLatF , res_polar_color.mpMaxLatF , np.array ( model_lat_in ) )
+res_polar_color.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , res_polar_color.mpMinLatF , res_polar_color.mpMaxLatF , np.array ( data_lat_in ) )
 res_polar_color.cnMaxLevelValF  = plot_max_level ( plot_levels , res_polar_color.cnLevelSpacingF )
 res_polar_color.cnMinLevelValF  = - res_polar_color.cnMaxLevelValF
-res_polar_color_z500.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_z500_composite , plot_levels , res_polar_color_z500.mpMinLatF , res_polar_color_z500.mpMaxLatF , np.array ( model_lat_in ) )
+res_polar_color_z500.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_z500_composite , plot_levels , res_polar_color_z500.mpMinLatF , res_polar_color_z500.mpMaxLatF , np.array ( data_lat_in ) )
 res_polar_color_z500.cnMaxLevelValF  = plot_max_level ( plot_levels , res_polar_color_z500.cnLevelSpacingF )
 res_polar_color_z500.cnMinLevelValF  = - res_polar_color_z500.cnMaxLevelValF
 
