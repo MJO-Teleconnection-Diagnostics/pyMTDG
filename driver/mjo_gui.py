@@ -12,6 +12,7 @@ import time, sys
 import subprocess
 import shutil
 
+
 class StartWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -1076,18 +1077,6 @@ class ThirdSubWindow(QMainWindow):
         #pixmap = QPixmap('weather.jpg') 
         self.threadpool = QThreadPool()
         
-        help_label = QLabel('''
-        DIR_IN: Please enter the input data directory path
-        START_DATE: Please enter the start date
-        END_DATE: Please enter the end date
-        Length of the forecats (in days): Please enter the length of the forecats in days
-        Number of ensembles: Please enter the number of ensembles
-        Number of initial dates: Please enter the number of initial dates
-        Initial dates: Please enter all the intial dates
-        Use ERA_I for validation: Please check this box if ERA_I is used for validation
-        Use IMERG for validation: Please check this box if IMERG is used for validation
-                            ''')
-        help_label.setWordWrap(True)
         self.dirin = dirin
         pref = self.dirin+"/"
         prefix = self.dirin+"/OBS/"
@@ -1130,31 +1119,41 @@ class ThirdSubWindow(QMainWindow):
         self.olrDataFiles.setText(prefix)
         self.olrDataFiles.setCursorPosition(len(prefix))
 
-        #Path to Extratropical z500 data files
-        self.Ez500s=[]
-        self.Ez500Ts = []
-        self.Ez500Tobss = []
+        #Path to Extratropical cyclone activity data files
+        Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files:', self)
+        Emeridional850 = QLabel(f"Path to meridional wind at 850 hPa data files for Extratropical Cyclone Activity:", self)
+        Ezonal850 = QLabel(f"Path to zonal wind at 850 hPa data files for Extratropical Cyclone Activity:", self)
 
-        for i in range(num_dates):
-            self.Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files for date {self.dates[i]}:', self)
-            self.Ez500T = QLineEdit(self)
-            self.Ez500T.setText(pref)
-            self.Ez500T.setCursorPosition(len(pref))
+        self.Ez500T = QLineEdit(self)
+        self.Ez500T.setText(pref)
+        self.Ez500T.setCursorPosition(len(pref))
 
-            self.Ez500s.append(self.Ez500)
-            self.Ez500Ts.append(self.Ez500T)
-         
-        
+        self.Emeridional850T = QLineEdit(self)
+        self.Emeridional850T.setText(pref)
+        self.Emeridional850T.setCursorPosition(len(pref))
+
+        self.Ezonal850T = QLineEdit(self)
+        self.Ezonal850T.setText(pref)
+        self.Ezonal850T.setCursorPosition(len(pref))
+
         self.Ez500obs = QLabel(f'Path to Extratropical Cyclone Activity Z500 observational data files:', self)
         self.Ez500Tobs = QLineEdit(self)
         self.Ez500Tobs.setText(prefix)
         self.Ez500Tobs.setCursorPosition(len(prefix))
 
+        self.Emeridional850obs = QLabel(f'Path to meridional wind at 850 hPa observational data files for Extratropical Cyclone Activity:', self)
+        self.Emeridional850Tobs = QLineEdit(self)
+        self.Emeridional850Tobs.setText(prefix)
+        self.Emeridional850Tobs.setCursorPosition(len(prefix))
+
+        self.Ezonal850obs = QLabel(f'Path to zonal wind at 850 hPa observational data files for Extratropical Cyclone Activity:', self)
+        self.Ezonal850Tobs = QLineEdit(self)
+        self.Ezonal850Tobs.setText(prefix)
+        self.Ezonal850Tobs.setCursorPosition(len(prefix))
 
         # Path to Z100 data files:
         z100s = []
         self.z100Ts = []
-        
         self.z100Tobss = []
     
         for i in range(num_dates):
@@ -1374,9 +1373,6 @@ class ThirdSubWindow(QMainWindow):
         self.t2mTobs.setText(prefix)
         self.t2mTobs.setCursorPosition(len(prefix))
 
-
-
-
         # Path to precipitational data files:
         precDatas = []
         self.precDataTs = []
@@ -1396,8 +1392,6 @@ class ThirdSubWindow(QMainWindow):
         self.precDataTobs.setText(prefix)
         self.precDataTobs.setCursorPosition(len(prefix))
             
-
-
         weeks = QLabel('Select weeks:', self)
         self.selectweeks = QLineEdit(self)
 
@@ -1418,80 +1412,146 @@ class ThirdSubWindow(QMainWindow):
         helptext=''''''
         rendered=[]
         if(len(selected)>=1):
-            if (selected[0]==0):
-                helptext+='\n'.join(diag_help_texts)
+            if 1 in selected or 0 in selected:
+                helptext+=diag_help_texts[1]+'\n\n'
+                if 'z500T' not in rendered:
+                    rendered.append('z500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(z500s[i])
+                        right_layout.addWidget(self.z500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(z500obs)
+                        right_layout.addWidget(self.z500Tobs)
+            if 2 in selected or 0 in selected:
+                helptext+=diag_help_texts[2]+'\n\n'
+                if 'precDataT' not in rendered:
+                    rendered.append('precDataT')
+                    for i in range(num_dates):
+                        right_layout.addWidget(precDatas[i])
+                        right_layout.addWidget(self.precDataTs[i])
+                    if era == False:
+                        right_layout.addWidget(precDataobs)
+                        right_layout.addWidget(self.precDataTobs)
+            if 3 in selected or 11 in selected or 0 in selected: #Fraction of the observed STRIPES
+                helptext+=diag_help_texts[3]+'\n\n'
+                if 'z500T' not in rendered:
+                    rendered.append('z500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(z500s[i])
+                        right_layout.addWidget(self.z500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(z500obs)
+                        right_layout.addWidget(self.z500Tobs)
+
+                right_layout.addWidget(weeks)
+                right_layout.addWidget(self.selectweeks)
+
+            if 4 in selected or 0 in selected: #Pattern CC over
+                helptext+=diag_help_texts[4]+'\n\n'
+                if 'z500T' not in rendered:
+                    rendered.append('z500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(z500s[i])
+                        right_layout.addWidget(self.z500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(z500obs)
+                        right_layout.addWidget(self.z500Tobs)
+                right_layout.addWidget(self.z500anomalies)
+                
+        
+            
+            if 5 in selected or 0 in selected: #relative amplitude over PNA
+                helptext+=diag_help_texts[5]+'\n\n'
+                if 'z500T' not in rendered:
+                    rendered.append('z500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(z500s[i])
+                        right_layout.addWidget(self.z500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(z500obs)
+                        right_layout.addWidget(self.z500Tobs)
+                
+            if 6 in selected or 0 in selected:
+                helptext+=diag_help_texts[6]+'\n\n'
+                if 'z500T' not in rendered:
+                    rendered.append('z500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(z500s[i])
+                        right_layout.addWidget(self.z500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(z500obs)
+                        right_layout.addWidget(self.z500Tobs)
+                if 'z100T' not in rendered:
+                    
+                    rendered.append('z100T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(z100s[i])
+                        right_layout.addWidget(self.z100Ts[i])
+                    if era == False:
+                        right_layout.addWidget(z100obs)
+                        right_layout.addWidget(self.z100Tobs)
+
+                if 'meridionalwind500T' not in rendered:
+                    rendered.append('meridionalwind500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(meridionalwind500s[i])
+                        right_layout.addWidget(self.meridionalwind500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(meridionalwind500obs)
+                        right_layout.addWidget(self.meridionalwind500Tobs)
+                
+                if 'temperature500T' not in rendered:
+                    rendered.append('temperature500T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(temperature500s[i])
+                        right_layout.addWidget(self.temperature500Ts[i])
+                    if era == False:
+                        right_layout.addWidget(temperature500obs)
+                        right_layout.addWidget(self.temperature500Tobs)
+                
+                if 'zonalwind10T' not in rendered:
+                    rendered.append('zonalwind10T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(zonalwind10s[i])
+                        right_layout.addWidget(self.zonalwind10Ts[i])
+                    if era == False:
+                        right_layout.addWidget(zonalwind10obs)
+                        right_layout.addWidget(self.zonalwind10Tobs)
+
+            if 7 in selected or 0 in selected: #histogram of 10hpa zonal wind
+                helptext+=diag_help_texts[7]+'\n\n'
+                if 'zonalwind10T' not in rendered:
+                    rendered.append('zonalwind10T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(zonalwind10s[i])
+                        right_layout.addWidget(self.zonalwind10Ts[i])
+                    if era == False:
+                        right_layout.addWidget(zonalwind10obs)
+                        right_layout.addWidget(self.zonalwind10Tobs)
+            if 8 in selected or 0 in selected: #Extratropical cyclone activity
+                helptext+=diag_help_texts[8]+'\n\n'
                 rendered.append('dailyMean')
                 right_layout.addWidget(daily_mean_values_label)
                 right_layout.addWidget(groupbox)
-                rendered.append('z500T')
-                for i in range(num_dates):
-                    right_layout.addWidget(z500s[i])
-                    right_layout.addWidget(self.z500Ts[i])
+                self.daily_mean_ind = right_layout.count()-1
+                right_layout.addWidget(Ez500)
+                right_layout.addWidget(self.Ez500T)
                 if era == False:
-                    right_layout.addWidget(z500obs)
-                    right_layout.addWidget(self.z500Tobs)
-
-                rendered.append('z100T')
-                for i in range(num_dates):
-                    right_layout.addWidget(z100s[i])
-                    right_layout.addWidget(self.z100Ts[i])
+                    right_layout.addWidget(self.Ez500obs)
+                    right_layout.addWidget(self.Ez500Tobs)
+                right_layout.addWidget(Emeridional850)
+                right_layout.addWidget(self.Emeridional850T)
                 if era == False:
-                    right_layout.addWidget(z100obs)
-                    right_layout.addWidget(self.z100Tobs)
-
-                rendered.append('zonalwind850T')
-                for i in range(num_dates):
-                    right_layout.addWidget(zonalwind850s[i])
-                    right_layout.addWidget(self.zonalwind850Ts[i])
+                    right_layout.addWidget(self.Emeridional850obs)
+                    right_layout.addWidget(self.Emeridional850Tobs)
+                right_layout.addWidget(Ezonal850)
+                right_layout.addWidget(self.Ezonal850T)
                 if era == False:
-                    right_layout.addWidget(zonalwind850obs)
-                    right_layout.addWidget(self.zonalwind850Tobs)
-
-                rendered.append('meridionalwind850T')
-                for i in range(num_dates):
-                    right_layout.addWidget(meridionalwind850s[i])
-                    right_layout.addWidget(self.meridionalwind850Ts[i])
-                if era == False:
-                    right_layout.addWidget(meridionalwind850obs)
-                    right_layout.addWidget(self.meridionalwind850Tobs)
-                
-                rendered.append('dirOLR')
-                right_layout.addWidget(dir_OLR_label)
-                right_layout.addWidget(self.olrDataFiles)
-
-                rendered.append('meridionalwind500T')
-                for i in range(num_dates):
-                    right_layout.addWidget(meridionalwind500s[i])
-                    right_layout.addWidget(self.meridionalwind500Ts[i])
-                if era == False:
-                    right_layout.addWidget(meridionalwind500obs)
-                    right_layout.addWidget(self.meridionalwind500Tobs)
-
-                rendered.append('zonalwind10T')
-                for i in range(num_dates):
-                    right_layout.addWidget(zonalwind10s[i])
-                    right_layout.addWidget(self.zonalwind10Ts[i])
-                if era == False:
-                    right_layout.addWidget(zonalwind10obs)
-                    right_layout.addWidget(self.zonalwind10Tobs)
-
-                rendered.append('zonalwind200T')
-                for i in range(num_dates):
-                    right_layout.addWidget(zonalwind200s[i])
-                    right_layout.addWidget(self.zonalwind200Ts[i])
-                if era == False:
-                    right_layout.addWidget(zonalwind200obs)
-                    right_layout.addWidget(self.zonalwind200Tobs)
-
-                rendered.append('temperature500T')
-                for i in range(num_dates):
-                    right_layout.addWidget(temperature500s[i])
-                    right_layout.addWidget(self.temperature500Ts[i])
-                if era == False:
-                    right_layout.addWidget(temperature500obs)
-                    right_layout.addWidget(self.temperature500Tobs)
-
-
+                    right_layout.addWidget(self.Ezonal850obs)
+                    right_layout.addWidget(self.Ezonal850Tobs)
+                    
+            if 10 in selected or 0 in selected:
+                helptext+=diag_help_texts[10]+'\n\n'
                 rendered.append('t2mT')
                 for i in range(num_dates):
                     right_layout.addWidget(t2ms[i])
@@ -1499,200 +1559,29 @@ class ThirdSubWindow(QMainWindow):
                 if era == False:
                     right_layout.addWidget(t2mobs)
                     right_layout.addWidget(self.t2mTobs)
-
-                rendered.append('precDataT')
-                for i in range(num_dates):
-                    right_layout.addWidget(precDatas[i])
-                    right_layout.addWidget(self.precDataTs[i])
-                if era == False:
-                    right_layout.addWidget(precDataobs)
-                    right_layout.addWidget(self.precDataTobs)
-
-            else:
-                if 8 in selected: #Extratropical cyclone activity
-                    helptext+=diag_help_texts[8]+'\n\n'
-                    rendered.append('dailyMean')
-                    right_layout.addWidget(daily_mean_values_label)
-                    right_layout.addWidget(groupbox)
-                    if 'zonalwind850T' not in rendered:
-                        rendered.append('zonalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind850s[i])
-                            right_layout.addWidget(self.zonalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind850obs)
-                            right_layout.addWidget(self.zonalwind850Tobs)
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-                    if 'meridionalwind850T' not in rendered:
-                        rendered.append('meridionalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(meridionalwind850s[i])
-                            right_layout.addWidget(self.meridionalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(meridionalwind850obs)
-                            right_layout.addWidget(self.meridionalwind850Tobs)
-                    
-                    
-                if 1 in selected:
-                    helptext+=diag_help_texts[1]+'\n\n'
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-            
-                if 2 in selected:
-                    helptext+=diag_help_texts[2]+'\n\n'
-                    if 'precDataT' not in rendered:
-                        rendered.append('precDataT')
-                        for i in range(num_dates):
-                            right_layout.addWidget(precDatas[i])
-                            right_layout.addWidget(self.precDataTs[i])
-                        if era == False:
-                            right_layout.addWidget(precDataobs)
-                            right_layout.addWidget(self.precDataTobs)
-
-                if 3 in selected or 11 in selected: #Fraction of the observed STRIPES
-                    helptext+=diag_help_texts[3]+'\n\n'
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-
-                    right_layout.addWidget(weeks)
-                    right_layout.addWidget(self.selectweeks)
-
-                if 4 in selected: #Pattern CC over
-                    helptext+=diag_help_texts[4]+'\n\n'
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-                    right_layout.addWidget(self.z500anomalies)
-                    
-            
-                
-                if 5 in selected: #relative amplitude over PNA
-                    helptext+=diag_help_texts[5]+'\n\n'
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-                    
-                if 6 in selected:
-                    helptext+=diag_help_texts[6]+'\n\n'
-                    if 'z500T' not in rendered:
-                        rendered.append('z500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z500s[i])
-                            right_layout.addWidget(self.z500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z500obs)
-                            right_layout.addWidget(self.z500Tobs)
-                    if 'z100T' not in rendered:
-                        
-                        rendered.append('z100T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(z100s[i])
-                            right_layout.addWidget(self.z100Ts[i])
-                        if era == False:
-                            right_layout.addWidget(z100obs)
-                            right_layout.addWidget(self.z100Tobs)
-
-                    if 'meridionalwind500T' not in rendered:
-                        
-                        rendered.append('meridionalwind500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(meridionalwind500s[i])
-                            right_layout.addWidget(self.meridionalwind500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(meridionalwind500obs)
-                            right_layout.addWidget(self.meridionalwind500Tobs)
-                    
-                    if 'temperature500T' not in rendered:
-                        rendered.append('temperature500T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(temperature500s[i])
-                            right_layout.addWidget(self.temperature500Ts[i])
-                        if era == False:
-                            right_layout.addWidget(temperature500obs)
-                            right_layout.addWidget(self.temperature500Tobs)
-                    
-                    if 'zonalwind10T' not in rendered:
-                        rendered.append('zonalwind10T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind10s[i])
-                            right_layout.addWidget(self.zonalwind10Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind10obs)
-                            right_layout.addWidget(self.zonalwind10Tobs)
-
-                if 7 in selected: #histogram of 10hpa zonal wind
-                    helptext+=diag_help_texts[7]+'\n\n'
-                    if 'zonalwind10T' not in rendered:
-                        rendered.append('zonalwind10T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind10s[i])
-                            right_layout.addWidget(self.zonalwind10Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind10obs)
-                            right_layout.addWidget(self.zonalwind10Tobs)
-
-                    
-                if 10 in selected:
-                    helptext+=diag_help_texts[10]+'\n\n'
-                    rendered.append('t2mT')
+            if 12 in selected or 0 in selected:
+                helptext+=diag_help_texts[12]+'\n\n'
+                rendered.append('dirOLR') #doesn't have a yaml entry
+                right_layout.addWidget(dir_OLR_label)
+                right_layout.addWidget(self.olrDataFiles)
+                if 'zonalwind850T' not in rendered:
+                    rendered.append('zonalwind850T')
                     for i in range(num_dates):
-                        right_layout.addWidget(t2ms[i])
-                        right_layout.addWidget(self.t2mTs[i])
+                        right_layout.addWidget(zonalwind850s[i])
+                        right_layout.addWidget(self.zonalwind850Ts[i])
                     if era == False:
-                        right_layout.addWidget(t2mobs)
-                        right_layout.addWidget(self.t2mTobs)
-                if 12 in selected:
-                    helptext+=diag_help_texts[12]+'\n\n'
-                    rendered.append('dirOLR') #doesn't have a yaml entry
-                    right_layout.addWidget(dir_OLR_label)
-                    right_layout.addWidget(self.olrDataFiles)
-                    if 'zonalwind850T' not in rendered:
-                        rendered.append('zonalwind850T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind850s[i])
-                            right_layout.addWidget(self.zonalwind850Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind850obs)
-                            right_layout.addWidget(self.zonalwind850Tobs)
-                    if 'zonalwind200T' not in rendered:
-                        rendered.append('zonalwind200T')
-                        for i in range(num_dates):
-                            right_layout.addWidget(zonalwind200s[i])
-                            right_layout.addWidget(self.zonalwind200Ts[i])
-                        if era == False:
-                            right_layout.addWidget(zonalwind200obs)
-                            right_layout.addWidget(self.zonalwind200Tobs)  
+                        right_layout.addWidget(zonalwind850obs)
+                        right_layout.addWidget(self.zonalwind850Tobs)
+                if 'zonalwind200T' not in rendered:
+                    rendered.append('zonalwind200T')
+                    for i in range(num_dates):
+                        right_layout.addWidget(zonalwind200s[i])
+                        right_layout.addWidget(self.zonalwind200Ts[i])
+                    if era == False:
+                        right_layout.addWidget(zonalwind200obs)
+                        right_layout.addWidget(self.zonalwind200Tobs)  
+            
                 
-                    
 
         self.right_layout = right_layout        
         self.selected=selected       
@@ -1729,7 +1618,6 @@ class ThirdSubWindow(QMainWindow):
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(splitter)
         
-
         # Create a central widget to hold the scroll
         central_widget = QWidget()
         central_layout = QGridLayout()
@@ -1739,13 +1627,12 @@ class ThirdSubWindow(QMainWindow):
         #central_layout.addWidget(showRes,1,5,alignment=Qt.AlignCenter)
         central_layout.addWidget(but,1,12,alignment=Qt.AlignRight)
         central_widget.setLayout(central_layout)
-        
         self.setCentralWidget(central_widget)
 
     def clickedNo(self):
         radioButton = self.sender()
         if radioButton.isChecked():
-            if not self.time_step_interval or not self.groupbox1 or not self.Ez500T:
+            if not self.time_step_interval or not self.groupbox1:
                 self.time_step_interval = QLabel('What is the forecast time step interval in the model data?', self)
                 self.groupbox1 = QGroupBox()
                 vbox = QVBoxLayout()
@@ -1755,34 +1642,8 @@ class ThirdSubWindow(QMainWindow):
                 self.time_step_interval_24 = QRadioButton("24")
                 self.time_step_interval_24.setChecked(True)
                 vbox.addWidget(self.time_step_interval_24)
-                self.Ez500s=[]
-                self.Ez500Ts = []
-                self.Ez500Tobss = []
-
-                for i in range(self.num_dates):
-                    self.Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files for date {self.dates[i]}:', self)
-                    self.Ez500T = QLineEdit(self)
-                    self.Ez500T.setText(self.pref)
-                    self.Ez500T.setCursorPosition(len(self.pref))
-
-                    self.Ez500s.append(self.Ez500)
-                    self.Ez500Ts.append(self.Ez500T)
-                
-        
-                self.Ez500obs = QLabel(f'Path to Extratropical Cyclone Activity Z500 observational data files:', self)
-                self.Ez500Tobs = QLineEdit(self)
-                self.Ez500Tobs.setText(self.prefix)
-                self.Ez500Tobs.setCursorPosition(len(self.prefix))
-
-            for i in range(self.num_dates):
-                self.right_layout.addWidget(self.Ez500s[i])
-                self.right_layout.addWidget(self.Ez500Ts[i])
-            if self.era == False:
-                self.right_layout.addWidget(self.Ez500obs)
-                self.right_layout.addWidget(self.Ez500Tobs)
-    
-            self.right_layout.insertWidget(2,self.time_step_interval)
-            self.right_layout.insertWidget(3,self.groupbox1)
+            self.right_layout.insertWidget(self.daily_mean_ind+1,self.time_step_interval)
+            self.right_layout.insertWidget(self.daily_mean_ind+2,self.groupbox1)
             self.right_layout.addStretch()
         else:
             self.right_layout.removeWidget(self.time_step_interval)
@@ -1791,18 +1652,6 @@ class ThirdSubWindow(QMainWindow):
             self.right_layout.removeWidget(self.groupbox1)
             self.groupbox1.deleteLater()
             self.groupbox1 = None
-
-            for i in range(self.num_dates):
-                self.right_layout.removeWidget(self.Ez500s[i])
-                self.Ez500s[i].deleteLater()
-                self.right_layout.removeWidget(self.Ez500Ts[i])
-                self.Ez500Ts[i].deleteLater()
-            self.Ez500T = None
-            if self.era == False:
-                self.right_layout.removeWidget(self.Ez500obs)
-                self.Ez500obs[i].deleteLater()
-                self.right_layout.removeWidget(self.Ez500Tobs)
-                self.Ez500Tobs[i].deleteLater()
     
     def closee(self):
         self.close()
@@ -1832,14 +1681,20 @@ class ThirdSubWindow(QMainWindow):
 
         dict_file['Path to zonalwind850 observational files'] = self.zonalwind850Tobs.text()
 
-        
+        #extratropical model files
+        dict_file['Extratropical Cyclone Activity Z500 model files'] = self.Ez500T.text()
+        dict_file['Extratropical Cyclone Activity meridional wind at 850 hPa model files'] = self.Emeridional850T.text()
+        dict_file['Extratropical Cyclone Activity zonal wind at 850 hPa model files'] = self.Ezonal850T.text()
+        #extratropical obs files
+        dict_file['Extratropical Cyclone Activity Z500 observational data files'] = self.Ez500Tobs.text()
+        dict_file['Extratropical Cyclone Activity meridional wind at 850 hPa observational data files'] = self.Emeridional850Tobs.text()
+        dict_file['Extratropical Cyclone Activity zonal wind at 850 hPa observational data files'] = self.Ezonal850Tobs.text()
+
         dict_file['Path to meridional wind at 850 hPa date files'] = []
         for i in self.meridionalwind850Ts:
             dict_file['Path to meridional wind at 850 hPa date files'].append(i.text())
 
         dict_file['Path to meridional wind at 850 hPa observational data file'] = self.meridionalwind850Tobs.text()
-
-        
         dict_file['Path to meridional wind at 500 hPa date files'] = []
         for i in self.meridionalwind500Ts:
             dict_file['Path to meridional wind at 500 hPa date files'].append(i.text())
@@ -1907,9 +1762,8 @@ class ThirdSubWindow(QMainWindow):
     
     def submi(self):
         slurm=self.showInputDialog()
-        if slurm != -1:
-            paths,dict_file = self.close_yaml()
-        else:
+        paths,dict_file = self.close_yaml()
+        if slurm == -1:
             return
         if slurm == True:
             command=f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=24GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon;{paths}'"
