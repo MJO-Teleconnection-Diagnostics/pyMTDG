@@ -477,7 +477,7 @@ The package can be applied to one forecast model. The name of the model will ape
                     - Select 'No' if model data do not include the initial conditions
 
 * Smooth climatology:
-                  - Select 'Yes' only for the CNRM model version CM6.1 (S2S database), EMC, ESRL, and NRL models (SubX or SubC project), and models that are initialized on the the same day of the weed (e.g., Wednesday)
+                  - Select 'Yes' only for the CNRM model version CM6.1 (S2S database), EMC, ESRL, and NRL models (SubX or SubC project), and models that are initialized on the the same day of the week (e.g., Wednesday)
                   - Select 'No' for most models in the S2S database
 
 
@@ -1299,7 +1299,7 @@ class ThirdSubWindow(QMainWindow):
 
         #EKE
         #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
-        daily_mean_values_label = QLabel('Are the model data daily-mean values?', self)
+        daily_mean_values_label = QLabel('Only for the Extratropical Cyclone Activity: Are the model data daily-mean values?', self)
         groupbox = QGroupBox()
         vbox = QVBoxLayout()
         groupbox.setLayout(vbox)
@@ -1351,7 +1351,12 @@ class ThirdSubWindow(QMainWindow):
 - If model data contains ensembles, the input data for U850 and V850 must be provided for each ensemble member. Using the ensemble mean will result in eddy kinetic energy with underestimated amplitude.
 - If model and verification data have different resolutions, it is highly recommended to provide the data on the same grid. Although this package has regridding capabilities it may take hours to days to complete the regridding especially for large ensembles. Usage of spherical harmonics is recommended for regridding of wind components. 
 
-* Path to Extratropical Cyclone Activity 500 model data files: 
+* Path to Extratropical Cyclone Activity Z500 model data files: Enter the name of Z500 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members. E.g., for one ensemble member only: /project/$userid/z500_2011040100_e00.nc. For multiple ensemble members the count of ensemble members should also start from  '00', /project/$userid/z500_2011040100_e00.nc, /project/$userid/z500_2011040100_e01.nc'
+
+
+* Path to Extratropical Cyclone Activity U850  model data files: Enter the name of U850 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members.
+
+* Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members.
 '''
         diag_help_texts[10] = '''
 ** Surface Air Temperature**
