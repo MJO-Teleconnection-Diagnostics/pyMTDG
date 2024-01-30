@@ -472,13 +472,13 @@ The package can be applied to one forecast model. The name of the model will ape
 
 * Model name: enter the model name, e.g., UFS or ufs
  
-* Model initial condition: 
-                    - Select 'Yes' for ....
-                    - Select 'No' for ....
+* Model initial conditions: 
+                    - Select 'Yes' if model data include the initial conditions (forecast hour 00Z) 
+                    - Select 'No' if model data do not include the initial conditions
 
 * Smooth climatology:
-                  - Select 'Yes' for ....
-                  - Select 'No' for ....
+                  - Select 'Yes' only for the CNRM model version CM6.1 (S2S database), EMC, ESRL, and NRL models (SubX or SubC project), and models that are initialized on the the same day of the weed (e.g., Wednesday)
+                  - Select 'No' for most models in the S2S database
 
 
                             ''')
@@ -863,6 +863,9 @@ class SelectDiagWindow(QMainWindow):
 
 
 On this page, the user can select all diagnostics, one diagnostic or multiple diagnostics. On the next page, the user will be prompted to provide additional information about the forecast data files required for each of the diagnostics.
+
+* The Extratropical Cyclone Activity
+    - Provides composites of 24-h difference filtered eddy kinetic energy at 850-hPa (computed using U850 and V850) and the spatial correlation coefficient between model and reanalysis composites ...
 
                             ''')
         help_label.setWordWrap(True)
@@ -1343,10 +1346,17 @@ class ThirdSubWindow(QMainWindow):
         Help text for Histogram of 10 hPa zonal wind
 '''
         diag_help_texts[8] = '''
-        Help text for Extratropical cyclone activity
+** Extratropical Cyclone Activity**
+
+- If model data contains ensembles, the input data for U850 and V850 must be provided for each ensemble member. Using the ensemble mean will result in eddy kinetic energy with underestimated amplitude.
+- If model and verification data have different resolutions, it is highly recommended to provide the data on the same grid. Although this package has regridding capabilities it may take hours to days to complete the regridding especially for large ensembles. Usage of spherical harmonics is recommended for regridding of wind components. 
+
+* Path to Extratropical Cyclone Activity 500 model data files: 
 '''
         diag_help_texts[10] = '''
-* Path to T2m model data files for date D or DD: complete the full path and names of files containing daily mean (if daily anomalies are need to be computed) or daily anomalies (if daily anomalies are provided) for the initial condition corresponding to date D or DD. E.g., for the forecasts initialized on 1st of the month: /project/$user/$user_dir/file_name_*01.nc or /project/$user/$user_dir/file_name_*.nc; for forecasts initialized on the 15th of the month: /project/$user/$user_dir/file_name_*15 or /project/$user/$user_dir/file_name_*.nc.
+** Surface Air Temperature**
+
+* Path to T2m model data files for date D or DD: complete the full path and names of files containing daily mean (if daily anomalies need to be computed) or daily anomalies (if daily anomalies are provided) for the initial condition corresponding to date D or DD. E.g., for the forecasts initialized on 1st of the month: /project/$user/$user_dir/file_name_*01.nc or /project/$user/$user_dir/file_name_*.nc; for forecasts initialized on the 15th of the month: /project/$user/$user_dir/file_name_*15 or /project/$user/$user_dir/file_name_*.nc.
 '''
         diag_help_texts[11] = '''
         Help text for Pattern CC over the Euro-Atlantic sector
