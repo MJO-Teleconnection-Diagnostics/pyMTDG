@@ -40,9 +40,9 @@ Smooth_climatology           = yml_input [ 'smooth climatology:' ]
 ERAI                         = yml_input [ 'ERAI:' ]
 RMM                          = yml_input [ 'RMM:' ]
 
-Model_u850_files             = yml_input [ 'Path to zonalwind850 date files' ]
-Model_v850_files             = yml_input [ 'Path to meridional wind at 850 hPa date files' ]
-Model_z500_files             = yml_input [ 'Path to z500 date files' ]
+Model_u850_files             = yml_input [ 'Extratropical Cyclone Activity meridional wind at 850 hPa model files' ]
+Model_v850_files             = yml_input [ 'Extratropical Cyclone Activity zonal wind at 850 hPa model files' ]
+Model_z500_files             = yml_input [ 'Extratropical Cyclone Activity Z500 model files' ]
 
 ###### Input from yml file (UFS)
 #ERAI = True
@@ -56,12 +56,13 @@ Model_z500_files             = yml_input [ 'Path to z500 date files' ]
 #Smooth_climatology           = False
 #ERAI                         = True
 if ERAI :
-#    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
-    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/u850.19790101-20190831.nc"
-    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
-    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
+    Reanalysis_name = "ERA-I"
+    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
+#    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/u850.19790101-20190831.nc"
+#    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
+#    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
 
 #Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
 #Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
@@ -69,10 +70,13 @@ if ERAI :
 #Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/u.850-isobaricInhPa.*.f000-840.nc" ]
 #Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/v.850-isobaricInhPa.*.f000-840.nc" ]
 #Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/gh.500-isobaricInhPa.*.f000-840.nc" ]
+#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.nc" ]
+#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.nc" ]
+#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.nc" ]
 Model_z500_varname = "z"
 #Model_z500_varname = "gh"
 
-if RMM :
+if not RMM :
     RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
 
 plot_dir = "../output/Eke/" + Model_name + "/"
@@ -129,6 +133,8 @@ compoiste_amplitude_threshold = 1.
 phase_names = [ "8-1" , "2-3" , "4-5" , "6-7" ]
 bootstrap_size = 1000
 test_confidence_level = 0.05
+pattern_corr_north = 80.
+pattern_corr_south = 20.
 
 ERAI_timesteps_per_day = 4
 
@@ -144,8 +150,8 @@ if not ( Forecast_time_step_interval == 6 or Forecast_time_step_interval == 24 )
     exit ( )
 else :
     time_step_per_24h = 24 // Forecast_time_step_interval
-if Ensemble_size == 1 : Multiple_Ensemble_Members = False
-else: Multiple_Ensemble_Members = True
+#if Ensemble_size == 1 : Multiple_Ensemble_Members = False
+#else: Multiple_Ensemble_Members = True
 
 ###### Get Reanalysis lat,lon
 ERA_u850_file_in = xr.open_dataset ( ERA_u850_file )
@@ -158,10 +164,10 @@ dim_reanalysis_lat = len ( reanalysis_lat_in )
 dim_reanalysis_lon = len ( reanalysis_lon_in )
 
 ###### Read model u,v data
-model_u_file_list = glob.glob ( Model_u850_files [ 0 ] )
+model_u_file_list = glob.glob ( Model_u850_files )
 model_u_file_list.sort ( )
 yyyymmddhh_list = [ ]
-u_files_head = Model_u850_files [ 0 ].split ( "*" , 1 )
+u_files_head = Model_u850_files.split ( "*" , 1 )
 file_yyyymmddhh_str1 = model_u_file_list [ 0 ].replace ( u_files_head [ 0 ] , "" )
 file_yyyymmddhh_str2 = file_yyyymmddhh_str1.replace ( u_files_head [ 1 ] , "" )
 file_yyyymmddhh_str  = file_yyyymmddhh_str2.split ( "_" , 1 )
@@ -217,11 +223,12 @@ yyyymmddhh_list.sort ( )
 yyyymmdd_list = convert_ymdh_to_ymd_list ( yyyymmddhh_list )
 if INCLUDE_HOUR : files_dates_list = yyyymmddhh_list
 else : files_dates_list = yyyymmdd_list
-v_files_head = Model_v850_files [ 0 ].split ( "*" , 1 )
+v_files_head = Model_v850_files.split ( "*" , 1 )
 
 ######read the first model u file to get lat and lon dimension
-if Multiple_Ensemble_Members : ens_string = "_e00"
-else : ens_string = ""
+#if Multiple_Ensemble_Members : ens_string = "_e00"
+#else : ens_string = ""
+ens_string = "_e00"
 model_u850_file0 = xr.open_dataset ( u_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + u_files_head [ 1 ] )
 model_u850_in = model_u850_file0 [ 'u' ]
 model_u850_in_dim = model_u850_in.dims
@@ -264,15 +271,14 @@ model_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks 
 del ( model_input_u )
 del ( model_u850_in )
 for week_n in range ( total_weeks ) :
-    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , REGRID_MODEL , ingrid , outgrid )
+    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , REGRID_MODEL , ingrid , outgrid )
 
 ###### Read model z500 data
 #potential issue with data type of z500,uv850
 #potential issue with missing files in uv850 or z500
 #potential issue with data frequency (6hourly vs daily mean) of z500,uv850
-z_files_head = Model_z500_files [ 0 ].split ( "*" , 1 )
-if Multiple_Ensemble_Members : ens_string = "_e00"
-else : ens_string = ""
+z_files_head = Model_z500_files.split ( "*" , 1 )
+ens_string = "_e00"
 model_z500_file0 = xr.open_dataset ( z_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + z_files_head [ 1 ] )
 model_z500_in = model_z500_file0 [ Model_z500_varname ]
 model_z500_file0.close ( )
@@ -281,7 +287,7 @@ model_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , 
 del ( model_input_z )
 del ( model_z500_in )
 for week_n in range ( total_weeks ) :
-    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , Multiple_Ensemble_Members , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data , REGRID_MODEL , ingrid , outgrid )
+    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data , REGRID_MODEL , ingrid , outgrid )
 
 ##### read reanalysis data for eke
 #potential issue with data type of erai/reanalysis
@@ -342,6 +348,25 @@ for region_n in range ( len ( pattern_corr_regions ) ) :
         pattern_correlation_z500 [ region_n , phase_n ] = calcPatCorr ( reanalysis_z500_composite [ phase_n , : , : ] , model_z500_composite [ phase_n , : , : ] , np.array ( data_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( data_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
 
 ##### make plots
+mpres                       = Ngl.Resources()
+mpres.nglDraw               = False
+mpres.nglFrame              = False
+mpres.nglMaximize           = False
+mpres.vpXF                  = 0.05
+mpres.vpYF                  = 0.88
+mpres.vpWidthF              = 0.45
+mpres.vpHeightF             = 0.45
+mpres.mpProjection          = 'Stereographic'
+mpres.mpEllipticalBoundary  = True
+mpres.mpDataSetName         = 'Earth..4'
+mpres.mpDataBaseVersion     = 'MediumRes'
+mpres.mpLimitMode           = 'LatLon'
+mpres.mpMaxLatF             = 90.
+mpres.mpMinLatF             = 20.
+mpres.mpCenterLatF          = 90.
+mpres.mpGridAndLimbOn       = False
+mpres.pmTickMarkDisplayMode = 'Never'
+
 res_polar_color                      = Ngl.Resources ( )
 res_polar_color.nglFrame             = False
 res_polar_color.nglDraw              = False
@@ -349,19 +374,8 @@ res_polar_color.cnFillOn             = True
 res_polar_color.cnLinesOn            = False
 res_polar_color.cnLineLabelsOn       = False
 res_polar_color.cnFillPalette        = "NCV_blue_red"
-res_polar_color.lbOrientation        = "horizontal"
-res_polar_color.mpMinLatF            = 20.
-res_polar_color.mpMaxLatF            = 80.
-res_polar_color.mpCenterLonF         = 180.
-res_polar_color.mpGridAndLimbOn      = False
-res_polar_color.mpLimitMode          = "LatLon"
-res_polar_color.mpGeophysicalLineColor = "gray50"
-res_polar_color.mpOutlineBoundarySets  = "Geophysical"
 res_polar_color.cnLevelSelectionMode = "ManualLevels"
-#res_polar_color.cnMinLevelValF       = -34.
-#res_polar_color.cnMaxLevelValF       = 34.
-#res_polar_color.cnLevelSpacingF      = 4.
-res_polar_color.sfXArray             = np.array ( data_lon_in )
+res_polar_color.lbOrientation        = "horizontal"
 res_polar_color.sfYArray             = np.array ( data_lat_in )
 
 res_significance                     = Ngl.Resources ( )
@@ -371,13 +385,14 @@ res_significance.cnFillOn            = False
 res_significance.cnLinesOn           = True
 res_significance.cnLineLabelsOn      = False
 res_significance.cnLevelSelectionMode = "ManualLevels"
+res_significance.cnMonoLineColor     = True
+res_significance.cnLineColor         = "darkgreen"
 res_significance.cnMinLevelValF      = test_confidence_level * .5
 res_significance.cnMaxLevelValF      = 1 - test_confidence_level * .5
 res_significance.cnLevelSpacingF     = res_significance.cnMaxLevelValF - res_significance.cnMinLevelValF
-res_significance.sfXArray            = np.array ( data_lon_in )
-res_significance.sfYArray            = np.array ( data_lat_in )
 res_significance.cnInfoLabelOn       = False
-res_significance.cnLineThicknessF    = 1.5
+res_significance.cnLineThicknessF    = 3.
+res_significance.sfYArray            = np.array ( data_lat_in )
 
 res_polar_color_z500                      = Ngl.Resources ( )
 res_polar_color_z500.nglFrame             = False
@@ -386,68 +401,103 @@ res_polar_color_z500.cnFillOn             = True
 res_polar_color_z500.cnLinesOn            = False
 res_polar_color_z500.cnLineLabelsOn       = False
 res_polar_color_z500.cnFillPalette        = "NCV_blue_red"
-res_polar_color_z500.lbOrientation        = "horizontal"
-res_polar_color_z500.mpMinLatF            = 20.
-res_polar_color_z500.mpMaxLatF            = 80.
-res_polar_color_z500.mpCenterLonF         = 180.
-res_polar_color_z500.mpGridAndLimbOn      = False
-res_polar_color_z500.mpLimitMode          = "LatLon"
-res_polar_color_z500.mpGeophysicalLineColor = "gray50"
-res_polar_color_z500.mpOutlineBoundarySets  = "Geophysical"
 res_polar_color_z500.cnLevelSelectionMode = "ManualLevels"
-#res_polar_color_z500.cnMinLevelValF       = -125
-#res_polar_color_z500.cnMaxLevelValF       = 125.
-#res_polar_color_z500.cnLevelSpacingF      = 10.
-res_polar_color_z500.sfXArray             = np.array ( data_lon_in )
+res_polar_color_z500.lbOrientation        = "horizontal"
 res_polar_color_z500.sfYArray             = np.array ( data_lat_in )
 
+lnres                   = Ngl.Resources()
+lnres.gsLineColor       = "black"
+lnres.gsLineThicknessF  = 1.0
+lnres.gsLineDashPattern = 0
+
 plot_levels = 8
-res_polar_color.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , res_polar_color.mpMinLatF , res_polar_color.mpMaxLatF , np.array ( data_lat_in ) )
+res_polar_color.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , pattern_corr_south , pattern_corr_north , np.array ( data_lat_in ) )
 res_polar_color.cnMaxLevelValF  = plot_max_level ( plot_levels , res_polar_color.cnLevelSpacingF )
 res_polar_color.cnMinLevelValF  = - res_polar_color.cnMaxLevelValF
-res_polar_color_z500.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_z500_composite , plot_levels , res_polar_color_z500.mpMinLatF , res_polar_color_z500.mpMaxLatF , np.array ( data_lat_in ) )
+res_polar_color_z500.cnLevelSpacingF = get_plot_level_spacing ( reanalysis_z500_composite , plot_levels , pattern_corr_south , pattern_corr_north , np.array ( data_lat_in ) )
 res_polar_color_z500.cnMaxLevelValF  = plot_max_level ( plot_levels , res_polar_color_z500.cnLevelSpacingF )
 res_polar_color_z500.cnMinLevelValF  = - res_polar_color_z500.cnMaxLevelValF
 
 for phase_n in range ( len ( phase_names ) ) :
-    wks_reanalysis = Ngl.open_wks ( "png" , plot_dir + "reanalysis_eke850_" + phase_names [ phase_n ] )
-    res_polar_color.tiMainString = "reanalysis eke850 phase" + phase_names [ phase_n ]
-    plot = Ngl.contour_map ( wks_reanalysis , reanalysis_eke850_composite [ phase_n , : , : ] , res_polar_color )
-    plot1 = Ngl.contour ( wks_reanalysis , reanalysis_eke850_significance [ phase_n , : , : ] , res_significance )
-    Ngl.overlay ( plot , plot1 )
-    Ngl.draw ( plot )
-    Ngl.frame ( wks_reanalysis )
-    Ngl.delete_wks ( wks_reanalysis )
-    wks_model = Ngl.open_wks ( "png" , plot_dir + "model_eke850_" + phase_names [ phase_n ] )
-    res_polar_color.tiMainString = "model eke850 phase" + phase_names [ phase_n ]
-    plot = Ngl.contour_map ( wks_model , model_eke850_composite [ phase_n , : , : ] , res_polar_color )
-    plot1 = Ngl.contour ( wks_model , model_eke850_significance [ phase_n , : , : ] , res_significance )
-    Ngl.overlay ( plot , plot1 )
-    Ngl.draw ( plot )
+    wks_model = Ngl.open_wks ( "png" , plot_dir + "eke850_phase" + phase_names [ phase_n ] )
+    mpres.vpXF = 0.025             #-- viewport x-position
+    map1 = Ngl.map ( wks_model , mpres )                        #-- create base map
+    Ngl.draw ( map1 )                                   #-- draw map
+    lines = []
+    lines.append ( Ngl.add_polyline ( wks_model , map1 , [ - 180 , 0 , 180 ] , [ mpres.mpMinLatF , mpres.mpMinLatF , mpres.mpMinLatF ] ,lnres ) )
+    plot_cyclic , lon_cyclie       = Ngl.add_cyclic ( model_eke850_composite [ phase_n , : , : ] , data_lon_in )
+    plot_significance , lon_cyclie = Ngl.add_cyclic ( model_eke850_significance [ phase_n , : , : ] , data_lon_in )
+    res_polar_color.sfXArray       = lon_cyclie
+    res_significance.sfXArray      = lon_cyclie
+    res_polar_color.tiMainString = Model_name
+    plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color )
+    plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
+    Ngl.overlay ( map1 , plot )
+    Ngl.overlay ( map1 , plot1 )
+    Ngl.draw ( map1 )
+    mpres.vpXF = 0.525             #-- viewport x-position
+    map2 = Ngl.map ( wks_model , mpres )                        #-- create base map
+    Ngl.draw ( map2 )                                   #-- draw map
+    lines = []
+    lines.append ( Ngl.add_polyline ( wks_model , map2 , [ - 180 , 0 , 180 ] , [ mpres.mpMinLatF , mpres.mpMinLatF , mpres.mpMinLatF ] ,lnres ) )
+    plot_cyclic , lon_cyclie       = Ngl.add_cyclic ( reanalysis_eke850_composite [ phase_n , : , : ] , data_lon_in )
+    plot_significance , lon_cyclie = Ngl.add_cyclic ( reanalysis_eke850_significance [ phase_n , : , : ] , data_lon_in )
+    res_polar_color.sfXArray       = lon_cyclie
+    res_significance.sfXArray      = lon_cyclie
+    res_polar_color.tiMainString = Reanalysis_name
+    plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color )
+    plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
+    Ngl.overlay ( map2 , plot )
+    Ngl.overlay ( map2 , plot1 )
+    Ngl.draw ( map2 )
     Ngl.frame ( wks_model )
     Ngl.delete_wks ( wks_model )
 
-for phase_n in range ( len ( phase_names ) ) :
-    wks_reanalysis = Ngl.open_wks ( "png" , plot_dir + "reanalysis_z500_" + phase_names [ phase_n ] )
-    res_polar_color_z500.tiMainString = "reanalysis z500 phase" + phase_names [ phase_n ]
-    plot = Ngl.contour_map ( wks_reanalysis , reanalysis_z500_composite [ phase_n , : , : ] , res_polar_color_z500 )
-    plot1 = Ngl.contour ( wks_reanalysis , reanalysis_z500_significance [ phase_n , : , : ] , res_significance )
-    Ngl.overlay ( plot , plot1 )
-    Ngl.draw ( plot )
-    Ngl.frame ( wks_reanalysis )
-    Ngl.delete_wks ( wks_reanalysis )
-    wks_model = Ngl.open_wks ( "png" , plot_dir + "model_z500_" + phase_names [ phase_n ] )
-    res_polar_color_z500.tiMainString = "model z500 phase" + phase_names [ phase_n ]
-    plot = Ngl.contour_map ( wks_model , model_z500_composite [ phase_n , : , : ] , res_polar_color_z500 )
-    plot1 = Ngl.contour ( wks_model , model_z500_significance [ phase_n , : , : ] , res_significance )
-    Ngl.overlay ( plot , plot1 )
-    Ngl.draw ( plot )
+for phase_n in range ( len ( phase_names ) ) :    
+    wks_model = Ngl.open_wks ( "png" , plot_dir + "z500_phase" + phase_names [ phase_n ] )
+    mpres.vpXF = 0.025             #-- viewport x-position
+    map1 = Ngl.map ( wks_model , mpres )                        #-- create base map
+    Ngl.draw ( map1 )                                   #-- draw map
+    lines = []
+    lines.append ( Ngl.add_polyline ( wks_model , map1 , [ - 180 , 0 , 180 ] , [ mpres.mpMinLatF , mpres.mpMinLatF , mpres.mpMinLatF ] ,lnres ) )
+    plot_cyclic , lon_cyclie       = Ngl.add_cyclic ( model_z500_composite [ phase_n , : , : ] , data_lon_in )
+    plot_significance , lon_cyclie = Ngl.add_cyclic ( model_z500_significance [ phase_n , : , : ] , data_lon_in )
+    res_polar_color_z500.sfXArray  = lon_cyclie
+    res_significance.sfXArray      = lon_cyclie
+    res_polar_color_z500.tiMainString = Model_name
+    plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color_z500 )
+    plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
+    Ngl.overlay ( map1 , plot )
+    Ngl.overlay ( map1 , plot1 )
+    Ngl.draw ( map1 )
+    mpres.vpXF = 0.525             #-- viewport x-position
+    map2 = Ngl.map ( wks_model , mpres )                        #-- create base map
+    Ngl.draw ( map2 )                                   #-- draw map
+    lines = []
+    lines.append ( Ngl.add_polyline ( wks_model , map2 , [ - 180 , 0 , 180 ] , [ mpres.mpMinLatF , mpres.mpMinLatF , mpres.mpMinLatF ] ,lnres ) )
+    plot_cyclic , lon_cyclie       = Ngl.add_cyclic ( reanalysis_z500_composite [ phase_n , : , : ] , data_lon_in )
+    plot_significance , lon_cyclie = Ngl.add_cyclic ( reanalysis_z500_significance [ phase_n , : , : ] , data_lon_in )
+    res_polar_color_z500.sfXArray  = lon_cyclie
+    res_significance.sfXArray      = lon_cyclie
+    res_polar_color_z500.tiMainString = Reanalysis_name
+    plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color_z500 )
+    plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
+    Ngl.overlay ( map2 , plot )
+    Ngl.overlay ( map2 , plot1 )
+    Ngl.draw ( map2 )
     Ngl.frame ( wks_model )
     Ngl.delete_wks ( wks_model )
+
+colors  = [ "blue" , "red" , "orange" , "magenta" ]
 
 res1                    = Ngl.Resources ( )
+res1.vpXF               = 0.03
+res1.vpYF               = 0.88
+res1.vpWidthF           = 0.27
+res1.vpHeightF          = 0.27
 res1.nglFrame           = False
 res1.nglDraw            = False
+res1.nglMaximize           = False
 res1.xyLineThicknesses  = 1
 res1.xyMarkLineModes    = [ "Lines" , "Markers" ,"Markers" ]
 res1.xyMarkers          = [ 0       , 4         , 4        ]               #-- marker type of each line
@@ -458,25 +508,32 @@ res1.trXMaxF = 1.
 res1.trYMaxF = 1.
 res1.trXMinF = -1.
 res1.trYMinF = -1.
-res1.tiMainFontHeightF  = 0.02
+res1.tiMainFontHeightF  = 0.012
 
 gsres                   = Ngl.Resources ( )
 gsres.gsMarkerIndex     = 16       # dots
-gsres.gsMarkerSizeF     = 0.025    # twice normal size
-gsres.gsMarkerThicknessF = 5
+gsres.gsMarkerSizeF     = 0.01    # twice normal size
+gsres.gsMarkerThicknessF = 2
 
 txres               = Ngl.Resources()
-txres.txFontHeightF = 0.02
+txres.txFontHeightF = 0.012
 txres.txJust        = "BottomCenter"
 
-colors  = [ "blue" , "red" , "orange" , "magenta" ]
-
+wks_pattern_cc = Ngl.open_wks ( "png" , plot_dir + "pattern_corr" )
 for region_n in range ( len ( pattern_corr_regions ) ) :
-    wks_pattern_cc = Ngl.open_wks ( "png" , plot_dir + "pattern_corr " + pattern_corr_regions [ region_n ] )
+    res1.vpXF = 0.08 + 0.04 * ( region_n ) + res1.vpWidthF * region_n
     one_to_one = np.array ( [ pattern_correlation_eke850 [ region_n , 0 ] , pattern_correlation_eke850 [ region_n , 1 ] , res1.trXMinF , res1.trXMaxF ] )
-    res1.tiMainString = pattern_corr_regions [ region_n ] + " " + str ( regions_south_north [ region_n ] [ 0 ] ) + "-" + str ( regions_south_north [ region_n ] [ 1 ] ) + "N " + str ( regions_west_east [ region_n ] [ 0 ] ) + "-" + str ( regions_west_east [ region_n ] [ 1 ] )
     res1.tiXAxisString = "z500 pattern correlation"
-    res1.tiYAxisString = "eke850 pattern correlation"
+    if region_n == 0 :
+        res1.tiYAxisString = "eke850 pattern correlation"
+        res1.tiMainString = pattern_corr_regions [ region_n ] + " " + str ( regions_south_north [ region_n ] [ 0 ] ) + "-" + str ( regions_south_north [ region_n ] [ 1 ] ) + "N"
+    else :
+        res1.tiYAxisString = ""
+        if regions_west_east [ region_n ] [ 0 ] < 180 : east_str = str ( regions_west_east [ region_n ] [ 0 ] ) + "E"
+        else : east_str = str ( regions_west_east [ region_n ] [ 0 ] ) + "W"
+        if regions_west_east [ region_n ] [ 1 ] < 180 : west_str = str ( regions_west_east [ region_n ] [ 1 ] ) + "E"
+        else : west_str = str ( regions_west_east [ region_n ] [ 1 ] ) + "W"
+        res1.tiMainString = pattern_corr_regions [ region_n ] + " " + str ( regions_south_north [ region_n ] [ 0 ] ) + "-" + str ( regions_south_north [ region_n ] [ 1 ] ) + "N " + east_str + "-" + west_str
     plot = Ngl.xy ( wks_pattern_cc , one_to_one , one_to_one , res1 )
     for phase_n in range ( len ( phase_names ) ) :
         gsres.gsMarkerColor = colors [ phase_n ]
@@ -484,6 +541,6 @@ for region_n in range ( len ( pattern_corr_regions ) ) :
         txres.txFontColor   = colors [ phase_n ]
         text1 = Ngl.add_text ( wks_pattern_cc , plot , "phase" + phase_names [ phase_n ] , pattern_correlation_z500 [ region_n , phase_n ] , pattern_correlation_eke850 [ region_n , phase_n ] - .15 , txres )
     Ngl.draw ( plot )
-    Ngl.frame ( wks_pattern_cc )
-    Ngl.delete_wks ( wks_pattern_cc )
+Ngl.frame ( wks_pattern_cc )
+Ngl.delete_wks ( wks_pattern_cc )
 
