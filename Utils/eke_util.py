@@ -7,6 +7,10 @@ import numpy as np
 import xarray as xr
 from os import path
 
+import spharm
+
+from fcst_utils import regrid_vector_spharm
+
 def get_model_latitude ( file_in , file_dims ) :
     return file_in [ file_dims [ len ( file_dims ) - 2 ] ]
 
@@ -20,15 +24,42 @@ def get_model_data_timestep ( file_heads , yyyymmddhh , ens_string , timestep , 
     model_in_np = np.array ( model_in )
     return model_in_np
 
-def get_model_eke_timestep ( u_file_heads , v_file_heads , yyyymmddhh , ens_string , timestep , interval ) :
+def regrid_vector_2d_3d_2d ( u_input , v_input , in_grid , out_grid ) :
+    u_input_reorder = u_input [ : , : , np.newaxis ]
+    v_input_reorder = v_input [ : , : , np.newaxis ]
+    u_regrid_out,v_regrid_out = regrid_vector_spharm ( u_input_reorder , v_input_reorder , in_grid , out_grid )
+    return u_regrid_out [ : , : , 0 ] , v_regrid_out [ : , : , 0 ]
+
+def regrid_scalar_2d_3d_2d ( z_input , in_grid , out_grid ) :
+    input_reorder = z_input [ : , : , np.newaxis ]
+    regrid_data    = spharm.regrid ( in_grid , out_grid , input_reorder )
+    return regrid_data [ : , : , 0 ]
+
+def get_model_z500_timestep ( file_heads , yyyymmddhh , ens_string , timestep , var_name , if_model_regrid , in_grid , out_grid ) :
+    z500_0 = get_model_data_timestep ( file_heads , yyyymmddhh , ens_string , timestep , var_name )
+    if if_model_regrid :
+        regrid_z500_0 = regrid_scalar_2d_3d_2d ( z500_0 , in_grid , out_grid )
+        return regrid_z500_0
+    else :
+        return z500_0
+
+def get_model_eke_timestep ( u_file_heads , v_file_heads , yyyymmddhh , ens_string , timestep , interval , if_model_regrid , in_grid , out_grid ) :
     u_0    = get_model_data_timestep ( u_file_heads , yyyymmddhh , ens_string , timestep , 'u' )
     u_24   = get_model_data_timestep ( u_file_heads , yyyymmddhh , ens_string , timestep + interval , 'u' )
-    u_diff = np.full ( len ( u_0 ) , np.nan , dtype=u_0.dtype )
-    u_diff = u_24 - u_0
     v_0    = get_model_data_timestep ( v_file_heads , yyyymmddhh , ens_string , timestep , 'v' )
     v_24   = get_model_data_timestep ( v_file_heads , yyyymmddhh , ens_string , timestep + interval , 'v' )
-    v_diff = np.full ( len ( v_0 ) , np.nan , dtype=v_0.dtype )
-    v_diff = v_24 - v_0
+    if if_model_regrid :
+        u_0_output , v_0_output = regrid_vector_2d_3d_2d ( u_0 , v_0 , in_grid , out_grid )
+        u_24_output , v_24_output = regrid_vector_2d_3d_2d ( u_24 , v_24 , in_grid , out_grid )
+        u_diff = np.full ( len ( u_0_output ) , np.nan , dtype=u_0_output.dtype )
+        u_diff = u_24_output - u_0_output
+        v_diff = np.full ( len ( v_0_output ) , np.nan , dtype=v_0_output.dtype )
+        v_diff = v_24_output - v_0_output
+    else :
+        u_diff = np.full ( len ( u_0 ) , np.nan , dtype=u_0.dtype )
+        u_diff = u_24 - u_0
+        v_diff = np.full ( len ( v_0 ) , np.nan , dtype=v_0.dtype )
+        v_diff = v_24 - v_0
     eke_0  = np.full ( len ( u_diff ) , np.nan , dtype=u_diff.dtype )
     eke_0  = 0.5 * ( u_diff * u_diff + v_diff * v_diff )
     return ( eke_0 )
@@ -85,13 +116,13 @@ def convert_ymdh_to_ymd_list ( ymdh_list ) :
             ymd_list.append ( yyyymmdd_now )
     return ymd_list
                         
-def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , file_list , week_n , ensemble_total , if_multi_members , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth ) :
+def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , file_list , week_n , ensemble_total , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth , if_model_regrid , in_grid , out_grid ) :
     ymd_list = convert_ymdh_to_ymd_list ( ymdh_list )
     eke_week_anomaly = np.full ( ( len ( ymd_list ) , 7 , len ( lat ) , len ( lon ) ) , np.nan , dtype=data_type )
     for day in range ( 7 ) :
         eke_day = np.full ( ( len ( ymd_list ) , 4 , ensemble_total , interval_per_24h , len ( lat ) , len ( lon ) ) , np.nan , dtype=data_type )
         for interval_n in range ( interval_per_24h ) :
-            print ( week_n , day , interval_n )
+            print ( "model eke" , week_n , day , interval_n )
             for ymdh_n in range ( len ( ymdh_list ) ) :
                 yyyymmdd_now = ymdh_list [ ymdh_n ] // 100
                 ymd_index = ymd_list.index ( yyyymmdd_now )
@@ -107,9 +138,8 @@ def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , fil
                     if ( not if_include_ic ) and hh == 0 : timestep = timestep - 1
                 if timestep >= 0 :
                     for ens_n in range ( ensemble_total ) :
-                        if if_multi_members : ens_string = "_e" + str ( ens_n ).zfill ( 2 )
-                        else : ens_string = ""
-                        eke_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_eke_timestep ( u_file_heads , v_file_heads , file_list [ ymdh_n ] , ens_string , timestep , interval_per_24h )
+                        ens_string = "_e" + str ( ens_n ).zfill ( 2 )
+                        eke_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_eke_timestep ( u_file_heads , v_file_heads , file_list [ ymdh_n ] , ens_string , timestep , interval_per_24h , if_model_regrid , in_grid , out_grid )
         eke_day_mean = np.nanmean ( eke_day , axis=(1,2,3) )
         eke_week_anomaly [ : , day , : , : ] = cal_anom ( eke_day_mean , ymd_list , if_smooth )
 #    del ( eke_day_mean )
@@ -118,12 +148,13 @@ def get_model_weekly_eke_anomaly ( u_file_heads , v_file_heads , ymdh_list , fil
 #    del ( eke_week_anomaly )
     return eke_week_anomaly_mean
 
-def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , file_list , week_n , ensemble_total , if_multi_members , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth , if_daily_mean ) :
+def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , file_list , week_n , ensemble_total , lat , lon , data_type , interval_per_24h , if_include_ic , if_smooth , if_daily_mean , if_model_regrid , in_grid , out_grid ) :
     ymd_list = convert_ymdh_to_ymd_list ( ymdh_list )
     z500_week_anomaly = np.full ( ( len ( ymd_list ) , 7 , len ( lat ) , len ( lon ) ) , np.nan , dtype=data_type )
     for day in range ( 7 ) :
         z500_day = np.full ( ( len ( ymd_list ) , 4 , ensemble_total , interval_per_24h , len ( lat ) , len ( lon ) ) , np.nan , dtype=data_type )
         for interval_n in range ( interval_per_24h ) :
+            print ( "model z500" , week_n , day , interval_n )
             for ymdh_n in range ( len ( ymdh_list ) ) :
                 yyyymmdd_now = ymdh_list [ ymdh_n ] // 100
                 ymd_index = ymd_list.index ( yyyymmdd_now )
@@ -139,11 +170,10 @@ def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , fil
                     if ( not if_daily_mean ) and ( not if_include_ic ) and hh == 0 : timestep = timestep - 1
                 if timestep >= 0 :
                     for ens_n in range ( ensemble_total ) :
-                        if if_multi_members : ens_string = "_e" + str ( ens_n ).zfill ( 2 )
-                        else : ens_string = ""
+                        ens_string = "_e" + str ( ens_n ).zfill ( 2 )
                         file_now = z500_file_heads [ 0 ] + str ( ymdh_list [ ymdh_n ] ) + ens_string + z500_file_heads [ 1 ]
                         if path.exists ( file_now ) :
-                            z500_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_data_timestep ( z500_file_heads , file_list [ ymdh_n ] , ens_string , timestep , var_name )
+                            z500_day [ ymd_index , hh_n , ens_n , interval_n , : , : ] = get_model_z500_timestep ( z500_file_heads , file_list [ ymdh_n ] , ens_string , timestep , var_name , if_model_regrid , in_grid , out_grid )
 
         z500_day_mean = np.nanmean ( z500_day , axis=(1,2,3) )
         z500_week_anomaly [ : , day , : , : ] = cal_anom ( z500_day_mean , ymd_list , if_smooth )
@@ -155,10 +185,9 @@ def get_model_weekly_z500_anomaly ( z500_file_heads , var_name , ymdh_list , fil
 
 def get_ts_erai ( file_in , var_name , time_n , total_days , eari_timesteps_per_day ) :
     data = np.array ( file_in [ var_name ] [ time_n : time_n + total_days * eari_timesteps_per_day , : , : ] )
-    data1 = np.array ( file_in [ var_name ] [ time_n : time_n + 1 , : , : ] )
     return data
 
-def get_erai_weekly_eke_anomaly ( era_u_file , era_v_file, ymdh_list , week_n , lat , lon , data_type , interval_per_24h , if_daily_mean , if_smooth , eari_timesteps_per_day ) :
+def get_erai_weekly_eke_anomaly ( era_u_file , era_v_file, ymdh_list , week_n , lat , lon , data_type , interval_per_24h , if_daily_mean , if_smooth , eari_timesteps_per_day , if_reanalysis_regrid , in_grid , out_grid , if_flip ) :
     ymd_list = convert_ymdh_to_ymd_list ( ymdh_list )
     ERA_u850_file = xr.open_dataset ( era_u_file )
     ERA_u_time_in  = ERA_u850_file [ 'time' ]
@@ -169,24 +198,33 @@ def get_erai_weekly_eke_anomaly ( era_u_file , era_v_file, ymdh_list , week_n , 
     u_ts = get_ts_erai ( ERA_u850_file , 'u' , 0 , 2 , eari_timesteps_per_day )
     eke_week_anomaly = np.full ( ( len ( ymd_list ) , 7 , len ( lat ) , len ( lon ) ) , np.nan , dtype=u_ts.dtype )
     for day in range ( 7 ) :
+        print ( "reanalysis eke" , week_n , day )
         eke_day = np.full ( ( len ( ymd_list ) , len ( lat ) , len ( lon ) ) , np.nan , dtype=eke_week_anomaly.dtype )
         for ymd_n in range ( len ( ymd_list ) ) :
             index = np.where ( ERA_u_yyyymmdd == ymd_list [ ymd_n ] ) [ 0 ] [ 0 ]
             u_ts = get_ts_erai ( ERA_u850_file , 'u' , index + ( week_n * 7 + day ) * eari_timesteps_per_day , 2 , eari_timesteps_per_day )
             index = np.where ( ERA_v_yyyymmdd == ymd_list [ ymd_n ] ) [ 0 ] [ 0 ]
             v_ts = get_ts_erai ( ERA_v850_file , 'v' , index + ( week_n * 7 + day ) * eari_timesteps_per_day , 2 , eari_timesteps_per_day )
+            if if_reanalysis_regrid :
+                u_regrid = np.full ( ( u_ts.shape [ 0 ] , len ( lat ) , len ( lon ) ) , np.nan , dtype=u_ts.dtype )
+                v_regrid = np.full ( ( v_ts.shape [ 0 ] , len ( lat ) , len ( lon ) ) , np.nan , dtype=v_ts.dtype )
+                for time_step_n in range ( u_ts.shape [ 0 ] ) :
+                    u_regrid [ time_step_n , : , : ] , v_regrid [ time_step_n , : , : ] = regrid_vector_2d_3d_2d ( u_ts [ time_step_n , : , : ] , v_ts [ time_step_n , : , : ] , in_grid , out_grid )
+            else :
+                u_regrid = u_ts
+                v_regrid = v_ts
             if if_daily_mean :
-                u_diff = np.full ( u_ts [ 0 , : , : ].shape , np.nan , dtype=u_ts.dtype )
-                u_diff = np.nanmean ( u_ts [ 0 : eari_timesteps_per_day , : , : ] , axis=0 ) - np.nanmean ( u_ts [ eari_timesteps_per_day : eari_timesteps_per_day * 2 , : , : ] , axis=0 )
-                v_diff = np.full ( u_ts [ 0 , : , : ].shape , np.nan , dtype=v_ts.dtype )
-                v_diff = np.nanmean ( v_ts [ 0 : eari_timesteps_per_day , : , : ] , axis=0 ) - np.nanmean ( v_ts [ eari_timesteps_per_day : eari_timesteps_per_day * 2 , : , : ] , axis=0 )
+                u_diff = np.full ( u_regrid [ 0 , : , : ].shape , np.nan , dtype=u_regrid.dtype )
+                u_diff = np.nanmean ( u_regrid [ 0 : eari_timesteps_per_day , : , : ] , axis=0 ) - np.nanmean ( u_regrid [ eari_timesteps_per_day : eari_timesteps_per_day * 2 , : , : ] , axis=0 )
+                v_diff = np.full ( v_regrid [ 0 , : , : ].shape , np.nan , dtype=v_regrid.dtype )
+                v_diff = np.nanmean ( v_regrid [ 0 : eari_timesteps_per_day , : , : ] , axis=0 ) - np.nanmean ( v_regrid [ eari_timesteps_per_day : eari_timesteps_per_day * 2 , : , : ] , axis=0 )
                 eke_day [ ymd_n , : , : ] = 0.5 * ( u_diff * u_diff + v_diff * v_diff )
             else :
-                u_diff = np.full ( u_ts [ : interval_per_24h , : , : ].shape , np.nan  , dtype=u_ts.dtype )
-                v_diff = np.full ( v_ts [ : interval_per_24h , : , : ].shape , np.nan  , dtype=v_ts.dtype )
+                u_diff = np.full ( u_regrid [ : interval_per_24h , : , : ].shape , np.nan  , dtype=u_ts.dtype )
+                v_diff = np.full ( v_regrid [ : interval_per_24h , : , : ].shape , np.nan  , dtype=v_ts.dtype )
                 for interval_n in range ( interval_per_24h ) :
-                    u_diff [ interval_n , : , : ] = u_ts [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) , : , : ] - u_ts [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) + eari_timesteps_per_day , : , : ]
-                    v_diff [ interval_n , : , : ] = v_ts [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) , : , : ] - v_ts [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) + eari_timesteps_per_day , : , : ]
+                    u_diff [ interval_n , : , : ] = u_regrid [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) , : , : ] - u_regrid [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) + eari_timesteps_per_day , : , : ]
+                    v_diff [ interval_n , : , : ] = v_regrid [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) , : , : ] - v_regrid [ interval_n * ( eari_timesteps_per_day // interval_per_24h ) + eari_timesteps_per_day , : , : ]
                 eke_day [ ymd_n , : , : ] = np.nanmean ( 0.5 * ( u_diff * u_diff + v_diff * v_diff ) , axis=0 )
         eke_week_anomaly [ : , day , : , : ] = cal_anom ( eke_day , ymd_list , if_smooth )
 #    del ( eke_day )
@@ -194,9 +232,13 @@ def get_erai_weekly_eke_anomaly ( era_u_file , era_v_file, ymdh_list , week_n , 
 #    del ( eke_week_anomaly )
     ERA_u850_file.close ( )
     ERA_v850_file.close ( )
-    return eke_week_anomaly_mean.astype ( data_type )
+    if if_flip :
+        eke_week_anomaly_mean_flip = np.flip ( eke_week_anomaly_mean , 1 )
+        return eke_week_anomaly_mean_flip.astype ( data_type )
+    else :
+        return eke_week_anomaly_mean.astype ( data_type )
 
-def get_erai_weekly_z500_anomaly ( era_z_file , ymdh_list , week_n , lat , lon , data_type , interval_per_24h , if_daily_mean , if_smooth , eari_timesteps_per_day ) :
+def get_erai_weekly_z500_anomaly ( era_z_file , ymdh_list , week_n , lat , lon , data_type , interval_per_24h , if_daily_mean , if_smooth , eari_timesteps_per_day , if_reanalysis_regrid , in_grid , out_grid , if_flip ) :
     ymd_list = convert_ymdh_to_ymd_list ( ymdh_list )
     ERA_z500_file = xr.open_dataset ( era_z_file )
     ERA_z_time_in  = ERA_z500_file [ 'time' ]
@@ -204,17 +246,28 @@ def get_erai_weekly_z500_anomaly ( era_z_file , ymdh_list , week_n , lat , lon ,
     z500_ts = get_ts_erai ( ERA_z500_file , 'z' , 0 , 1 , eari_timesteps_per_day )
     z500_week_anomaly = np.full ( ( len ( ymd_list ) , 7 , len ( lat ) , len ( lon ) ) , np.nan , dtype=z500_ts.dtype )
     for day in range ( 7 ) :
+        print ( "reanalysis z500" , week_n , day )
         z500_day = np.full ( ( len ( ymd_list ) , len ( lat ) , len ( lon ) ) , np.nan , dtype=z500_week_anomaly.dtype )
         for ymd_n in range ( len ( ymd_list ) ) :
             index = np.where ( ERA_z_yyyymmdd == ymd_list [ ymd_n ] ) [ 0 ] [ 0 ]
             z500_ts = get_ts_erai ( ERA_z500_file , 'z' , index + ( week_n * 7 + day ) * eari_timesteps_per_day , 1 , eari_timesteps_per_day )
-            z500_day [ ymd_n , : , : ] = np.nanmean ( z500_ts , axis=0 )
+            if if_reanalysis_regrid :
+                z500_regrid = np.full ( ( z500_ts.shape [ 0 ] , len ( lat ) , len ( lon ) ) , np.nan , dtype=z500_ts.dtype )
+                for time_step_n in range ( z500_ts.shape [ 0 ] ) :
+                    z500_regrid [ time_step_n , : , : ] = regrid_scalar_2d_3d_2d ( z500_ts [ time_step_n , : , : ] , in_grid , out_grid )
+                z500_day [ ymd_n , : , : ] = np.nanmean ( z500_regrid , axis=0 )
+            else :
+                z500_day [ ymd_n , : , : ] = np.nanmean ( z500_ts , axis=0 )
         z500_week_anomaly [ : , day , : , : ] = cal_anom ( z500_day , ymd_list , if_smooth )
 #    del ( z500_day )
     z500_week_anomaly_mean = np.nanmean ( z500_week_anomaly , axis=1 ) * ( 1. / g0 ) 
 #    del ( z500_week_anomaly )
     ERA_z500_file.close ( )
-    return z500_week_anomaly_mean.astype ( data_type )
+    if if_flip :
+        z500_week_anomaly_mean_flip = np.flip ( z500_week_anomaly_mean , 1 )
+        return z500_week_anomaly_mean_flip.astype ( data_type )
+    else :
+        return z500_week_anomaly_mean.astype ( data_type )
 
 def get_rmm_composite_list ( composite_phase_names , model_yyyymmdd , rmm_yyyymmdd , rmm_phase_in , rmm_amplitude_in , amplitude_threshold , start_month , end_month ) :
     rmm_list = [ ]
