@@ -40,8 +40,8 @@ Smooth_climatology           = yml_input [ 'smooth climatology:' ]
 ERAI                         = yml_input [ 'ERAI:' ]
 RMM                          = yml_input [ 'RMM:' ]
 
-Model_u850_files             = yml_input [ 'Extratropical Cyclone Activity meridional wind at 850 hPa model files' ]
-Model_v850_files             = yml_input [ 'Extratropical Cyclone Activity zonal wind at 850 hPa model files' ]
+Model_u850_files             = yml_input [ 'Extratropical Cyclone Activity zonal wind at 850 hPa model files' ]
+Model_v850_files             = yml_input [ 'Extratropical Cyclone Activity meridional wind at 850 hPa model files' ]
 Model_z500_files             = yml_input [ 'Extratropical Cyclone Activity Z500 model files' ]
 
 ###### Input from yml file (UFS)
@@ -64,9 +64,9 @@ if ERAI :
 #    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
 #    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
 
-#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
-#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
-#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/6hourly/yyyymmdd/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.6hourly.nc" ]
+#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
+#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
+#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.6hourly.nc" ]
 #Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/u.850-isobaricInhPa.*.f000-840.nc" ]
 #Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/v.850-isobaricInhPa.*.f000-840.nc" ]
 #Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/gh.500-isobaricInhPa.*.f000-840.nc" ]
