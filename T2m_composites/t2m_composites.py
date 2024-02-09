@@ -40,6 +40,12 @@ for i in range(len(times)):
 
 ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
 
+# Get the forecast period from the provided Start_Date -- End_Date period
+yyyymmdd_Begin=dictionary['START_DATE:']
+tBegin=yyyymmdd_Begin[0:4]+'-'+yyyymmdd_Begin[4:6]+'-'+yyyymmdd_Begin[6:8]
+yyyymmdd_End=dictionary['END_DATE:']
+tEnd=yyyymmdd_End[0:4]+'-'+yyyymmdd_End[4:6]+'-'+yyyymmdd_End[6:8]
+
 # ERA-Interim data covers 01/01/1979-08/31/2019, 7 years and 8 months, 14853 days
 
 if (dictionary['ERAI:']==True):
@@ -50,15 +56,14 @@ if (dictionary['ERAI:']==False):
 ds_t2m_obs=xr.open_dataset(fil_t2m_obs)
 
 
-# Calculate anomalies of observations for the provided Start_Date -- End_Date period
+# If requested, calculate anomalies of observations for the provided Start_Date -- End_Date period; otherwise read the anomalies from the provided file
 
 
 if (dictionary['Daily Anomaly:'] == True):
     var_name='t2m_anom'
-    tBegin=dictionary['START_DATE:']
-    tEnd=dictionary['END_DATE:']
     t2m_obs_anom=calcAnomObs(ds_t2m_obs['t2m'].sel(time=slice(tBegin,tEnd)),var_name)
-
+if (dictionary['Daily Anomaly:'] == False):
+    t2m_obs_anom=ds_t2m_obs['t2m_anom']
 
 # Select all days in November-December-January-February-March
 
