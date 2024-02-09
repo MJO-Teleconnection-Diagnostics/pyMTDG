@@ -12,7 +12,6 @@ import time, sys
 import subprocess
 import shutil
 
-
 class StartWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -605,11 +604,7 @@ The package can be applied to one forecast model. The name of the model will ape
         #commenting out the input validation
         dict_file =self.dict_file
         dict_file['model name'] = self.model_name.text()
-        '''dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
-        if self.time_step_interval and self.time_step_interval_24.isChecked():
-            dict_file['forecast time step']= 24
-        else:
-            dict_file['forecast time step']= 6'''
+        
         
         dict_file['model initial conditions']= self.initial_conds_yes.isChecked()
         dict_file['smooth climatology:'] = self.smooth_climatology_yes.isChecked()
@@ -1313,14 +1308,14 @@ class ThirdSubWindow(QMainWindow):
         #If "No" in 1, what is the forecast time step interval in the model data?
         self.time_step_interval = QLabel('What is the forecast time step interval in the model data?', self)
         self.groupbox1 = QGroupBox()
-        vbox = QVBoxLayout()
-        self.groupbox1.setLayout(vbox)
+        vbox2 = QVBoxLayout()
+        self.groupbox1.setLayout(vbox2)
         self.time_step_interval_6 = QRadioButton("6")
         
-        vbox.addWidget(self.time_step_interval_6)
+        vbox2.addWidget(self.time_step_interval_6)
         self.time_step_interval_24 = QRadioButton("24")
         self.time_step_interval_24.setChecked(True)
-        vbox.addWidget(self.time_step_interval_24)
+        vbox2.addWidget(self.time_step_interval_24)
 
         diag_help_texts = ['']*13
 
@@ -1673,11 +1668,12 @@ class ThirdSubWindow(QMainWindow):
         self.parent.show()
     def close_yaml(self):
         dict_file =self.dict_file
-        dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
-        if self.time_step_interval and self.time_step_interval_24.isChecked():
-            dict_file['forecast time step']= 24
-        else:
-            dict_file['forecast time step']= 6
+        if 8 in self.selected:
+            dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
+            if self.time_step_interval and self.time_step_interval_24.isChecked():
+                dict_file['forecast time step']= 24
+            else:
+                dict_file['forecast time step']= 6
         dict_file['Path to z500 date files'] = []
         for i in self.z500Ts:
             dict_file['Path to z500 date files'].append(i.text())
