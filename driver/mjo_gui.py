@@ -6,12 +6,11 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 import yaml
-from PyQt5.QtCore import QObject, QThread, QRunnable,QThreadPool
+from PyQt5.QtCore import QObject, QThread, QRunnable
 import os
 import time, sys
 import subprocess
 import shutil
-
 class StartWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -939,7 +938,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         right_layout.addWidget(self.second)
         right_layout.addWidget(self.third)
         right_layout.addWidget(self.third_2)
-        right_layout.addWidget(self.fourth)
+        #right_layout.addWidget(self.fourth)
         right_layout.addWidget(self.fifth)
         right_layout.addWidget(self.sixth)
         right_layout.addWidget(self.seventh)
@@ -1032,7 +1031,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.second.setChecked(True)
             self.third.setChecked(True)
             self.third_2.setChecked(True)
-            self.fourth.setChecked(True)
+            #self.fourth.setChecked(True)
             self.fifth.setChecked(True)
             self.sixth.setChecked(True)
             self.seventh.setChecked(True)
@@ -1046,7 +1045,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.second.setChecked(False)
             self.third.setChecked(False)
             self.third_2.setChecked(False)
-            self.fourth.setChecked(False)
+            #self.fourth.setChecked(False)
             self.fifth.setChecked(False)
             self.sixth.setChecked(False)
             self.seventh.setChecked(False)
@@ -1061,47 +1060,43 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
 class ThirdSubWindow(QMainWindow):
     def __init__(self,parent,selected,dirin,era,dict_file):
         super().__init__()
-        #self.setupUi(self)
+        
+        #passed down variables
         self.parent=parent
         self.selected = selected
-        self.dict_file = dict_file
-        #vbox = QHBoxLayout()
-        self.setWindowTitle('Third Sub Window')
-        self.setGeometry(0, 0, 800, 400)  # Set window position and size
-        self.showMaximized()
-        scroll_bar = QScrollBar(self)
-        # Create the weather image widget
-        #weather_image = QLabel(self)
-        #pixmap = QPixmap('weather.jpg') 
-        self.threadpool = QThreadPool()
-        
-        self.dirin = dirin
-        pref = self.dirin+"/"
-        prefix = self.dirin+"/OBS/"
-        
-        self.pref=pref 
-        self.prefix = prefix
-        #change labels correctly.
-
-        self.scroll = QScrollArea()             # Scroll Area which contains the widgets, set as the centralWidget
-        self.widget = QWidget()                 # Widget that contains the collection of Vertical Box
-        right_layout = QVBoxLayout()
-        num_dates = dict_file['Number of initial dates:']
-        dates = dict_file['Initial dates:' ]
-        self.dates = dates
-        self.num_dates = num_dates
-        # Path to Z500 data files:
-        self.num_dates = num_dates
         self.era=era
+        self.dirin = dirin
+        self.pref = self.dirin+"/"
+        self.prefix = self.dirin+"/OBS/"
+        self.dict_file = dict_file
+        self.num_dates = dict_file['Number of initial dates:']
+        self.dates = dict_file['Initial dates:' ]
+        
+        #set window title and position and size
+        self.setWindowTitle('Third Sub Window')
+        self.setGeometry(0, 0, 800, 400)  
+        self.showMaximized()
+        
+        #scroll bar - vertical and horizontal
+        #scroll Area which contains the widgets, set as the centralWidget
+        self.scroll = QScrollArea()  
+        #self.widget = QWidget()                 # Widget that contains the collection of Vertical Box
+        
+        
+        #right_layout declaration
+        right_layout = QVBoxLayout()
+        
+        
+        #Path to Z500 data files:
         z500s=[]
         self.z500Ts = []
         self.z500Tobss = []
 
-        for i in range(num_dates):
-            z500 = QLabel(f'Path to Z500 model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            z500 = QLabel(f'Path to Z500 model data files for date {self.dates[i]}:', self)
             self.z500T = QLineEdit(self)
-            self.z500T.setText(pref)
-            self.z500T.setCursorPosition(len(pref))
+            self.z500T.setText(self.pref)
+            self.z500T.setCursorPosition(len(self.pref))
 
             z500s.append(z500)
             self.z500Ts.append(self.z500T)
@@ -1109,13 +1104,13 @@ class ThirdSubWindow(QMainWindow):
         
         z500obs = QLabel(f'Path to Z500 observational data files:', self)
         self.z500Tobs = QLineEdit(self)
-        self.z500Tobs.setText(prefix)
-        self.z500Tobs.setCursorPosition(len(prefix))
+        self.z500Tobs.setText(self.prefix)
+        self.z500Tobs.setCursorPosition(len(self.prefix))
 
         dir_OLR_label = QLabel('Path to OLR data files:', self)
         self.olrDataFiles = QLineEdit(self)
-        self.olrDataFiles.setText(prefix)
-        self.olrDataFiles.setCursorPosition(len(prefix))
+        self.olrDataFiles.setText(self.prefix)
+        self.olrDataFiles.setCursorPosition(len(self.prefix))
 
         #Path to Extratropical cyclone activity data files
         Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files:', self)
@@ -1123,42 +1118,42 @@ class ThirdSubWindow(QMainWindow):
         Ezonal850 = QLabel(f"Path to zonal wind at 850 hPa data files for Extratropical Cyclone Activity:", self)
 
         self.Ez500T = QLineEdit(self)
-        self.Ez500T.setText(pref)
-        self.Ez500T.setCursorPosition(len(pref))
+        self.Ez500T.setText(self.pref)
+        self.Ez500T.setCursorPosition(len(self.pref))
 
         self.Emeridional850T = QLineEdit(self)
-        self.Emeridional850T.setText(pref)
-        self.Emeridional850T.setCursorPosition(len(pref))
+        self.Emeridional850T.setText(self.pref)
+        self.Emeridional850T.setCursorPosition(len(self.pref))
 
         self.Ezonal850T = QLineEdit(self)
-        self.Ezonal850T.setText(pref)
-        self.Ezonal850T.setCursorPosition(len(pref))
+        self.Ezonal850T.setText(self.pref)
+        self.Ezonal850T.setCursorPosition(len(self.pref))
 
         self.Ez500obs = QLabel(f'Path to Extratropical Cyclone Activity Z500 observational data files:', self)
         self.Ez500Tobs = QLineEdit(self)
-        self.Ez500Tobs.setText(prefix)
-        self.Ez500Tobs.setCursorPosition(len(prefix))
+        self.Ez500Tobs.setText(self.prefix)
+        self.Ez500Tobs.setCursorPosition(len(self.prefix))
 
         self.Emeridional850obs = QLabel(f'Path to meridional wind at 850 hPa observational data files for Extratropical Cyclone Activity:', self)
         self.Emeridional850Tobs = QLineEdit(self)
-        self.Emeridional850Tobs.setText(prefix)
-        self.Emeridional850Tobs.setCursorPosition(len(prefix))
+        self.Emeridional850Tobs.setText(self.prefix)
+        self.Emeridional850Tobs.setCursorPosition(len(self.prefix))
 
         self.Ezonal850obs = QLabel(f'Path to zonal wind at 850 hPa observational data files for Extratropical Cyclone Activity:', self)
         self.Ezonal850Tobs = QLineEdit(self)
-        self.Ezonal850Tobs.setText(prefix)
-        self.Ezonal850Tobs.setCursorPosition(len(prefix))
+        self.Ezonal850Tobs.setText(self.prefix)
+        self.Ezonal850Tobs.setCursorPosition(len(self.prefix))
 
         # Path to Z100 data files:
         z100s = []
         self.z100Ts = []
         self.z100Tobss = []
     
-        for i in range(num_dates):
-            z100 = QLabel(f'Path to Z100 model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            z100 = QLabel(f'Path to Z100 model data files for date {self.dates[i]}:', self)
             self.z100T = QLineEdit(self)
-            self.z100T.setText(pref)
-            self.z100T.setCursorPosition(len(pref))
+            self.z100T.setText(self.pref)
+            self.z100T.setCursorPosition(len(self.pref))
 
 
             z100s.append(z100)
@@ -1166,8 +1161,8 @@ class ThirdSubWindow(QMainWindow):
             
         z100obs = QLabel(f'Path to Z100 observational data files:', self)
         self.z100Tobs = QLineEdit(self)
-        self.z100Tobs.setText(prefix)
-        self.z100Tobs.setCursorPosition(len(prefix))
+        self.z100Tobs.setText(self.prefix)
+        self.z100Tobs.setCursorPosition(len(self.prefix))
 
 
 
@@ -1177,18 +1172,18 @@ class ThirdSubWindow(QMainWindow):
         
         self.zonalwind850Tobss = []
 
-        for i in range(num_dates):
-            zonalwind850 = QLabel(f'Path to zonal wind at 850 hPa model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            zonalwind850 = QLabel(f'Path to zonal wind at 850 hPa model data files for date {self.dates[i]}:', self)
             self.zonalwind850T = QLineEdit(self)
-            self.zonalwind850T.setText(pref)
-            self.zonalwind850T.setCursorPosition(len(pref))
+            self.zonalwind850T.setText(self.pref)
+            self.zonalwind850T.setCursorPosition(len(self.pref))
             zonalwind850s.append(zonalwind850)
             self.zonalwind850Ts.append(self.zonalwind850T)
             
         zonalwind850obs = QLabel(f'Path to zonal wind at 850 hPa observational data files:', self)
         self.zonalwind850Tobs = QLineEdit(self)
-        self.zonalwind850Tobs.setText(prefix)
-        self.zonalwind850Tobs.setCursorPosition(len(prefix))
+        self.zonalwind850Tobs.setText(self.prefix)
+        self.zonalwind850Tobs.setCursorPosition(len(self.prefix))
 
         # Path to zonal wind at 200 hPa data files:
         zonalwind200s = []
@@ -1196,19 +1191,19 @@ class ThirdSubWindow(QMainWindow):
         
         self.zonalwind200Tobss = []
 
-        for i in range(num_dates):
-            zonalwind200 = QLabel(f'Path to zonal wind at 200 hPa model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            zonalwind200 = QLabel(f'Path to zonal wind at 200 hPa model data files for date {self.dates[i]}:', self)
             self.zonalwind200T = QLineEdit(self)
-            self.zonalwind200T.setText(pref)
-            self.zonalwind200T.setCursorPosition(len(pref))
+            self.zonalwind200T.setText(self.pref)
+            self.zonalwind200T.setCursorPosition(len(self.pref))
 
             zonalwind200s.append(zonalwind200)
             self.zonalwind200Ts.append(self.zonalwind200T)
             
         zonalwind200obs = QLabel(f'Path to zonal wind at 200 hPa observational data files:', self)
         self.zonalwind200Tobs = QLineEdit(self)
-        self.zonalwind200Tobs.setText(prefix)
-        self.zonalwind200Tobs.setCursorPosition(len(prefix))
+        self.zonalwind200Tobs.setText(self.prefix)
+        self.zonalwind200Tobs.setCursorPosition(len(self.prefix))
 
 
 
@@ -1217,19 +1212,19 @@ class ThirdSubWindow(QMainWindow):
         self.zonalwind10Ts = []
         zonalwind10obss = []
         self.zonalwind10Tobss = []
-        for i in range(num_dates):
-            zonalwind10 = QLabel(f'Path to zonal wind at 10 hPa model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            zonalwind10 = QLabel(f'Path to zonal wind at 10 hPa model data files for date {self.dates[i]}:', self)
             self.zonalwind10T = QLineEdit(self)
-            self.zonalwind10T.setText(pref)
-            self.zonalwind10T.setCursorPosition(len(pref))
+            self.zonalwind10T.setText(self.pref)
+            self.zonalwind10T.setCursorPosition(len(self.pref))
 
             zonalwind10s.append(zonalwind10)
             self.zonalwind10Ts.append(self.zonalwind10T)
             
         zonalwind10obs = QLabel(f'Path to zonal wind at 10 hPa observational data files:', self)
         self.zonalwind10Tobs = QLineEdit(self)
-        self.zonalwind10Tobs.setText(prefix)
-        self.zonalwind10Tobs.setCursorPosition(len(prefix))
+        self.zonalwind10Tobs.setText(self.prefix)
+        self.zonalwind10Tobs.setCursorPosition(len(self.prefix))
 
 
 
@@ -1239,19 +1234,19 @@ class ThirdSubWindow(QMainWindow):
         meridionalwind850obss = []
         self.meridionalwind850Tobss = []
 
-        for i in range(num_dates):
-            meridionalwind850 = QLabel(f'Path to meridional wind at 850 hPa model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            meridionalwind850 = QLabel(f'Path to meridional wind at 850 hPa model data files for date {self.dates[i]}:', self)
             self.meridionalwind850T = QLineEdit(self)
-            self.meridionalwind850T.setText(pref)
-            self.meridionalwind850T.setCursorPosition(len(pref))
+            self.meridionalwind850T.setText(self.pref)
+            self.meridionalwind850T.setCursorPosition(len(self.pref))
 
             meridionalwind850s.append(meridionalwind850)
             self.meridionalwind850Ts.append(self.meridionalwind850T)
                     
         meridionalwind850obs = QLabel(f'Path to meridional wind at 850 hPa observational data files:', self)
         self.meridionalwind850Tobs = QLineEdit(self)
-        self.meridionalwind850Tobs.setText(prefix)
-        self.meridionalwind850Tobs.setCursorPosition(len(prefix))
+        self.meridionalwind850Tobs.setText(self.prefix)
+        self.meridionalwind850Tobs.setCursorPosition(len(self.prefix))
 
         # Path to meridional wind at 500 hPa data files:
 
@@ -1260,18 +1255,18 @@ class ThirdSubWindow(QMainWindow):
         meridionalwind500obss = []
         self.meridionalwind500Tobss = []
 
-        for i in range(num_dates):
-            meridionalwind500 = QLabel(f'Path to meridional wind at 500 hPa model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            meridionalwind500 = QLabel(f'Path to meridional wind at 500 hPa model data files for date {self.dates[i]}:', self)
             self.meridionalwind500T = QLineEdit(self)
-            self.meridionalwind500T.setText(pref)
-            self.meridionalwind500T.setCursorPosition(len(pref))
+            self.meridionalwind500T.setText(self.pref)
+            self.meridionalwind500T.setCursorPosition(len(self.pref))
 
             meridionalwind500s.append(meridionalwind500)
             self.meridionalwind500Ts.append(self.meridionalwind500T)
         meridionalwind500obs = QLabel(f'Path to meridional wind at 500 hPa observational data files:', self)
         self.meridionalwind500Tobs = QLineEdit(self)
-        self.meridionalwind500Tobs.setText(prefix)
-        self.meridionalwind500Tobs.setCursorPosition(len(prefix))
+        self.meridionalwind500Tobs.setText(self.prefix)
+        self.meridionalwind500Tobs.setCursorPosition(len(self.prefix))
 
         # Path to temperature at 500 hPa data files:
         temperature500s = []
@@ -1279,18 +1274,18 @@ class ThirdSubWindow(QMainWindow):
         temperature500obss = []
         self.temperature500Tobss = []
 
-        for i in range(num_dates):
-            temperature500 = QLabel(f'Path to temperature at 500 hPa model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            temperature500 = QLabel(f'Path to temperature at 500 hPa model data files for date {self.dates[i]}:', self)
             self.temperature500T = QLineEdit(self)
-            self.temperature500T.setText(pref)
-            self.temperature500T.setCursorPosition(len(pref))
+            self.temperature500T.setText(self.pref)
+            self.temperature500T.setCursorPosition(len(self.pref))
             temperature500s.append(temperature500)
             self.temperature500Ts.append(self.temperature500T)
             
         temperature500obs = QLabel(f'Path to temperature at 500 hPa observational data files:', self)
         self.temperature500Tobs = QLineEdit(self)
-        self.temperature500Tobs.setText(prefix)
-        self.temperature500Tobs.setCursorPosition(len(prefix))
+        self.temperature500Tobs.setText(self.prefix)
+        self.temperature500Tobs.setCursorPosition(len(self.prefix))
 
         #EKE
         #Are the model data daily-mean values? (Otherwise the data are instantaneous values)
@@ -1329,7 +1324,7 @@ class ThirdSubWindow(QMainWindow):
         Help text for Pattern CC over the PNA region
 '''
         diag_help_texts[4] = '''
-        Help text for Fraction of the observed STRIPES index for geopotential height
+        
 '''
         diag_help_texts[5] = '''
         Help text for Relative amplitude over PNA?
@@ -1370,18 +1365,18 @@ class ThirdSubWindow(QMainWindow):
         self.t2mTs = []
         t2mobss = []
         self.t2mTobss = []
-        for i in range(num_dates):
-            t2m = QLabel(f'Path to T2m model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            t2m = QLabel(f'Path to T2m model data files for date {self.dates[i]}:', self)
             self.t2mT = QLineEdit(self)
-            self.t2mT.setText(pref)
-            self.t2mT.setCursorPosition(len(pref))
+            self.t2mT.setText(self.pref)
+            self.t2mT.setCursorPosition(len(self.pref))
 
             t2ms.append(t2m)
             self.t2mTs.append(self.t2mT)
         t2mobs = QLabel(f'Path to T2m observational data files:', self)
         self.t2mTobs = QLineEdit(self)
-        self.t2mTobs.setText(prefix)
-        self.t2mTobs.setCursorPosition(len(prefix))
+        self.t2mTobs.setText(self.prefix)
+        self.t2mTobs.setCursorPosition(len(self.prefix))
 
         # Path to precipitational data files:
         precDatas = []
@@ -1389,18 +1384,18 @@ class ThirdSubWindow(QMainWindow):
         precDataobss = []
         self.precDataTobss = []
 
-        for i in range(num_dates):
-            precData = QLabel(f'Path to precipitation model data files for date {dates[i]}:', self)
+        for i in range(self.num_dates):
+            precData = QLabel(f'Path to precipitation model data files for date {self.dates[i]}:', self)
             self.precDataT = QLineEdit(self)
-            self.precDataT.setText(pref)
-            self.precDataT.setCursorPosition(len(pref))
+            self.precDataT.setText(self.pref)
+            self.precDataT.setCursorPosition(len(self.pref))
 
             precDatas.append(precData)
             self.precDataTs.append(self.precDataT)
         precDataobs = QLabel(f'Path to precipitation observational data files:', self)
         self.precDataTobs = QLineEdit(self)
-        self.precDataTobs.setText(prefix)
-        self.precDataTobs.setCursorPosition(len(prefix))
+        self.precDataTobs.setText(self.prefix)
+        self.precDataTobs.setCursorPosition(len(self.prefix))
             
         weeks = QLabel('Select weeks:', self)
         self.selectweeks = QLineEdit(self)
@@ -1426,7 +1421,7 @@ class ThirdSubWindow(QMainWindow):
                 helptext+=diag_help_texts[1]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(z500s[i])
                         right_layout.addWidget(self.z500Ts[i])
                     if era == False:
@@ -1436,31 +1431,30 @@ class ThirdSubWindow(QMainWindow):
                 helptext+=diag_help_texts[2]+'\n\n'
                 if 'precDataT' not in rendered:
                     rendered.append('precDataT')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(precDatas[i])
                         right_layout.addWidget(self.precDataTs[i])
                     if era == False:
                         right_layout.addWidget(precDataobs)
                         right_layout.addWidget(self.precDataTobs)
-            if 3 in selected or 11 in selected or 0 in selected: #Fraction of the observed STRIPES
+            '''if 3 in selected or 11 in selected or 0 in selected: #Fraction of the observed STRIPES
                 helptext+=diag_help_texts[3]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(z500s[i])
                         right_layout.addWidget(self.z500Ts[i])
                     if era == False:
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
-
                 right_layout.addWidget(weeks)
-                right_layout.addWidget(self.selectweeks)
+                right_layout.addWidget(self.selectweeks)'''
 
             if 4 in selected or 0 in selected: #Pattern CC over
                 helptext+=diag_help_texts[4]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(z500s[i])
                         right_layout.addWidget(self.z500Ts[i])
                     if era == False:
@@ -1474,7 +1468,7 @@ class ThirdSubWindow(QMainWindow):
                 helptext+=diag_help_texts[5]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(z500s[i])
                         right_layout.addWidget(self.z500Ts[i])
                     if era == False:
@@ -1485,7 +1479,7 @@ class ThirdSubWindow(QMainWindow):
                 helptext+=diag_help_texts[6]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(z500s[i])
                         right_layout.addWidget(self.z500Ts[i])
                     if era == False:
@@ -1494,7 +1488,7 @@ class ThirdSubWindow(QMainWindow):
                 if 'z100T' not in rendered:
                     
                     rendered.append('z100T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(z100s[i])
                         right_layout.addWidget(self.z100Ts[i])
                     if era == False:
@@ -1503,7 +1497,7 @@ class ThirdSubWindow(QMainWindow):
 
                 if 'meridionalwind500T' not in rendered:
                     rendered.append('meridionalwind500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(meridionalwind500s[i])
                         right_layout.addWidget(self.meridionalwind500Ts[i])
                     if era == False:
@@ -1512,7 +1506,7 @@ class ThirdSubWindow(QMainWindow):
                 
                 if 'temperature500T' not in rendered:
                     rendered.append('temperature500T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(temperature500s[i])
                         right_layout.addWidget(self.temperature500Ts[i])
                     if era == False:
@@ -1521,7 +1515,7 @@ class ThirdSubWindow(QMainWindow):
                 
                 if 'zonalwind10T' not in rendered:
                     rendered.append('zonalwind10T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(zonalwind10s[i])
                         right_layout.addWidget(self.zonalwind10Ts[i])
                     if era == False:
@@ -1532,7 +1526,7 @@ class ThirdSubWindow(QMainWindow):
                 helptext+=diag_help_texts[7]+'\n\n'
                 if 'zonalwind10T' not in rendered:
                     rendered.append('zonalwind10T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(zonalwind10s[i])
                         right_layout.addWidget(self.zonalwind10Ts[i])
                     if era == False:
@@ -1563,7 +1557,7 @@ class ThirdSubWindow(QMainWindow):
             if 10 in selected or 0 in selected:
                 helptext+=diag_help_texts[10]+'\n\n'
                 rendered.append('t2mT')
-                for i in range(num_dates):
+                for i in range(self.num_dates):
                     right_layout.addWidget(t2ms[i])
                     right_layout.addWidget(self.t2mTs[i])
                 if era == False:
@@ -1576,7 +1570,7 @@ class ThirdSubWindow(QMainWindow):
                 right_layout.addWidget(self.olrDataFiles)
                 if 'zonalwind850T' not in rendered:
                     rendered.append('zonalwind850T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(zonalwind850s[i])
                         right_layout.addWidget(self.zonalwind850Ts[i])
                     if era == False:
@@ -1584,7 +1578,7 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(self.zonalwind850Tobs)
                 if 'zonalwind200T' not in rendered:
                     rendered.append('zonalwind200T')
-                    for i in range(num_dates):
+                    for i in range(self.num_dates):
                         right_layout.addWidget(zonalwind200s[i])
                         right_layout.addWidget(self.zonalwind200Ts[i])
                     if era == False:
@@ -1668,7 +1662,7 @@ class ThirdSubWindow(QMainWindow):
         self.parent.show()
     def close_yaml(self):
         dict_file =self.dict_file
-        if 8 in self.selected:
+        if 8 in self.selected or 0 in self.selected:
             dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
             if self.time_step_interval and self.time_step_interval_24.isChecked():
                 dict_file['forecast time step']= 24
@@ -1734,7 +1728,7 @@ class ThirdSubWindow(QMainWindow):
 
         dict_file['Path to precipitation observational data files:'] = self.precDataTobs.text()
         
-        dict_file['Select weeks:'] = self.selectweeks.text()
+        #dict_file['Select weeks:'] = self.selectweeks.text()
 
         dict_file['Path to T2m model data files for date'] = []
         for i in self.t2mTs:
@@ -2085,7 +2079,7 @@ class FinalWindow(QMainWindow):
                 right_layout.addWidget(self.second)
                 right_layout.addWidget(self.third)
                 right_layout.addWidget(self.third_2)
-                right_layout.addWidget(self.fourth)
+                #right_layout.addWidget(self.fourth)
                 right_layout.addWidget(self.fifth)
                 right_layout.addWidget(self.sixth)
                 right_layout.addWidget(self.seventh)
@@ -2107,8 +2101,8 @@ class FinalWindow(QMainWindow):
                 if i ==11:
                     right_layout.addWidget(self.third_2)
                     
-                if i==4:
-                    right_layout.addWidget(self.fourth)
+                #if i==4:
+                 #   right_layout.addWidget(self.fourth)
                     
                 if i==5:
                     right_layout.addWidget(self.fifth)
@@ -2180,11 +2174,7 @@ class FinalWindow(QMainWindow):
         elif self.third_2.isChecked():
             f=1
             self.win2 = third2Result(self,self.dict_file)
-            self.win2.show()
-        elif self.fourth.isChecked():
-            f=1
-            self.win2 = fourthResult(self,self.dict_file)
-            self.win2.show()
+            self.win2.show() #fourth
         elif self.fifth.isChecked():
             f=1
             self.win2 = fifthResult(self,self.dict_file)
