@@ -306,8 +306,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
     files = np.sort(glob.glob(fc_dir))
     ds = xr.open_mfdataset(files, combine='nested',
                            concat_dim='time',parallel='true')
-    varname = get_variable_name(ds, vartype)
-    fc = ds[varname]
+    fc = get_variable_from_dataset(ds, vartype)
     if vartype == 'prate':
         # !!!!! Note: we are making the assumption that the forecast data is in kg/m2/s here !!!!!
         fc = fc*86400 # mm/s to mm/day
