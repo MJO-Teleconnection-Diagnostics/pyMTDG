@@ -1756,16 +1756,18 @@ class ThirdSubWindow(QMainWindow):
         file.close()
         
         #run diagnostics
-        diagnostics_path = ["../T2m_composites/t2m_composites.py", "../T2m_composites/t2m_composites.py", "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py",
-                             "../T2m_composites/t2m_composites.py"]
+        diagnostics_path = ["../T2m_composites/t2m_composites.py",
+                            "../STRIPES/STRIPES_z500.py",
+                            "../STRIPES/STRIPES_precip.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py",
+                            "../T2m_composites/t2m_composites.py"]
         paths = 'python '+diagnostics_path[self.selected[0]]
         for i in self.selected[1:]:
             paths+=' & python '+diagnostics_path[i]
@@ -3013,7 +3015,7 @@ class firstResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
@@ -3100,7 +3102,7 @@ class secondResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/StripesPrecip/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
