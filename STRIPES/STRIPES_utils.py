@@ -300,7 +300,13 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
             [14,27]] # week 3-4
 
     # -------- Open data --------
-    rmm = xr.open_dataset(frmm)
+    rmm = xr.open_dataset(frmm,decode_times=False)
+    times=rmm['amplitude'].time
+    init_time=date(1960,1,1)+timedelta(int(times[0]))
+    time=[]
+    for i in range(len(times)):
+        time.append(init_time+timedelta(i))
+
 
     # read forecast data
     files = np.sort(glob.glob(fc_dir))
@@ -313,6 +319,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
 
     # read obs
     ds = xr.open_mfdataset(obs_dir)
+    print(obs_dir)
     obs = get_variable_from_dataset(ds, vartype)
     
     # subset time

@@ -35,14 +35,21 @@ if (dictionary['RMM:']==False):
     # !!! Note: this will need to be updated with a correct final path for the RMM data
     #     This is a pretty small data file (< 1 MB) maybe we shoud just include it in the package
     # fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
-    RMM_FILE = dir_in+'/erai/rmm_ERA-Interim.nc'
+    #RMM_FILE = dir_in+'/erai/rmm_ERA-Interim.nc'
+    RMM_FILE = dir_in+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
+
     
 # where are the z500 data files located?
 # !!! Note: This code ignores situations where the files for different initialization dates 
 #           are in different directories.
 # !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
-Z500_DIR = dictionary['Path to z500 date files'][0] + '*.nc*'
-Z500_DIR_OBS = dictionary['Path to z500 observational files'] + '*.nc*'
+#Z500_DIR = dictionary['Path to z500 date files'][0] + '*.nc*'
+Z500_DIR = dictionary['Path to z500 date files'][0]
+
+#Z500_DIR_OBS = dictionary['Path to z500 observational files'] + '*.nc*'
+
+if (dictionary['ERAI:']==True):
+    Z500_DIR_OBS = dictionary['Path to z500 observational files']+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
 
 # read start and end date
 START_DATE = dictionary['START_DATE:']
