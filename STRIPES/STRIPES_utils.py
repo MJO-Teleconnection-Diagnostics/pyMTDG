@@ -262,7 +262,7 @@ def get_variable_from_dataset(ds,vartype):
         
         # convert geopotential to geopotential height if needed
         for units in ['m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2']:
-            if units in list(obs.units):
+            if units in list(da.units):
                 print('converting geopotential to geopotential height')
                 da = da/9.81
                 da.attrs['units']='m'
@@ -318,7 +318,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
         fc = fc*86400 # mm/s to mm/day
 
     # read obs
-    ds = xr.open_mfdataset(obs_dir)
+    ds = xr.open_dataset(obs_dir)
     print(obs_dir)
     obs = get_variable_from_dataset(ds, vartype)
     

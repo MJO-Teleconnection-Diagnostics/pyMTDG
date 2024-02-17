@@ -49,7 +49,7 @@ Z500_DIR = dictionary['Path to z500 date files'][0]
 #Z500_DIR_OBS = dictionary['Path to z500 observational files'] + '*.nc*'
 
 if (dictionary['ERAI:']==True):
-    Z500_DIR_OBS = dictionary['Path to z500 observational files']+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
+    Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
 
 # read start and end date
 START_DATE = dictionary['START_DATE:']
