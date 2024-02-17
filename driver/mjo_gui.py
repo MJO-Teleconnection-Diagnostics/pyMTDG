@@ -895,7 +895,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
         self.fourth.setChecked(False)
 
-        self.fifth = QCheckBox("Relative amplitude over PNA?")
+        self.fifth = QCheckBox("Relative amplitude over PNA")
         self.fifth.setChecked(False)
 
         self.sixth = QCheckBox("Stratospheric pathway")
@@ -1753,14 +1753,13 @@ class ThirdSubWindow(QMainWindow):
         diagnostics_path = ["../T2m_composites/t2m_composites.py",
                             "../STRIPES/STRIPES_z500.py",
                             "../STRIPES/STRIPES_precip.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
-                            "../T2m_composites/t2m_composites.py",
+                            "../Pattern_CC_Amplitude/pna.py",
+                            "../Pattern_CC_Amplitude/atlantic.py",
+                            "../Relative_Amplitude/code.py",
+                            "../Stratosphere/stratosphere.py",
+                            "../Histogram_10hPa/histogram.py",
+                            "../eke/eke_plot.py",
+                            "../MJO/mjo.py",
                             "../T2m_composites/t2m_composites.py"]
         paths = 'python '+diagnostics_path[self.selected[0]]
         for i in self.selected[1:]:
@@ -3009,7 +3008,7 @@ class firstResult(QMainWindow):
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'STRIPES - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -3096,7 +3095,7 @@ class secondResult(QMainWindow):
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'STRIPES - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -3160,7 +3159,7 @@ class secondResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'STRIPES - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3179,11 +3178,11 @@ class thirdResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/PatternCC_PNA/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'Pattern CC - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -3247,7 +3246,7 @@ class thirdResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'Pattern CC - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
