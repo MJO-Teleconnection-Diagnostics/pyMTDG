@@ -15,9 +15,13 @@ sys.path.insert ( 0 , '../Utils' )
 from eke_util import get_model_latitude
 from eke_util import get_model_longitude
 from eke_util import get_model_weekly_eke_anomaly
-from eke_util import get_erai_weekly_eke_anomaly
+from eke_util import get_reanalysis_weekly_eke_anomaly
 from eke_util import get_model_weekly_z500_anomaly
-from eke_util import get_erai_weekly_z500_anomaly
+from eke_util import get_reanalysis_weekly_z500_anomaly
+from eke_util import get_z500_varname
+from eke_util import get_u850_varname
+from eke_util import get_v850_varname
+from eke_util import if_convert_z500_unit
 from eke_util import convert_ymdh_to_ymd_list
 from eke_util import get_rmm_composite_list
 from eke_util import get_composite
@@ -57,9 +61,9 @@ Model_z500_files             = yml_input [ 'Extratropical Cyclone Activity Z500 
 #ERAI                         = True
 if ERAI :
     Reanalysis_name = "ERA-I"
-    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
+    reanalysis_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+    reanalysis_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+    reanalysis_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
 #    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/u850.19790101-20190831.nc"
 #    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
 #    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
@@ -73,7 +77,7 @@ if ERAI :
 #Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.nc" ]
 #Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.nc" ]
 #Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.nc" ]
-Model_z500_varname = "z"
+#Model_z500_varname = "z"
 #Model_z500_varname = "gh"
 
 if not RMM :
@@ -136,7 +140,7 @@ test_confidence_level = 0.05
 pattern_corr_north = 80.
 pattern_corr_south = 20.
 
-ERAI_timesteps_per_day = 4
+reanalysis_timesteps_per_day = 4
 
 pattern_corr_regions = [ "Northern Hemisphere" , "North Pacific + North America" , "North Atlantic" ]
 regions_south_north  = [ [ 20 , 80 ]           , [ 20 , 80 ]                     , [ 20 , 80 ]      ]
@@ -154,14 +158,28 @@ else :
 #else: Multiple_Ensemble_Members = True
 
 ###### Get Reanalysis lat,lon
-ERA_u850_file_in = xr.open_dataset ( ERA_u850_file )
-reanalysis_lat_in = np.array ( ERA_u850_file_in [ "latitude" ] )
-reanalysis_lon_in = np.array ( ERA_u850_file_in [ "longitude" ] )
-ERA_u850_file_in.close ( )
+reanalysis_u850_file_in = xr.open_dataset ( reanalysis_u850_file )
+reanalysis_u850_varname = get_u850_varname ( reanalysis_u850_file_in )
+reanalysis_u850_in = reanalysis_u850_file_in [ reanalysis_u850_varname ] [ 4 , : , : ]
+reanalysis_u850_in_dim = reanalysis_u850_in.dims
+del ( reanalysis_u850_in )
+reanalysis_lat_in = get_model_latitude ( reanalysis_u850_file_in , reanalysis_u850_in_dim )
+reanalysis_lon_in = get_model_longitude ( reanalysis_u850_file_in , reanalysis_u850_in_dim )
+reanalysis_u850_file_in.close ( )
 delta_reanalysis_lat = reanalysis_lat_in [ 1 ] - reanalysis_lat_in [ 0 ]
 delta_reanalysis_lon = reanalysis_lon_in [ 1 ] - reanalysis_lon_in [ 0 ]
 dim_reanalysis_lat = len ( reanalysis_lat_in )
 dim_reanalysis_lon = len ( reanalysis_lon_in )
+
+reanalysis_v850_file_in = xr.open_dataset ( reanalysis_v850_file )
+reanalysis_v850_varname = get_v850_varname ( reanalysis_v850_file_in )
+reanalysis_v850_file_in.close ( )
+reanalysis_z500_file_in = xr.open_dataset ( reanalysis_z500_file )
+reanalysis_z500_varname = get_z500_varname ( reanalysis_z500_file_in )
+reanalysis_z500_in = reanalysis_z500_file_in [ reanalysis_z500_varname ] [ 4 , : , : ]
+CONVERT_REANALYSIS_Z500_UNIT = if_convert_z500_unit ( reanalysis_z500_in )
+del ( reanalysis_z500_in )
+reanalysis_z500_file_in.close ( )
 
 ###### Read model u,v data
 model_u_file_list = glob.glob ( Model_u850_files )
@@ -230,12 +248,16 @@ v_files_head = Model_v850_files.split ( "*" , 1 )
 #else : ens_string = ""
 ens_string = "_e00"
 model_u850_file0 = xr.open_dataset ( u_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + u_files_head [ 1 ] )
-model_u850_in = model_u850_file0 [ 'u' ]
+Model_u850_varname = get_u850_varname ( model_u850_file0 )
+model_u850_in = model_u850_file0 [ Model_u850_varname ]
 model_u850_in_dim = model_u850_in.dims
 model_lat_in = get_model_latitude ( model_u850_file0 , model_u850_in_dim )
 model_lon_in = get_model_longitude ( model_u850_file0 , model_u850_in_dim )
 model_u850_file0.close ( )
 model_input_u = np.array ( model_u850_in )
+model_v850_file0 = xr.open_dataset ( v_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + v_files_head [ 1 ] )
+Model_v850_varname = get_v850_varname ( model_v850_file0 )
+model_v850_file0.close ( )
 
 ######regrid set-up
 delta_model_lat = model_lat_in [ 1 ] - model_lat_in [ 0 ]
@@ -271,7 +293,7 @@ model_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks 
 del ( model_input_u )
 del ( model_u850_in )
 for week_n in range ( total_weeks ) :
-    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , REGRID_MODEL , ingrid , outgrid )
+    model_eke850_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_eke_anomaly ( u_files_head , v_files_head , Model_u850_varname , Model_v850_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , REGRID_MODEL , ingrid , outgrid )
 
 ###### Read model z500 data
 #potential issue with data type of z500,uv850
@@ -280,23 +302,24 @@ for week_n in range ( total_weeks ) :
 z_files_head = Model_z500_files.split ( "*" , 1 )
 ens_string = "_e00"
 model_z500_file0 = xr.open_dataset ( z_files_head [ 0 ] + str ( files_dates_list [ 0 ] ) + ens_string + z_files_head [ 1 ] )
+Model_z500_varname = get_z500_varname ( model_z500_file0 )
 model_z500_in = model_z500_file0 [ Model_z500_varname ]
+CONVERT_MODEL_Z500_UNIT = if_convert_z500_unit ( model_z500_in )
 model_z500_file0.close ( )
 model_input_z = np.array ( model_z500_in )
 model_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_input_z.dtype )
 del ( model_input_z )
 del ( model_z500_in )
 for week_n in range ( total_weeks ) :
-    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data , REGRID_MODEL , ingrid , outgrid )
+    model_z500_forecast_anomaly [ : , week_n , : , : ] = get_model_weekly_z500_anomaly ( z_files_head , Model_z500_varname , yyyymmddhh_list , files_dates_list , week_n , Ensemble_size , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Model_data_initial_condition , Smooth_climatology , Daily_Mean_Data , REGRID_MODEL , ingrid , outgrid , CONVERT_MODEL_Z500_UNIT )
 
 ##### read reanalysis data for eke
 #potential issue with data type of erai/reanalysis
-if ERAI :
-    reanlaysis_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_eke850_forecast_anomaly.dtype )
-    reanlaysis_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
-    for week_n in range ( total_weeks ) :
-        reanlaysis_eke850_forecast_anomaly [ : , week_n , : , : ] = get_erai_weekly_eke_anomaly ( ERA_u850_file , ERA_v850_file , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , ERAI_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT )
-        reanlaysis_z500_forecast_anomaly [ : , week_n , : , : ] = get_erai_weekly_z500_anomaly ( ERA_z500_file , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , ERAI_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT )
+reanlaysis_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_eke850_forecast_anomaly.dtype )
+reanlaysis_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
+for week_n in range ( total_weeks ) :
+    reanlaysis_eke850_forecast_anomaly [ : , week_n , : , : ] = get_reanalysis_weekly_eke_anomaly ( reanalysis_u850_file , reanalysis_v850_file , reanalysis_u850_varname , reanalysis_v850_varname , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , reanalysis_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT )
+    reanlaysis_z500_forecast_anomaly [ : , week_n , : , : ] = get_reanalysis_weekly_z500_anomaly ( reanalysis_z500_file , reanalysis_z500_varname , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , reanalysis_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT , CONVERT_MODEL_Z500_UNIT )
 
 ##### read rmm index
 rmm_file = xr.open_dataset ( RMM_ERA_file )
