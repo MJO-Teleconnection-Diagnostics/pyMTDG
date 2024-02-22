@@ -328,12 +328,12 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
     obs = obs.transpose('time','latitude','longitude')
 
     # -------- Calculate anomalies --------
-    obs_anom=calcAnomObs(obs, varname)
+    obs_anom=calcAnomObs(obs, vartype)
     obs_anom.attrs['units']=obs.units
     del obs
     gc.collect()
 
-    fc_anom = calcAnom(fc,varname)
+    fc_anom = calcAnom(fc,vartype)
     # Reshape 1D time dimension of UFS anomalies to 2D
     fc_anom = reshape_forecast(fc_anom, nfc=int(len(fc_anom.time)/len(files)))
     del fc

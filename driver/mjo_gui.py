@@ -1315,7 +1315,8 @@ class ThirdSubWindow(QMainWindow):
         diag_help_texts = ['']*13
 
         diag_help_texts[1] = '''
-        Help text for STRIPES Index for geopotential height
+        Please include a trailing / in the directory where the geopotential data is located. Data can be 
+        geopotential (units m^2/s^2) or geopotential height. 
         '''
         diag_help_texts[2] = '''
         Help text for STRIPES Index for precipitation

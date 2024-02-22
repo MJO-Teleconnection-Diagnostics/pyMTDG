@@ -262,7 +262,7 @@ def get_variable_from_dataset(ds,vartype):
         
         # convert geopotential to geopotential height if needed
         for units in ['m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2']:
-            if units in list(obs.units):
+            if units in list(da.units):
                 print('converting geopotential to geopotential height')
                 da = da/9.81
                 da.attrs['units']='m'
@@ -300,7 +300,13 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
             [14,27]] # week 3-4
 
     # -------- Open data --------
-    rmm = xr.open_dataset(frmm)
+    rmm = xr.open_dataset(frmm,decode_times=False)
+    times=rmm['amplitude'].time
+    init_time=date(1960,1,1)+timedelta(int(times[0]))
+    time=[]
+    for i in range(len(times)):
+        time.append(init_time+timedelta(i))
+
 
     # read forecast data
     files = np.sort(glob.glob(fc_dir))
@@ -312,7 +318,8 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
         fc = fc*86400 # mm/s to mm/day
 
     # read obs
-    ds = xr.open_mfdataset(obs_dir)
+    ds = xr.open_dataset(obs_dir)
+    print(obs_dir)
     obs = get_variable_from_dataset(ds, vartype)
     
     # subset time
@@ -321,12 +328,12 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
     obs = obs.transpose('time','latitude','longitude')
 
     # -------- Calculate anomalies --------
-    obs_anom=calcAnomObs(obs, varname)
+    obs_anom=calcAnomObs(obs, vartype)
     obs_anom.attrs['units']=obs.units
     del obs
     gc.collect()
 
-    fc_anom = calcAnom(fc,varname)
+    fc_anom = calcAnom(fc,vartype)
     # Reshape 1D time dimension of UFS anomalies to 2D
     fc_anom = reshape_forecast(fc_anom, nfc=int(len(fc_anom.time)/len(files)))
     del fc
