@@ -262,7 +262,7 @@ def get_variable_from_dataset(ds,vartype):
         
         # convert geopotential to geopotential height if needed
         for units in ['m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2']:
-            if units in list(da.units):
+            if units == da.units:
                 print('converting geopotential to geopotential height')
                 da = da/9.81
                 da.attrs['units']='m'
@@ -300,16 +300,17 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
             [14,27]] # week 3-4
 
     # -------- Open data --------
-    rmm = xr.open_dataset(frmm,decode_times=False)
-    times=rmm['amplitude'].time
-    init_time=date(1960,1,1)+timedelta(int(times[0]))
-    time=[]
-    for i in range(len(times)):
-        time.append(init_time+timedelta(i))
-
+    # this causes problems
+    # rmm = xr.open_dataset(frmm,decode_times=False)
+    # times=rmm['amplitude'].time
+    # init_time=date(1960,1,1)+timedelta(int(times[0]))
+    # time=[]
+    # for i in range(len(times)):
+    #     time.append(init_time+timedelta(i))
+    rmm = xr.open_dataset(frmm)
 
     # read forecast data
-    files = np.sort(glob.glob(fc_dir))
+    files = np.sort(glob.glob(fc_dir+'*.nc*'))
     ds = xr.open_mfdataset(files, combine='nested',
                            concat_dim='time',parallel='true')
     fc = get_variable_from_dataset(ds, vartype)
@@ -319,7 +320,6 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
 
     # read obs
     ds = xr.open_dataset(obs_dir)
-    print(obs_dir)
     obs = get_variable_from_dataset(ds, vartype)
     
     # subset time
