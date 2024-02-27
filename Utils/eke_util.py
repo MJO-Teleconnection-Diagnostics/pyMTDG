@@ -63,7 +63,7 @@ def get_v850_varname ( file_in ) :
 
 def if_convert_z500_unit ( data ) :
     try :
-        unit_list = list ( data.units )
+        unit_list = [ data.units ]
         for units in [ 'm**2 s**-2' , 'm^2/s^2' , 'm2/s2','m2s-2' , 'm2 s-2' ] :
             if units in unit_list :
                 return True
