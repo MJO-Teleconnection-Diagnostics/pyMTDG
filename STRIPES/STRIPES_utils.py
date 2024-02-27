@@ -300,14 +300,10 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
             [14,27]] # week 3-4
 
     # -------- Open data --------
-    # this causes problems
-    # rmm = xr.open_dataset(frmm,decode_times=False)
-    # times=rmm['amplitude'].time
-    # init_time=date(1960,1,1)+timedelta(int(times[0]))
-    # time=[]
-    # for i in range(len(times)):
-    #     time.append(init_time+timedelta(i))
-    rmm = xr.open_dataset(frmm)
+    rmm = xr.open_dataset(frmm,decode_times=False)
+    time=np.datetime64(rmm.time.units.split()[2]
+                )+[np.timedelta64(int(days), 'D') for days in rmm.time.values]
+    rmm['time']=time
 
     # read forecast data
     files = np.sort(glob.glob(fc_dir+'*.nc*'))
