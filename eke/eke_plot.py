@@ -319,7 +319,7 @@ reanlaysis_eke850_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_w
 reanlaysis_z500_forecast_anomaly = np.full ( ( len ( yyyymmdd_list ) , total_weeks , len ( data_lat_in ) , len ( data_lon_in ) ) , np.nan , dtype=model_z500_forecast_anomaly.dtype )
 for week_n in range ( total_weeks ) :
     reanlaysis_eke850_forecast_anomaly [ : , week_n , : , : ] = get_reanalysis_weekly_eke_anomaly ( reanalysis_u850_file , reanalysis_v850_file , reanalysis_u850_varname , reanalysis_v850_varname , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_eke850_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , reanalysis_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT )
-    reanlaysis_z500_forecast_anomaly [ : , week_n , : , : ] = get_reanalysis_weekly_z500_anomaly ( reanalysis_z500_file , reanalysis_z500_varname , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , reanalysis_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT , CONVERT_MODEL_Z500_UNIT )
+    reanlaysis_z500_forecast_anomaly [ : , week_n , : , : ] = get_reanalysis_weekly_z500_anomaly ( reanalysis_z500_file , reanalysis_z500_varname , yyyymmddhh_list , week_n , data_lat_in , data_lon_in , model_z500_forecast_anomaly.dtype , time_step_per_24h , Daily_Mean_Data , Smooth_climatology , reanalysis_timesteps_per_day , REGRID_REANALYSIS , ingrid , outgrid , REVERSE_REANALYSIS_LAT , CONVERT_REANALYSIS_Z500_UNIT )
 
 ##### read rmm index
 rmm_file = xr.open_dataset ( RMM_ERA_file )
@@ -452,7 +452,7 @@ for phase_n in range ( len ( phase_names ) ) :
     plot_significance , lon_cyclie = Ngl.add_cyclic ( model_eke850_significance [ phase_n , : , : ] , data_lon_in )
     res_polar_color.sfXArray       = lon_cyclie
     res_significance.sfXArray      = lon_cyclie
-    res_polar_color.tiMainString = Model_name
+    res_polar_color.tiMainString = Model_name + " eke850 phase" + phase_names [ phase_n ]
     plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color )
     plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
     Ngl.overlay ( map1 , plot )
@@ -467,7 +467,7 @@ for phase_n in range ( len ( phase_names ) ) :
     plot_significance , lon_cyclie = Ngl.add_cyclic ( reanalysis_eke850_significance [ phase_n , : , : ] , data_lon_in )
     res_polar_color.sfXArray       = lon_cyclie
     res_significance.sfXArray      = lon_cyclie
-    res_polar_color.tiMainString = Reanalysis_name
+    res_polar_color.tiMainString = Reanalysis_name + " eke850 phase" + phase_names [ phase_n ]
     plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color )
     plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
     Ngl.overlay ( map2 , plot )
@@ -487,7 +487,7 @@ for phase_n in range ( len ( phase_names ) ) :
     plot_significance , lon_cyclie = Ngl.add_cyclic ( model_z500_significance [ phase_n , : , : ] , data_lon_in )
     res_polar_color_z500.sfXArray  = lon_cyclie
     res_significance.sfXArray      = lon_cyclie
-    res_polar_color_z500.tiMainString = Model_name
+    res_polar_color_z500.tiMainString = Model_name + " z500 phase" + phase_names [ phase_n ]
     plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color_z500 )
     plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
     Ngl.overlay ( map1 , plot )
@@ -502,7 +502,7 @@ for phase_n in range ( len ( phase_names ) ) :
     plot_significance , lon_cyclie = Ngl.add_cyclic ( reanalysis_z500_significance [ phase_n , : , : ] , data_lon_in )
     res_polar_color_z500.sfXArray  = lon_cyclie
     res_significance.sfXArray      = lon_cyclie
-    res_polar_color_z500.tiMainString = Reanalysis_name
+    res_polar_color_z500.tiMainString = Reanalysis_name + " z500 phase" + phase_names [ phase_n ]
     plot = Ngl.contour ( wks_model , plot_cyclic , res_polar_color_z500 )
     plot1 = Ngl.contour ( wks_model , plot_significance , res_significance )
     Ngl.overlay ( map2 , plot )
