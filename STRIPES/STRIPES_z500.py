@@ -85,23 +85,27 @@ for ilag, lag in enumerate(lags):
         ax.projection._central_longitude = 260  # Set the central_longitude
 
     # Observations
-    stripes_obs_cyclic, lon_cyclic = add_cyclic_point(stripes_obs[ilag], lon)
-    im_obs = axs[0].contourf(lon_cyclic, lat, stripes_obs_cyclic, extend='max', cmap=cmap_obs, levels=levs_obs)
+    # stripes_obs_cyclic, lon_cyclic = add_cyclic_point(stripes_obs[ilag], lon)
+    # im_obs = axs[0].contourf(lon_cyclic, lat, stripes_obs_cyclic, extend='max', cmap=cmap_obs, levels=levs_obs)
+    im_obs = axs[0].contourf(lon, lat, stripes_obs[ilag], extend='max', cmap=cmap_obs, levels=levs_obs)
     cbar_obs = fig.colorbar(im_obs, ax=axs[0], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
     axs[0].set_title(f'Obs., week {lag}')
 
     # Forecast
-    stripes_fc_cyclic, _ = add_cyclic_point(stripes_fc[ilag], lon)
-    im_fc = axs[1].contourf(lon_cyclic, lat, stripes_fc_cyclic, extend='max', cmap=cmap_obs, levels=levs_obs)
+    # stripes_fc_cyclic, _ = add_cyclic_point(stripes_fc[ilag], lon)
+    # im_fc = axs[1].contourf(lon_cyclic, lat, stripes_fc_cyclic, extend='max', cmap=cmap_obs, levels=levs_obs)
+    im_fc = axs[1].contourf(lon, lat, stripes_fc[ilag], extend='max', cmap=cmap_obs, levels=levs_obs)
     cbar_fc = fig.colorbar(im_fc, ax=axs[1], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
     axs[1].set_title(f'Forecast., week {lag}')
 
     # Bias
-    bias = stripes_fc_cyclic - stripes_obs_cyclic
-    im_bias = axs[2].contourf(lon_cyclic, lat, bias, extend='both', cmap='RdBu_r', levels=levs_anom)
+    # bias = stripes_fc_cyclic - stripes_obs_cyclic
+    # im_bias = axs[2].contourf(lon_cyclic, lat, bias, extend='both', cmap='RdBu_r', levels=levs_anom)
+    bias = stripes_fc[ilag] - stripes_obs[ilag]
+    im_bias = axs[2].contourf(lon, lat, bias, extend='both', cmap='RdBu_r', levels=levs_anom)
     cbar_bias = fig.colorbar(im_bias, ax=axs[2], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[2].set_title(f'Forecast - Obs., week {lag}')
-    
+    axs[2].set_title(f'Forecast - Obs., week {lag}') 
+
     # save
     if not os.path.exists('../output/StripesGeopot/'+model_name): 
         os.mkdir('../output/StripesGeopot/'+model_name)
