@@ -110,4 +110,4 @@ for ilag, lag in enumerate(lags):
     if not os.path.exists('../output/StripesGeopot/'+model_name): 
         os.mkdir('../output/StripesGeopot/'+model_name)
     figname='stripes_z500_wk' + lag 
-    fig.savefig('../output/StripessGeopot/'+model_name+'/'+figname+'.jpg',dpi=300)
+    fig.savefig('../output/StripesGeopot/'+model_name+'/'+figname+'.jpg',dpi=300)
