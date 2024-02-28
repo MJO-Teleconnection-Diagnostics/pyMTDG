@@ -103,7 +103,7 @@ for ilag, lag in enumerate(lags):
     axs[2].set_title(f'Forecast - Obs., week {lag}')
     
     # save
-    if not os.path.exists('../output/STRIPES/'+model_name): 
-        os.mkdir('../output/STRIPES/'+model_name)
+    if not os.path.exists('../output/StripesGeopot/'+model_name): 
+        os.mkdir('../output/StripesGeopot/'+model_name)
     figname='stripes_z500_wk' + lag 
-    fig.savefig('../output/STRIPES/'+model_name+'/'+figname+'.jpg',dpi=300)
+    fig.savefig('../output/StripessGeopot/'+model_name+'/'+figname+'.jpg',dpi=300)
