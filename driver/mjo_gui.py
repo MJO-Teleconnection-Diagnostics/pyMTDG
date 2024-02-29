@@ -36,7 +36,7 @@ class StartWindow(QMainWindow):
         start = QPushButton('Start', self)
         start.setFixedSize(70,30)
         #start.setGeometry(200, 150, 40, 40)
-        start.clicked.connect(self.open_second_window)
+        start.clicked.connect(self.open_stripesprecip_window)
         
         ## Layout
         layout = QVBoxLayout()
@@ -52,12 +52,11 @@ class StartWindow(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
-    def open_second_window(self):
-        self.second_window = ViewRes_RunCal(self)
+    def open_stripesprecip_window(self):
+        self.stripesprecip_window = ViewRes_RunCal(self)
         self.hide()
     
-diagnostics={'stripesgeopot':1,'stripesprecip':2,'stripesfraction':4,'patterncc_pna':3,'mjo':12,
-            'eke':9,'et_cyclone':8,'patterncc_atlantic':11,'t2m':10,'strat_path':6,'pna_relamp':5,'zonal_wind_hist':7}
+diagnostics={'stripesgeopot':1,'stripesprecip':2,'patterncc_pna':3,'patterncc_atlantic':4,'strat_path':5,'zonal_wind_hist':6,'et_cyclone':7,'mjo':8,'t2m':9}
 def get_model_diagnostics2(model_name):
     diags=[]
     flag=0
@@ -82,8 +81,12 @@ def get_model_diagnostics(model_name):
     for f in all_folders:
         fm_path = os.path.join(start_path,f, model_name)
         # Check if the item is a directory
+        print(fm_path)
         if os.path.isdir(fm_path):
-            diags.append(diagnostics[f.lower()])
+            print('path exists',fm_path)
+            if f.lower() in diagnostics:
+                diags.append(diagnostics[f.lower()])
+            
     if diags == []:
         return None, None
     return model_name,diags
@@ -298,7 +301,7 @@ To run the package, the user needs to specify:
         
         button2 = QPushButton('Next', self)
         button2.setFixedSize(70,30)
-        button2.clicked.connect(self.open_second_window)
+        button2.clicked.connect(self.open_stripesprecip_window)
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
@@ -369,7 +372,7 @@ To run the package, the user needs to specify:
         splitter.widget(0).setLayout(left_layout)
         splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Set the right layout to the second widget of the splitter
+        # Set the right layout to the stripesprecip widget of the splitter
         splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -400,7 +403,7 @@ To run the package, the user needs to specify:
 
 
 
-    def open_second_window(self):
+    def open_stripesprecip_window(self):
         if self.dir_in_text.text() == '':
             QMessageBox.warning(self,'Missing fields!',"Please enter the input directory")
             return 
@@ -444,8 +447,8 @@ To run the package, the user needs to specify:
             dict_file['IMERG:' ]= True
         else:
             dict_file['IMERG:'] = False
-        self.second_window = modelInformation(self,self.dir_in_text.text(),self.era,dict_file)
-        self.second_window.showMaximized()
+        self.stripesprecip_window = modelInformation(self,self.dir_in_text.text(),self.era,dict_file)
+        self.stripesprecip_window.showMaximized()
         self.hide()
     def closee(self):
         self.close()
@@ -510,7 +513,7 @@ The package can be applied to one forecast model. The name of the model will ape
 
         self.button2 = QPushButton('Next', self)
         self.button2.setFixedSize(70,30)
-        self.button2.clicked.connect(self.open_second_window)
+        self.button2.clicked.connect(self.open_stripesprecip_window)
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
@@ -552,7 +555,7 @@ The package can be applied to one forecast model. The name of the model will ape
         splitter.widget(0).setLayout(left_layout)
         splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Set the right layout to the second widget of the splitter
+        # Set the right layout to the stripesprecip widget of the splitter
         splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -599,7 +602,7 @@ The package can be applied to one forecast model. The name of the model will ape
             self.groupbox1.deleteLater()
             self.groupbox1 = None
 
-    def open_second_window(self):
+    def open_stripesprecip_window(self):
         #commenting out the input validation
         dict_file =self.dict_file
         dict_file['model name'] = self.model_name.text()
@@ -610,8 +613,8 @@ The package can be applied to one forecast model. The name of the model will ape
         
         self.dict_file = dict_file
         
-        self.second_window = SecondWindow(self,self.dir_in_text,self.era,dict_file)
-        self.second_window.showMaximized()
+        self.stripesprecip_window = stripesprecipWindow(self,self.dir_in_text,self.era,dict_file)
+        self.stripesprecip_window.showMaximized()
         self.hide()
     
 
@@ -622,7 +625,7 @@ The package can be applied to one forecast model. The name of the model will ape
 
 
 
-class SecondWindow(QMainWindow):
+class stripesprecipWindow(QMainWindow):
     def __init__(self,parent,dirin,era,dict_file):
         super().__init__()
         #self.setupUi(self)
@@ -763,7 +766,7 @@ class SecondWindow(QMainWindow):
         splitter.widget(0).setLayout(left_layout)
         splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Set the right layout to the second widget of the splitter
+        # Set the right layout to the stripesprecip widget of the splitter
         splitter.widget(1).setLayout(self.right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -883,38 +886,38 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         self.stripesgeopot = QCheckBox("STRIPES Index for geopotential height")
         self.stripesgeopot.setChecked(False)
 
-        self.second = QCheckBox("STRIPES Index for precipitation")
-        self.second.setChecked(False)
+        self.stripesprecip = QCheckBox("STRIPES Index for precipitation")
+        self.stripesprecip.setChecked(False)
 
-        self.third = QCheckBox("Pattern CC over the PNA region")
-        self.third.setChecked(False)
+        self.patterncc_pna = QCheckBox("Pattern CC and Relative Amplitude over the PNA region")
+        self.patterncc_pna.setChecked(False) #3
 
-        self.third_2 = QCheckBox("Pattern CC over the Euro-Atlantic sector")
-        self.third_2.setChecked(False) #11
+        self.patterncc_atlantic = QCheckBox("Pattern CC and Relative Amplitude over the Euro-Atlantic sector")
+        self.patterncc_atlantic.setChecked(False) #4
 
-        self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
-        self.fourth.setChecked(False)
+        #self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
+        #self.fourth.setChecked(False)
 
-        self.fifth = QCheckBox("Relative amplitude over PNA")
-        self.fifth.setChecked(False)
+        #self.fifth = QCheckBox("Relative amplitude over PNA?")
+        #self.fifth.setChecked(False)
 
-        self.sixth = QCheckBox("Stratospheric pathway")
-        self.sixth.setChecked(False)
+        self.strat_path = QCheckBox("Stratospheric pathway")
+        self.strat_path.setChecked(False)
 
-        self.seventh = QCheckBox("Histogram of 10 hPa zonal wind")
-        self.seventh.setChecked(False)
+        self.zonal_wind_hist = QCheckBox("Histogram of 10 hPa zonal wind")
+        self.zonal_wind_hist.setChecked(False)
 
-        self.eight = QCheckBox("Extratropical cyclone activity")
-        self.eight.setChecked(False)
+        self.et_cyclone = QCheckBox("Extratropical cyclone activity")
+        self.et_cyclone.setChecked(False)
 
         #self.nine = QCheckBox("EKE850-Z500 correlation")
         #self.nine.setChecked(False)
 
-        self.nine_two = QCheckBox("MJO")
-        self.nine_two.setChecked(False) #12
+        self.mjo = QCheckBox("MJO")
+        self.mjo.setChecked(False) #8
 
-        self.ten = QCheckBox("Surface air temperature")
-        self.ten.setChecked(False)
+        self.t2m = QCheckBox("Surface air temperature")
+        self.t2m.setChecked(False)
 
         # Create the checkboxs
         but = QPushButton('Next', self)
@@ -935,17 +938,17 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         right_layout = QVBoxLayout()
         right_layout.addWidget(self.all)
         right_layout.addWidget(self.stripesgeopot)
-        right_layout.addWidget(self.second)
-        right_layout.addWidget(self.third)
-        right_layout.addWidget(self.third_2)
+        right_layout.addWidget(self.stripesprecip)
+        right_layout.addWidget(self.patterncc_pna)
+        right_layout.addWidget(self.patterncc_atlantic)
         #right_layout.addWidget(self.fourth)
-        right_layout.addWidget(self.fifth)
-        right_layout.addWidget(self.sixth)
-        right_layout.addWidget(self.seventh)
-        right_layout.addWidget(self.eight)
+        #right_layout.addWidget(self.fifth)
+        right_layout.addWidget(self.strat_path)
+        right_layout.addWidget(self.zonal_wind_hist)
+        right_layout.addWidget(self.et_cyclone)
         #right_layout.addWidget(self.nine)
-        right_layout.addWidget(self.nine_two)
-        right_layout.addWidget(self.ten)
+        right_layout.addWidget(self.mjo)
+        right_layout.addWidget(self.t2m)
         right_layout.addStretch()
 
         splitter = QSplitter(Qt.Horizontal)
@@ -986,28 +989,28 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         else:
             if self.stripesgeopot.isChecked():
                 selected.append(1)
-            if self.second.isChecked():
+            if self.stripesprecip.isChecked():
                 selected.append(2)
-            if self.third.isChecked():
+            if self.patterncc_pna.isChecked():
                 selected.append(3)
-            if self.third_2.isChecked():
-                selected.append(11)
-            if self.fourth.isChecked():
+            if self.patterncc_atlantic.isChecked():
                 selected.append(4)
-            if self.fifth.isChecked():
+            #if self.fourth.isChecked():
+             #   selected.append(4)
+            #if self.fifth.isChecked():
+             #   selected.append(5)
+            if self.strat_path.isChecked():
                 selected.append(5)
-            if self.sixth.isChecked():
+            if self.zonal_wind_hist.isChecked():
                 selected.append(6)
-            if self.seventh.isChecked():
+            if self.et_cyclone.isChecked():
                 selected.append(7)
-            if self.eight.isChecked():
-                selected.append(8)
             #if self.nine.isChecked():
              #   selected.append(9)
-            if self.nine_two.isChecked():
-                selected.append(12)
-            if self.ten.isChecked():
-                selected.append(10)
+            if self.mjo.isChecked():
+                selected.append(8)
+            if self.t2m.isChecked():
+                selected.append(9)
         if selected == []:
             msg = QMessageBox()
             msg.setWindowTitle("Empty input given")
@@ -1028,31 +1031,30 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         if checked:
             self.all.setChecked(True)
             self.stripesgeopot.setChecked(True)
-            self.second.setChecked(True)
-            self.third.setChecked(True)
-            self.third_2.setChecked(True)
+            self.stripesprecip.setChecked(True)
+            self.patterncc_pna.setChecked(True)
+            self.patterncc_atlantic.setChecked(True)
             #self.fourth.setChecked(True)
-            self.fifth.setChecked(True)
-            self.sixth.setChecked(True)
-            self.seventh.setChecked(True)
-            self.eight.setChecked(True)
+            #self.fifth.setChecked(True)
+            self.strat_path.setChecked(True)
+            self.zonal_wind_hist.setChecked(True)
+            self.et_cyclone.setChecked(True)
             #self.nine.setChecked(True)
-            self.nine_two.setChecked(True)
-            self.ten.setChecked(True)
+            self.mjo.setChecked(True)
+            self.t2m.setChecked(True)
         else:
             self.all.setChecked(False)
             self.stripesgeopot.setChecked(False)
-            self.second.setChecked(False)
-            self.third.setChecked(False)
-            self.third_2.setChecked(False)
+            self.stripesprecip.setChecked(False)
+            self.patterncc_pna.setChecked(False)
+            self.patterncc_atlantic.setChecked(False)
             #self.fourth.setChecked(False)
-            self.fifth.setChecked(False)
-            self.sixth.setChecked(False)
-            self.seventh.setChecked(False)
-            self.eight.setChecked(False)
+            self.strat_path.setChecked(False)
+            self.zonal_wind_hist.setChecked(False)
+            self.et_cyclone.setChecked(False)
             #self.nine.setChecked(False)
-            self.nine_two.setChecked(False)
-            self.ten.setChecked(False)
+            self.mjo.setChecked(False)
+            self.t2m.setChecked(False)
     
      
 
@@ -1322,21 +1324,21 @@ class ThirdSubWindow(QMainWindow):
         Help text for STRIPES Index for precipitation
 '''
         diag_help_texts[3] = '''
-        Help text for Pattern CC over the PNA region
+        Help text for Pattern CC and Relative Amplitude over the PNA region
 '''
         diag_help_texts[4] = '''
-        
+        Help text for Pattern CC and Relative Amplitude over the Euro-Atlantic sector
 '''
+        #diag_help_texts[5] = '''
+        #Help text for Relative amplitude over PNA?
+
         diag_help_texts[5] = '''
-        Help text for Relative amplitude over PNA?
-'''
-        diag_help_texts[6] = '''
         Help text for Stratospheric pathway
 '''
-        diag_help_texts[7] = '''
+        diag_help_texts[6] = '''
         Help text for Histogram of 10 hPa zonal wind
 '''
-        diag_help_texts[8] = '''
+        diag_help_texts[7] = '''
 ** Extratropical Cyclone Activity**
 
 - If model data contains ensembles, the input data for U850 and V850 must be provided for each ensemble member. Using the ensemble mean will result in eddy kinetic energy with underestimated amplitude.
@@ -1349,17 +1351,20 @@ class ThirdSubWindow(QMainWindow):
 
 * Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members.
 '''
-        diag_help_texts[10] = '''
+        diag_help_texts[8] = '''
+        Help text for MJO
+    
+'''
+        diag_help_texts[9] = '''
 ** Surface Air Temperature**
 
 * Path to T2m model data files for date D or DD: complete the full path and names of files containing daily mean (if daily anomalies need to be computed) or daily anomalies (if daily anomalies are provided) for the initial condition corresponding to date D or DD. E.g., for the forecasts initialized on 1st of the month: /project/$user/$user_dir/file_name_*01.nc or /project/$user/$user_dir/file_name_*.nc; for forecasts initialized on the 15th of the month: /project/$user/$user_dir/file_name_*15 or /project/$user/$user_dir/file_name_*.nc.
+
+
+
 '''
-        diag_help_texts[11] = '''
-        Help text for Pattern CC over the Euro-Atlantic sector
-'''
-        diag_help_texts[12] = '''
-        Help text for MJO
-'''
+       
+        
 
         # Path to T2m data files:
         t2ms = []
@@ -1418,7 +1423,7 @@ class ThirdSubWindow(QMainWindow):
         helptext=''''''
         rendered=[]
         if(len(selected)>=1):
-            if 1 in selected or 0 in selected:
+            if 1 in selected or 0 in selected: # stripes geopotential height
                 helptext+=diag_help_texts[1]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
@@ -1428,7 +1433,7 @@ class ThirdSubWindow(QMainWindow):
                     if era == False:
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
-            if 2 in selected or 0 in selected:
+            if 2 in selected or 0 in selected: #stripes index for precipitation
                 helptext+=diag_help_texts[2]+'\n\n'
                 if 'precDataT' not in rendered:
                     rendered.append('precDataT')
@@ -1451,8 +1456,8 @@ class ThirdSubWindow(QMainWindow):
                 right_layout.addWidget(weeks)
                 right_layout.addWidget(self.selectweeks)'''
 
-            if 4 in selected or 0 in selected: #Pattern CC over
-                helptext+=diag_help_texts[4]+'\n\n'
+            if 3 in selected or 0 in selected: #Pattern CC over & relative amplitude over PNA
+                helptext+=diag_help_texts[3]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1465,8 +1470,8 @@ class ThirdSubWindow(QMainWindow):
                 
         
             
-            if 5 in selected or 0 in selected: #relative amplitude over PNA
-                helptext+=diag_help_texts[5]+'\n\n'
+            if 4 in selected or 0 in selected: #relative amplitude over PNA - NOW - pattern cc ...euro atlantic sector
+                helptext+=diag_help_texts[4]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1476,8 +1481,8 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
                 
-            if 6 in selected or 0 in selected:
-                helptext+=diag_help_texts[6]+'\n\n'
+            if 5 in selected or 0 in selected: #Stratospheric pathway
+                helptext+=diag_help_texts[5]+'\n\n'
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1523,8 +1528,8 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(zonalwind10obs)
                         right_layout.addWidget(self.zonalwind10Tobs)
 
-            if 7 in selected or 0 in selected: #histogram of 10hpa zonal wind
-                helptext+=diag_help_texts[7]+'\n\n'
+            if 6 in selected or 0 in selected: #histogram of 10hpa zonal wind
+                helptext+=diag_help_texts[6]+'\n\n'
                 if 'zonalwind10T' not in rendered:
                     rendered.append('zonalwind10T')
                     for i in range(self.num_dates):
@@ -1533,8 +1538,9 @@ class ThirdSubWindow(QMainWindow):
                     if era == False:
                         right_layout.addWidget(zonalwind10obs)
                         right_layout.addWidget(self.zonalwind10Tobs)
-            if 8 in selected or 0 in selected: #Extratropical cyclone activity
-                helptext+=diag_help_texts[8]+'\n\n'
+                        
+            if 7 in selected or 0 in selected: #Extratropical cyclone activity
+                helptext+=diag_help_texts[7]+'\n\n'
                 rendered.append('dailyMean')
                 right_layout.addWidget(daily_mean_values_label)
                 right_layout.addWidget(groupbox)
@@ -1555,17 +1561,10 @@ class ThirdSubWindow(QMainWindow):
                     right_layout.addWidget(self.Ezonal850obs)
                     right_layout.addWidget(self.Ezonal850Tobs)
                     
-            if 10 in selected or 0 in selected:
-                helptext+=diag_help_texts[10]+'\n\n'
-                rendered.append('t2mT')
-                for i in range(self.num_dates):
-                    right_layout.addWidget(t2ms[i])
-                    right_layout.addWidget(self.t2mTs[i])
-                if era == False:
-                    right_layout.addWidget(t2mobs)
-                    right_layout.addWidget(self.t2mTobs)
-            if 12 in selected or 0 in selected:
-                helptext+=diag_help_texts[12]+'\n\n'
+            
+                    
+            if 8 in selected or 0 in selected: #MJO
+                helptext+=diag_help_texts[8]+'\n\n'
                 rendered.append('dirOLR') #doesn't have a yaml entry
                 right_layout.addWidget(dir_OLR_label)
                 right_layout.addWidget(self.olrDataFiles)
@@ -1585,6 +1584,15 @@ class ThirdSubWindow(QMainWindow):
                     if era == False:
                         right_layout.addWidget(zonalwind200obs)
                         right_layout.addWidget(self.zonalwind200Tobs)  
+            if 9 in selected or 0 in selected: #T2m Surface Air Temp
+                helptext+=diag_help_texts[9]+'\n\n\n'
+                rendered.append('t2mT')
+                for i in range(self.num_dates):
+                    right_layout.addWidget(t2ms[i])
+                    right_layout.addWidget(self.t2mTs[i])
+                if era == False:
+                    right_layout.addWidget(t2mobs)
+                    right_layout.addWidget(self.t2mTobs)
             
                 
 
@@ -1615,7 +1623,7 @@ class ThirdSubWindow(QMainWindow):
         splitter.widget(0).setLayout(left_layout)
         splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Set the right layout to the second widget of the splitter
+        # Set the right layout to the stripesprecip widget of the splitter
         splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -1751,15 +1759,14 @@ class ThirdSubWindow(QMainWindow):
         file.close()
         
         #run diagnostics
-        diagnostics_path = ["../T2m_composites/t2m_composites.py",
+        diagnostics_path = ["../",
                             "../STRIPES/STRIPES_z500.py",
                             "../STRIPES/STRIPES_precip.py",
                             "../Pattern_CC_Amplitude/pna.py",
                             "../Pattern_CC_Amplitude/atlantic.py",
-                            "../Relative_Amplitude/code.py",
                             "../Stratosphere/stratosphere.py",
                             "../Histogram_10hPa/histogram.py",
-                            "../eke/eke_plot.py",
+                            "../eke/eke_plot.py", #extratropical cyclone activity
                             "../MJO/mjo.py",
                             "../T2m_composites/t2m_composites.py"]
         paths = 'python '+diagnostics_path[self.selected[0]]
@@ -2016,38 +2023,38 @@ class FinalWindow(QMainWindow):
         self.stripesgeopot = QRadioButton("STRIPES Index for geopotential height")
         self.stripesgeopot.setChecked(False) # 1
 
-        self.second = QRadioButton("STRIPES Index for precipitation")
-        self.second.setChecked(False) #2
+        self.stripesprecip = QRadioButton("STRIPES Index for precipitation")
+        self.stripesprecip.setChecked(False) #2
 
-        self.third = QRadioButton("Pattern CC over the PNA region")
-        self.third.setChecked(False) #3
+        self.patterncc_pna = QRadioButton("Pattern CC and Relative Amplitude over the PNA region")
+        self.patterncc_pna.setChecked(False) #3
 
-        self.third_2 = QRadioButton("Pattern CC over the Euro-Atlantic sector")
-        self.third_2.setChecked(False) #11
+        self.patterncc_atlantic = QRadioButton("Pattern CC and Relative Amplitude over the Euro-Atlantic sector")
+        self.patterncc_atlantic.setChecked(False) #4
 
-        self.fourth = QRadioButton("Fraction of the observed STRIPES index for geopotential height")
-        self.fourth.setChecked(False) #4
+        #self.fourth = QRadioButton("Fraction of the observed STRIPES index for geopotential height")
+        #self.fourth.setChecked(False) #4
 
-        self.fifth = QRadioButton("Relative amplitude over PNA?")
-        self.fifth.setChecked(False) #5
+        #self.fifth = QRadioButton("Relative amplitude over PNA?")
+        #self.fifth.setChecked(False) #5
 
-        self.sixth = QRadioButton("Stratospheric pathway")
-        self.sixth.setChecked(False) #6
+        self.strat_path = QRadioButton("Stratospheric pathway")
+        self.strat_path.setChecked(False) #5
 
-        self.seventh = QRadioButton("Histogram of 10 hPa zonal wind")
-        self.seventh.setChecked(False) #7
+        self.zonal_wind_hist = QRadioButton("Histogram of 10 hPa zonal wind")
+        self.zonal_wind_hist.setChecked(False) #6
 
-        self.eight = QRadioButton("Extratropical cyclone activity")
-        self.eight.setChecked(False) #8
+        self.et_cyclone = QRadioButton("Extratropical cyclone activity")
+        self.et_cyclone.setChecked(False) #7
 
         #self.nine = QRadioButton("EKE850-Z500 correlation")
         #self.nine.setChecked(False) #9
 
-        self.nine_two = QRadioButton("MJO")
-        self.nine_two.setChecked(False) #12
+        self.mjo = QRadioButton("MJO")
+        self.mjo.setChecked(False) #8
 
-        self.ten = QRadioButton("Surface air temperature")
-        self.ten.setChecked(False) #10
+        self.t2m = QRadioButton("Surface air temperature")
+        self.t2m.setChecked(False) #9
 
         
         back = QPushButton('Back', self)
@@ -2072,55 +2079,54 @@ class FinalWindow(QMainWindow):
         right_layout.addWidget(result_label)
         
         
-        for i in selected:
-            if i == 0:
+        if 0 in selected:
 
+            right_layout.addWidget(self.stripesgeopot)
+            right_layout.addWidget(self.stripesprecip)
+            right_layout.addWidget(self.patterncc_pna)
+            right_layout.addWidget(self.patterncc_atlantic)
+            #right_layout.addWidget(self.fourth)
+            #right_layout.addWidget(self.fifth)
+            right_layout.addWidget(self.strat_path)
+            right_layout.addWidget(self.zonal_wind_hist)
+            right_layout.addWidget(self.et_cyclone)
+            #right_layout.addWidget(self.nine)
+            right_layout.addWidget(self.mjo)
+            right_layout.addWidget(self.t2m)
+        else:      
+            
+            if 1 in selected:
                 right_layout.addWidget(self.stripesgeopot)
-                right_layout.addWidget(self.second)
-                right_layout.addWidget(self.third)
-                right_layout.addWidget(self.third_2)
-                #right_layout.addWidget(self.fourth)
-                right_layout.addWidget(self.fifth)
-                right_layout.addWidget(self.sixth)
-                right_layout.addWidget(self.seventh)
-                right_layout.addWidget(self.eight)
-                #right_layout.addWidget(self.nine)
-                right_layout.addWidget(self.nine_two)
-                right_layout.addWidget(self.ten)
-                
-            else:
-                if i == 1:
-                    right_layout.addWidget(self.stripesgeopot)
-                    
-                if i == 2:
-                    right_layout.addWidget(self.second)
-                    
-                if i==3:
-                    right_layout.addWidget(self.third)
-                    
-                if i ==11:
-                    right_layout.addWidget(self.third_2)
-                    
-                #if i==4:
-                 #   right_layout.addWidget(self.fourth)
-                    
-                if i==5:
-                    right_layout.addWidget(self.fifth)
-                    
-                if i==6:
-                    right_layout.addWidget(self.sixth)
-                    
-                if i==7:
-                    right_layout.addWidget(self.seventh)
-                    
-                if i==8:
-                    right_layout.addWidget(self.eight)   
-                #if i==9:
-                    #right_layout.addWidget(self.nine)    
-                if i==12:
-                    right_layout.addWidget(self.nine_two)   
-                if i==10:
-                    right_layout.addWidget(self.ten)
+
+            if 2 in selected:
+                right_layout.addWidget(self.stripesprecip)
+
+            if 3 in selected:
+                right_layout.addWidget(self.patterncc_pna)
+
+            if 4 in selected:
+                right_layout.addWidget(self.patterncc_atlantic)
+
+            #if i==4:
+             #   right_layout.addWidget(self.fourth)
+
+            #if i==5:
+             #   right_layout.addWidget(self.fifth)
+
+            if 5 in selected:
+                right_layout.addWidget(self.strat_path)
+
+            if 6 in selected:
+                right_layout.addWidget(self.zonal_wind_hist)
+
+            if 7 in selected:
+                right_layout.addWidget(self.et_cyclone)   
+            #if i==9:
+                #right_layout.addWidget(self.nine)    
+            if 8 in selected:
+                right_layout.addWidget(self.mjo)   
+            if 9 in selected:
+                right_layout.addWidget(self.t2m)
         right_layout.addStretch() 
         right_layout.addWidget(next,alignment=Qt.AlignRight)
         #right_layout.addWidget(but,alignment=Qt.AlignRight)
@@ -2134,7 +2140,7 @@ class FinalWindow(QMainWindow):
         splitter.widget(0).setLayout(left_layout)
         splitter.widget(0).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Set the right layout to the second widget of the splitter
+        # Set the right layout to the stripesprecip widget of the splitter
         splitter.widget(1).setLayout(right_layout)
         splitter.widget(1).setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -2163,39 +2169,41 @@ class FinalWindow(QMainWindow):
             f=1
             self.win1 = firstResult(self,self.dict_file)
             self.win1.show()
-        elif self.second.isChecked():
+        elif self.stripesprecip.isChecked():
             f=1
-            self.win2 = secondResult(self,self.dict_file)
+            self.win2 = stripesprecipResult(self,self.dict_file)
             self.win2.show()
-        elif self.third.isChecked():
+        elif self.patterncc_pna.isChecked():
             f=1
             self.win2 = thirdResult(self,self.dict_file)
             self.win2.show()
-        elif self.third_2.isChecked():
+        elif self.patterncc_atlantic.isChecked():
             f=1
             self.win2 = third2Result(self,self.dict_file)
             self.win2.show() #fourth
-        elif self.fifth.isChecked():
+        #elif self.fifth.isChecked():
+         #   f=1
+          #  self.win2 = fifthResult(self,self.dict_file)
+          
+          #  self.win2.show() 
+        
+        elif self.strat_path.isChecked():
             f=1
-            self.win2 = fifthResult(self,self.dict_file)
+            self.win2 = strat_pathResult(self,self.dict_file)
             self.win2.show()
-        elif self.sixth.isChecked():
+        elif self.zonal_wind_hist.isChecked():
             f=1
-            self.win2 = sixthResult(self,self.dict_file)
+            self.win2 = zonal_wind_histResult(self,self.dict_file)
             self.win2.show()
-        elif self.seventh.isChecked():
+        elif self.et_cyclone.isChecked():
             f=1
-            self.win2 = seventhResult(self,self.dict_file)
+            self.win2 = et_cycloneResult(self,self.dict_file)
             self.win2.show()
-        elif self.eight.isChecked():
+        elif self.mjo.isChecked():
             f=1
-            self.win2 = eightResult(self,self.dict_file)
+            self.win2 = mjoResult(self,self.dict_file)
             self.win2.show()
-        elif self.nine_two.isChecked():
-            f=1
-            self.win2 = nine_twoResult(self,self.dict_file)
-            self.win2.show()
-        elif self.ten.isChecked():
+        elif self.t2m.isChecked():
             f=1
             self.win2 = tenthResult(self,self.dict_file)
             self.win2.show()
@@ -2302,7 +2310,7 @@ class tenthResult(QMainWindow):
 
 
 
-class nine_twoResult(QMainWindow):
+class mjoResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         #self.setupUi(self)
@@ -2313,11 +2321,11 @@ class nine_twoResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/MJO/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'MJO res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -2377,7 +2385,7 @@ class nine_twoResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'MJO - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2385,94 +2393,8 @@ class nine_twoResult(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-class ninthResult(QMainWindow):
-    def __init__(self,parent,dict_file):
-        super().__init__()
-        self.parent = parent
-        self.model_name = dict_file['model name']
-        self.setWindowTitle('EKE850-Z500 correlation')
-        self.setGeometry(200, 200, 400, 200)  # Set window position and size
-        #self.setMaximumSize(width, height)
-        self.viewImages=[]
-        #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        print(len(self.all_files))
-        self.imagebuttons=[]
-        for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
-            
-            self.viewImages.append(False)
-            self.imagebuttons.append(buttonn)
-            
-       
-        back = QPushButton('Back', self)
-        back.clicked.connect(self.closee)
-        back.setFixedSize(70,30)
-        
-        #Create a layout for the left half (weather image)
-        layout = QVBoxLayout()
-        ryt_layout = QVBoxLayout()
-        
-        for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
-            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
-        
-        for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
-            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
-        
-    
-
-        frame = QFrame()
-        frame.setLayout(layout)
-        ryt_frame = QFrame()
-        ryt_frame.setLayout(ryt_layout)
-        #Create a layout for the right half (text widgets and button)
-        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-
-        lay = QHBoxLayout()
-        lay.addWidget(frame)
-        lay.addWidget(ryt_frame)
-        central_widget = QWidget()
-        central_widget.setLayout(lay)
-
-        fr = QFrame()
-        fr.setLayout(lay)
-        # Create a central widget to hold the splitter
-        main_widget = QWidget()
-
-        
-        central_layout = QVBoxLayout()
-        central_layout.addWidget(fr)
-        back.setStyleSheet("""
-        QPushButton:hover {
-            background-color: gray;
-        }
-    """)
-        central_layout.addWidget(back,alignment=Qt.AlignCenter)
-        main_widget.setLayout(central_layout)
-        self.setCentralWidget(main_widget)
-
-
-    def openweek1_2(self, path,i):
-        def clickk():
-            print(path,i)
-            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
-                self.viewImages[i] = self.viewImage
-                #self.viewImage1.closed.connect(self.quit1)
-                self.viewImages[i].show()
-        return clickk
-    def closee(self):
-        self.close()
-        self.parent.show()
-        
-class eightResult(QMainWindow):
+class et_cycloneResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         self.parent = parent
@@ -2482,11 +2404,11 @@ class eightResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'ET-Cyclone res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -2550,7 +2472,7 @@ class eightResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'ET Cyclone - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2558,7 +2480,7 @@ class eightResult(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-class seventhResult(QMainWindow):
+class zonal_wind_histResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         self.parent = parent
@@ -2568,11 +2490,11 @@ class seventhResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/Zonal_Wind_Hist/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'zonal_wind_hist res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -2636,7 +2558,7 @@ class seventhResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'zonal_wind_hist - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2645,7 +2567,7 @@ class seventhResult(QMainWindow):
         self.close()
         self.parent.show()
 
-class fifthResult(QMainWindow):
+'''class fifthResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         self.parent = parent
@@ -2730,9 +2652,9 @@ class fifthResult(QMainWindow):
         return clickk
     def closee(self):
         self.close()
-        self.parent.show()
+        self.parent.show()'''
 
-class sixthResult(QMainWindow):
+class strat_pathResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         self.parent = parent
@@ -2742,11 +2664,11 @@ class sixthResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/Strat_Path/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'Strat_Path res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -2810,7 +2732,7 @@ class sixthResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'Strat_Path - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2825,16 +2747,16 @@ class third2Result(QMainWindow):
         super().__init__()
         self.parent = parent
         self.model_name = dict_file['model name']
-        self.setWindowTitle('Pattern CC over the Euro-Atlantic sector')
+        self.setWindowTitle('Pattern CC and Relative Amplitude over the Euro-Atlantic sector')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/PatternCC_Atlantic/{self.model_name}')
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'PatCC_RelAmp_EuroAtlanticSec res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -2898,7 +2820,7 @@ class third2Result(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'PatEuro - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3009,7 +2931,7 @@ class firstResult(QMainWindow):
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'STRIPES - {i+1}', self)
+            buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -3073,7 +2995,7 @@ class firstResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'StripesGeopot - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3082,7 +3004,7 @@ class firstResult(QMainWindow):
         self.close()
         self.parent.show()
         
-class secondResult(QMainWindow):
+class stripesprecipResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         self.parent = parent
@@ -3096,7 +3018,7 @@ class secondResult(QMainWindow):
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'STRIPES - {i+1}', self)
+            buttonn=QPushButton(f'StripesInd_Precip res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -3160,7 +3082,7 @@ class secondResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'STRIPES - {i}')
+                self.viewImage = viewImage(path,f'StripesInd_Precip - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3174,7 +3096,7 @@ class thirdResult(QMainWindow):
         super().__init__()
         self.parent = parent
         self.model_name = dict_file['model name']
-        self.setWindowTitle('Pattern CC over the PNA region')
+        self.setWindowTitle('Pattern CC and Relative Amplitude over the PNA region')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
         self.viewImages=[]
@@ -3183,7 +3105,7 @@ class thirdResult(QMainWindow):
         print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'Pattern CC - {i+1}', self)
+            buttonn=QPushButton(f'PatternCC_PNA res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -3247,7 +3169,7 @@ class thirdResult(QMainWindow):
         def clickk():
             print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Pattern CC - {i}')
+                self.viewImage = viewImage(path,f'PatternCC_PNA - {i}')
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3422,17 +3344,17 @@ class OutputWindow(QMainWindow):
         if checked:
             self.all.setChecked(True)
             self.stripesgeopot.setChecked(True)
-            self.second.setChecked(True)
-            self.third.setChecked(True)
-            self.third_2.setChecked(True)
-            self.fourth.setChecked(True)
-            self.fifth.setChecked(True)
-            self.sixth.setChecked(True)
-            self.seventh.setChecked(True)
-            self.eight.setChecked(True)
+            self.stripesprecip.setChecked(True)
+            self.patterncc_pna.setChecked(True)
+            self.patterncc_atlantic.setChecked(True)
+            #self.fourth.setChecked(True)
+            #self.fifth.setChecked(True)
+            self.strat_path.setChecked(True)
+            self.zonal_wind_hist.setChecked(True)
+            self.et_cyclone.setChecked(True)
             #self.nine.setChecked(True)
-            self.nine_two.setChecked(True)
-            self.ten.setChecked(True)
+            self.mjo.setChecked(True)
+            self.t2m.setChecked(True)
         else:
             self.all.setChecked(False)
 
