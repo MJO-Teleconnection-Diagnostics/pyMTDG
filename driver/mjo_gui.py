@@ -1087,7 +1087,7 @@ class ThirdSubWindow(QMainWindow):
         
         #right_layout declaration
         right_layout = QVBoxLayout()
-        
+        left_layout = QVBoxLayout()
         
         #Path to Z500 data files:
         z500s=[]
@@ -1353,6 +1353,7 @@ class ThirdSubWindow(QMainWindow):
 '''
         diag_help_texts[8] = '''
         Help text for MJO
+   
     
 '''
         diag_help_texts[9] = '''
@@ -1424,7 +1425,11 @@ class ThirdSubWindow(QMainWindow):
         rendered=[]
         if(len(selected)>=1):
             if 1 in selected or 0 in selected: # stripes geopotential height
-                helptext+=diag_help_texts[1]+'\n\n'
+                #helptext+=diag_help_texts[1]+'\n\n'
+                text = diag_help_texts[1]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1434,7 +1439,11 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
             if 2 in selected or 0 in selected: #stripes index for precipitation
-                helptext+=diag_help_texts[2]+'\n\n'
+                #helptext+=diag_help_texts[2]+'\n\n'
+                text = diag_help_texts[2]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 if 'precDataT' not in rendered:
                     rendered.append('precDataT')
                     for i in range(self.num_dates):
@@ -1457,7 +1466,11 @@ class ThirdSubWindow(QMainWindow):
                 right_layout.addWidget(self.selectweeks)'''
 
             if 3 in selected or 0 in selected: #Pattern CC over & relative amplitude over PNA
-                helptext+=diag_help_texts[3]+'\n\n'
+                #helptext+=diag_help_texts[3]+'\n\n'
+                text = diag_help_texts[3]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1471,7 +1484,11 @@ class ThirdSubWindow(QMainWindow):
         
             
             if 4 in selected or 0 in selected: #relative amplitude over PNA - NOW - pattern cc ...euro atlantic sector
-                helptext+=diag_help_texts[4]+'\n\n'
+                #helptext+=diag_help_texts[4]+'\n\n'
+                text = diag_help_texts[4]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1482,7 +1499,11 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(self.z500Tobs)
                 
             if 5 in selected or 0 in selected: #Stratospheric pathway
-                helptext+=diag_help_texts[5]+'\n\n'
+                #helptext+=diag_help_texts[5]+'\n\n'
+                text = diag_help_texts[5]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 if 'z500T' not in rendered:
                     rendered.append('z500T')
                     for i in range(self.num_dates):
@@ -1529,7 +1550,11 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(self.zonalwind10Tobs)
 
             if 6 in selected or 0 in selected: #histogram of 10hpa zonal wind
-                helptext+=diag_help_texts[6]+'\n\n'
+                #helptext+=diag_help_texts[6]+'\n\n'
+                text = diag_help_texts[6]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 if 'zonalwind10T' not in rendered:
                     rendered.append('zonalwind10T')
                     for i in range(self.num_dates):
@@ -1540,7 +1565,11 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(self.zonalwind10Tobs)
                         
             if 7 in selected or 0 in selected: #Extratropical cyclone activity
-                helptext+=diag_help_texts[7]+'\n\n'
+                #helptext+=diag_help_texts[7]+'\n\n'
+                text = diag_help_texts[7]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 rendered.append('dailyMean')
                 right_layout.addWidget(daily_mean_values_label)
                 right_layout.addWidget(groupbox)
@@ -1564,7 +1593,11 @@ class ThirdSubWindow(QMainWindow):
             
                     
             if 8 in selected or 0 in selected: #MJO
-                helptext+=diag_help_texts[8]+'\n\n'
+                #helptext+=diag_help_texts[8]+'\n\n'
+                text = diag_help_texts[8]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 rendered.append('dirOLR') #doesn't have a yaml entry
                 right_layout.addWidget(dir_OLR_label)
                 right_layout.addWidget(self.olrDataFiles)
@@ -1585,7 +1618,11 @@ class ThirdSubWindow(QMainWindow):
                         right_layout.addWidget(zonalwind200obs)
                         right_layout.addWidget(self.zonalwind200Tobs)  
             if 9 in selected or 0 in selected: #T2m Surface Air Temp
-                helptext+=diag_help_texts[9]+'\n\n\n'
+                #helptext+=diag_help_texts[9]+'\n\n\n'
+                text = diag_help_texts[9]+'\n\n'
+                lab=QLabel(text)
+                lab.setWordWrap(True)
+                left_layout.addWidget(lab)
                 rendered.append('t2mT')
                 for i in range(self.num_dates):
                     right_layout.addWidget(t2ms[i])
@@ -1608,8 +1645,8 @@ class ThirdSubWindow(QMainWindow):
         help_label = QLabel(helptext)
         help_label.setWordWrap(True)
         # Create a layout for the left half (weather image)
-        left_layout = QVBoxLayout()
-        left_layout.addWidget(help_label)
+        
+        #left_layout.addWidget(help_label)
         left_layout.addStretch()
         #left_layout.addWidget(back,alignment=Qt.AlignLeft)
         # Create a layout for the right half (text widgets and button)
