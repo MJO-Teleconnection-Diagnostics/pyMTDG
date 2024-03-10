@@ -1,8 +1,11 @@
 import xarray as xr
 import numpy as np
 import netCDF4
-import Ngl
 import spharm
+
+import matplotlib.pyplot as plt
+import proplot as plot
+from matplotlib.markers import MarkerStyle
 
 import glob
 import os
@@ -30,6 +33,7 @@ from eke_util import test_sig_np
 from eke_util import calcPatCorr
 from eke_util import get_plot_level_spacing
 from eke_util import plot_max_level
+from eke_util import plotComposites
 
 ###### Input from yml file ( UFS )
 with open ( '../driver/config.yml' , 'r' ) as file:
@@ -369,6 +373,67 @@ for region_n in range ( len ( pattern_corr_regions ) ) :
     for phase_n in range ( len ( phase_names ) ) :
         pattern_correlation_eke850 [ region_n , phase_n ] = calcPatCorr ( reanalysis_eke850_composite [ phase_n , : , : ] , model_eke850_composite [ phase_n , : , : ] , np.array ( data_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( data_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
         pattern_correlation_z500 [ region_n , phase_n ] = calcPatCorr ( reanalysis_z500_composite [ phase_n , : , : ] , model_z500_composite [ phase_n , : , : ] , np.array ( data_lat_in ) , regions_south_north [ region_n ] [ 0 ] , regions_south_north [ region_n ] [ 1 ] , np.array ( data_lon_in ) , regions_west_east [ region_n ] [ 0 ] , regions_west_east [ region_n ] [ 1 ] )
+
+##### make plots
+colors  = [ "blue" , "red" , "orange" , "magenta" ]
+
+fig, axs = plt.subplots ( 1 , len ( pattern_corr_regions ) , figsize=( 14 , 4 ) )
+fig.suptitle ( "pattern correlation" , size=14 )
+for region_n in range ( len ( pattern_corr_regions ) ) :
+    for phase_n in range ( len ( phase_names ) ) :    
+        m = MarkerStyle ( 'o' )
+        axs [ region_n ].plot ( pattern_correlation_z500 [ region_n , phase_n ] , pattern_correlation_eke850 [ region_n , phase_n ] , marker=m , color=colors [ phase_n ] )
+        axs [ region_n ].text ( pattern_correlation_z500 [ region_n , phase_n ] , pattern_correlation_eke850 [ region_n , phase_n ] - 0.1 , phase_names [ phase_n ] , color=colors [ phase_n ] )
+    axs [ region_n ].set_xlabel ( "z500 pattern correlation" )
+    axs [ region_n ].set_ylabel ( "eke850 pattern correlation" )
+    axs [ region_n ].set_xlim ( -1 , 1 )
+    axs [ region_n ].set_ylim ( -1 , 1 )
+    axs [ region_n ].set_title ( "phase" + pattern_corr_regions [ region_n ] )
+plt.savefig ( plot_dir + "pattern_corr.jpg" , dpi=500 )
+
+plot_levels = 8
+fig_title_names = [ "Reanalysis" , Model_name ]
+cmap='bwr'
+
+cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , pattern_corr_south , pattern_corr_north , np.array ( data_lat_in ) )
+cnMaxLevelValF  = plot_max_level ( plot_levels , cnLevelSpacingF )
+cnLevels = np.arange ( - cnMaxLevelValF , cnMaxLevelValF + cnLevelSpacingF , cnLevelSpacingF )
+for phase_n in range ( len ( phase_names ) ) :
+    wks_name = plot_dir + "eke850_phase" + phase_names [ phase_n ]
+    plot_data = np.empty ( ( 2 , len ( data_lat_in ) , len ( data_lon_in ) ) , dtype=type ( model_eke850_composite ) )
+    plot_data [ 0 , : , : ] = reanalysis_eke850_composite [ phase_n , : , : ]
+    plot_data [ 1 , : , : ] = model_eke850_composite [ phase_n , : , : ]
+    sig_data = np.empty ( ( 2 , len ( data_lat_in ) , len ( data_lon_in ) ) , dtype=type ( model_eke850_significance ) )
+    sig_data [ 0 , : , : ] = reanalysis_eke850_significance [ phase_n , : , : ]
+    sig_data [ 1 , : , : ] = model_eke850_significance [ phase_n , : , : ]
+    for plot_n in range ( 2 ) :
+        for lat_n in range ( len ( data_lat_in ) ) :
+            for lon_n in range ( len ( data_lon_in ) ) :
+                if sig_data [ plot_n , lat_n , lon_n ] > ( test_confidence_level * .5 ) and sig_data [ plot_n , lat_n , lon_n ] < ( 1 - test_confidence_level * .5 ) : sig_data [ plot_n , lat_n , lon_n ] = -1
+                else : sig_data [ plot_n , lat_n , lon_n ] = 0.5
+#    sig_data = np.where ( logical_and ( sig_data > ( test_confidence_level * .5 ) , sig_data < ( 1 - test_confidence_level * .5 ) ) , - 1. , 0.5 )
+    plotComposites ( plot_data , data_lat_in , data_lon_in , fig_title_names , cnLevels , cmap , sig_data , pattern_correlation_eke850 [ 0 , phase_n ] , wks_name , "eke850 phase" + phase_names [ phase_n ] , "eke850 m2/s2" ) 
+
+cnLevelSpacingF = get_plot_level_spacing ( reanalysis_z500_composite , plot_levels , pattern_corr_south , pattern_corr_north , np.array ( data_lat_in ) )
+cnMaxLevelValF  = plot_max_level ( plot_levels , cnLevelSpacingF )
+cnLevels = np.arange ( - cnMaxLevelValF , cnMaxLevelValF + cnLevelSpacingF , cnLevelSpacingF )
+for phase_n in range ( len ( phase_names ) ) :
+    wks_name = plot_dir + "z500_phase" + phase_names [ phase_n ]
+    plot_data = np.empty ( ( 2 , len ( data_lat_in ) , len ( data_lon_in ) ) , dtype=type ( model_z500_composite ) )
+    plot_data [ 0 , : , : ] = reanalysis_z500_composite [ phase_n , : , : ]
+    plot_data [ 1 , : , : ] = model_z500_composite [ phase_n , : , : ]
+    sig_data = np.empty ( ( 2 , len ( data_lat_in ) , len ( data_lon_in ) ) , dtype=type ( model_z500_significance ) )
+    sig_data [ 0 , : , : ] = reanalysis_z500_significance [ phase_n , : , : ]
+    sig_data [ 1 , : , : ] = model_z500_significance [ phase_n , : , : ]
+    for plot_n in range ( 2 ) :
+        for lat_n in range ( len ( data_lat_in ) ) :
+            for lon_n in range ( len ( data_lon_in ) ) :
+                if sig_data [ plot_n , lat_n , lon_n ] > ( test_confidence_level * .5 ) and sig_data [ plot_n , lat_n , lon_n ] < ( 1 - test_confidence_level * .5 ) : sig_data [ plot_n , lat_n , lon_n ] = -1
+                else : sig_data [ plot_n , lat_n , lon_n ] = 0.5
+#    sig_data = np.where ( logical_and ( sig_data > ( test_confidence_level * .5 ) , sig_data < ( 1 - test_confidence_level * .5 ) ) , - 1. , 0.5 )
+    plotComposites ( plot_data , data_lat_in , data_lon_in , fig_title_names , cnLevels , cmap , sig_data , pattern_correlation_z500 [ 0 , phase_n ] , wks_name , "z500 phase" + phase_names [ phase_n ] , "z500 m" ) 
+
+exit ( )
 
 ##### make plots
 mpres                       = Ngl.Resources()
