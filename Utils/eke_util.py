@@ -6,6 +6,9 @@ g0 = 9.801
 import numpy as np
 import xarray as xr
 from os import path
+from cartopy.util import add_cyclic_point
+import matplotlib.pyplot as plt
+import proplot as plot
 
 import spharm
 
@@ -350,7 +353,6 @@ def test_sig_np ( data_season , data_composite , N_samples , m_cases ) :
 def weighted_mean ( x , w ) :
     return np.sum ( x * w ) / np.sum ( w )
 def weighted_cov ( x , y , w ) :
-#    return np.sum ( w * ( x - weighted_mean ( x , w ) ) * ( y - weighted_mean ( y , w ) ) ) / np.sum ( w )
     return np.sum ( w * x * y ) / np.sum ( w )
 def weighted_corr ( x , y , w ) :
     return weighted_cov ( x , y , w ) / np.sqrt ( weighted_cov ( x , x , w ) * weighted_cov ( y , y , w ) )
@@ -385,20 +387,6 @@ def calcPatCorr ( data1 , data2 , lat , lat_south , lat_north , lon , lon_west ,
     else :
         for lon_n in range ( len ( lon ) ) :
             if lon [ lon_n ] >= lon_west or lon [ lon_n ] <= lon_east : lon_list.append ( lon_n )
-#    if lat [ 1 ] > lat [ 0 ] : 
-#        lat_south_index = 0
-#        while lat [ lat_south_index ] < lat_south : lat_south_index = lat_south_index + 1
-#        lat_north_index = lat_south_index
-#        while lat_north_index < len ( lat ) and lat [ lat_north_index ] < lat_north : lat_north_index = lat_north_index + 1
-#        lat_north_index = lat_north_index - 1
-#        return weighted_corr ( data1 [ lat_south_index : lat_north_index , lon_list ] , data2 [ lat_south_index : lat_north_index , lon_list ] , weights [ lat_south_index : lat_north_index , lon_list ] )
-#    else :
-#        lat_north_index = 0
-#        while lat [ lat_north_index ] > lat_north : lat_north_index = lat_north_index + 1
-#        lat_south_index = lat_north_index
-#        while lat_south_index < len ( lat ) and lat [ lat_south_index ] > lat_south : lat_south_index = lat_south_index + 1
-#        lat_south_index = lat_south_index - 1
-#        return weighted_corr ( data1 [ lat_north_index : lat_south_index , lon_list ] , data2 [ lat_north_index : lat_south_index , lon_list ] , weights [ lat_north_index : lat_south_index , lon_list ] )
     ( lat_south_index , lat_north_index ) = get_lat_north_south_index ( lat_south , lat_north , lat )
     return weighted_corr ( data1 [ lat_south_index : lat_north_index , lon_list ] , data2 [ lat_south_index : lat_north_index , lon_list ] , weights [ lat_south_index : lat_north_index , lon_list ] )
 
@@ -412,4 +400,32 @@ def get_plot_level_spacing ( data , levels , lat_south , lat_north , lat ) :
     while plot_max_level ( levels , interval ) < plot_max :
         interval = interval + 2
     return interval
+
+def plotComposites ( data , lat_in , lon_in , data_names , levels , cmap , sig_map , rcorr , fig_name , title_str , label_str ) :
+    data_add = np.empty ( ( 2 , len ( lat_in ) , len ( lon_in ) + 1 ) , dtype=type ( data ) )
+    data_add [ : , : , : -1 ] = data
+    data_add [ : , : , -1 ] = data [ : , : , 0 ]
+    sig_add = np.empty ( ( 2 , len ( lat_in ) , len ( lon_in ) + 1 ) , dtype=type ( sig_map ) )
+    sig_add [ : , : , : -1 ] = sig_map
+    sig_add [ : , : , -1 ] = sig_map [ : , : , 0 ]
+    lon_in1 = np.empty ( len ( lon_in ) + 1 , dtype=type ( lon_in ) )
+    lon_in1 [ : - 1 ] = lon_in
+    lon_in1 [ - 1 ] = 360.
+    with plot.rc.context ( fontsize='20px' ) :
+        fig = plot.figure ( refwidth=6.5 )
+        axes = fig.subplots ( nrows=1 , ncols=2 , proj='npstere' , proj_kw={'lon_0': 180} )
+        for p,ax in enumerate ( axes ) :
+            h = ax.contourf ( lon_in1 , lat_in , data_add [ p , : , : ] , cmap=cmap , lw=1 , ec='none' , extend='both' , levels=levels )
+            ax.contourf ( lon_in1 , lat_in , sig_add [ p , : , : ] , levels= [ 0 , 1 ] ,
+                    colors='None',hatches=['...',''])
+            if ( p==0 ):
+                ax.format ( title=data_names [ p ] )
+            else:
+                ax.format ( title=data_names [ p ] , rtitle='{:.2f}'.format(rcorr))
+            ax.format(coast='True',boundinglat=20,grid=False,suptitle=title_str)
+        fig.colorbar(h, loc='b', extend='both', label=label_str,
+                      width='2em', extendsize='3em', shrink=0.8,
+                    )
+    fig.savefig(fig_name+'.jpg',dpi=500)
+    return
 
