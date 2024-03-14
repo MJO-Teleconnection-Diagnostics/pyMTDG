@@ -81,9 +81,9 @@ def get_model_diagnostics(model_name):
     for f in all_folders:
         fm_path = os.path.join(start_path,f, model_name)
         # Check if the item is a directory
-        print(fm_path)
+        #print(fm_path)
         if os.path.isdir(fm_path):
-            print('path exists',fm_path)
+            #print('path exists',fm_path)
             if f.lower() in diagnostics:
                 diags.append(diagnostics[f.lower()])
             
@@ -170,13 +170,13 @@ class ViewRes_RunCal(QMainWindow):
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
-                print('Accepted')
+                #print('Accepted')
                 self.model_name = dialog.input_text.text()
                 if len(self.model_name)>0:
                     self.model_name,self.selected = get_model_diagnostics(self.model_name)
                     if self.model_name: 
                         self.dict_file['model name'] = self.model_name
-                        print(f"Accepted: {self.model_name}")
+                        #print(f"Accepted: {self.model_name}")
                         modelname_exists=1
                         break  # Break the loop when valid input is provided
                     else:
@@ -184,7 +184,7 @@ class ViewRes_RunCal(QMainWindow):
                 else:
                     self.showErrorMessage("Empty text")
             else:
-                print("Exiting dialog box")
+                #print("Exiting dialog box")
                 break  # Break the loop if the user cancels the input dialog
                 
         if modelname_exists==1:
@@ -400,9 +400,6 @@ To run the package, the user needs to specify:
         else:
             self.era = False
     
-
-
-
     def open_stripesprecip_window(self):
         if self.dir_in_text.text() == '':
             QMessageBox.warning(self,'Missing fields!',"Please enter the input directory")
@@ -438,7 +435,7 @@ To run the package, the user needs to specify:
         dict_file['Number of ensembles:'] = self.num_ensm.text()
         dict_file['Number of initial dates:']= int(self.initial_dates.text())
         dict_file['Initial dates:' ]= list(map(int,self.initial_dates_values.text().split()))
-        #print(type(self.initial_dates_values.text()),' has values ',list(map(int,self.initial_dates_values.text().split())))
+        ##print(type(self.initial_dates_values.text()),' has values ',list(map(int,self.initial_dates_values.text().split())))
         if self.era:
             dict_file['ERAI:'] = True
         else:
@@ -522,7 +519,6 @@ The package can be applied to one forecast model. The name of the model will ape
         left_layout = QVBoxLayout()
             
         left_layout.addStretch()
-    
         left_layout.addWidget(help_label)
         left_layout.addStretch()
         left_layout.addWidget(back,alignment=Qt.AlignLeft)
@@ -831,7 +827,7 @@ class stripesprecipWindow(QMainWindow):
         #self.close()
 
     def method(self,checked):
-        # printing the checked status
+        # #printing the checked status
         if checked:
             self.right_layout.addWidget(self.groupbox)
             #self.right_layout.addStretch()
@@ -1027,7 +1023,7 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
     
 
     def method(self,checked):
-        # printing the checked status
+        # #printing the checked status
         if checked:
             self.all.setChecked(True)
             self.stripesgeopot.setChecked(True)
@@ -1831,7 +1827,7 @@ class ThirdSubWindow(QMainWindow):
         else:
             #display a window saying process is terminated
             QMessageBox.warning(self, "Process stopped", "Process execution terminated.")
-            print("Process terminated")
+            #print("Process terminated")
             #command='cd ..; cd T2m_composites; python t2m_composites.py & python t2m_composites.py & python t2m_composites.py'
             #self.ret = subprocess.Popen(command,  shell=True)
         
@@ -1864,14 +1860,14 @@ class SubprocessRunner(QThread):
                 process = subprocess.Popen(['python', path])
                 self.processes.append(process)
             except Exception as e:
-                print(f"Error running script {path}: {e}")
+                #print(f"Error running script {path}: {e}")
 
     # Wait for all subprocesses to complete
         for process in self.processes:
             process.wait()'''
         self.ret = subprocess.Popen(self.command, shell=True)
         self.ret.wait()
-        print('Execution done in Subprocess thread')
+        #print('Execution done in Subprocess thread')
 
 class InputDialog2(QDialog):
     def __init__(self):
@@ -1921,20 +1917,20 @@ class LoadingDialog(QDialog):
         self.subprocess_runner.ret.terminate()
         self.subprocess_runner.ret.wait()
         self.subprocess_runner.terminate()  # Terminate the subprocess
-        print('terminated')
+        #print('terminated')
         self.subprocess_runner.wait()  # Wait for the subprocess to finish
         self.close()
 
     def closeEvent(self, event):
         if self.subprocess_runner.isRunning():
-            print('terminated')
+            #print('terminated')
             self.subprocess_runner.ret.terminate()
             self.subprocess_runner.ret.wait()
             self.close()
             #self.parent.show()
             event.accept()
         else:
-            print('About to close the loading page')
+            #print('About to close the loading page')
             super().accept()
             self.close()
             #self.parent.show()
@@ -1947,7 +1943,7 @@ def get_all_files_in_directory(directory):
     
     # Check if the path is a directory
     if not os.path.isdir(abs_directory):
-        print(f"{abs_directory} is not a valid directory.")
+        #print(f"{abs_directory} is not a valid directory.")
         return
     
     # Get a list of all files in the directory
@@ -2008,14 +2004,14 @@ class runCal_View(QMainWindow):
                 self.model_name,self.selected = get_model_diagnostics(self.model_name)
                 if self.model_name:
                     self.dict_file['model name'] = self.model_name
-                    print(f"Accepted: {self.model_name}")
+                    #print(f"Accepted: {self.model_name}")
                     f=1
                     break  # Break the loop when valid input is provided
                 else:
-                    print(self.model_name)
+                    #print(self.model_name)
                     self.showErrorMessage("There is no model with this name.")
             else:
-                print("Canceled")
+                #print("Canceled")
                 break  # Break the loop if the user cancels the input dialog
         if f==1:
             self.runFinal = FinalWindow(self,self.selected,self.dict_file)
@@ -2117,7 +2113,6 @@ class FinalWindow(QMainWindow):
         
         
         if 0 in selected:
-
             right_layout.addWidget(self.stripesgeopot)
             right_layout.addWidget(self.stripesprecip)
             right_layout.addWidget(self.patterncc_pna)
@@ -2131,7 +2126,6 @@ class FinalWindow(QMainWindow):
             right_layout.addWidget(self.mjo)
             right_layout.addWidget(self.t2m)
         else:      
-            
             if 1 in selected:
                 right_layout.addWidget(self.stripesgeopot)
 
@@ -2199,10 +2193,8 @@ class FinalWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def showResults(self):
-        #self.hide()
         f=0
         if self.stripesgeopot.isChecked():
-            #open new window
             f=1
             self.win1 = firstResult(self,self.dict_file)
             self.win1.show()
@@ -2242,7 +2234,7 @@ class FinalWindow(QMainWindow):
             self.win2.show()
         elif self.t2m.isChecked():
             f=1
-            self.win2 = tenthResult(self,self.dict_file)
+            self.win2 = t2mResult(self,self.dict_file)
             self.win2.show()
         if f==0:
             msg = QMessageBox()
@@ -2258,7 +2250,7 @@ class FinalWindow(QMainWindow):
         self.close()
         self.parent.show()
         
-class tenthResult(QMainWindow):
+class t2mResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
         self.parent = parent
@@ -2270,29 +2262,26 @@ class tenthResult(QMainWindow):
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
-            
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
-            
-       
         back = QPushButton('Back', self)
         back.clicked.connect(self.closee)
         back.setFixedSize(70,30)
-        
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2331,11 +2320,11 @@ class tenthResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'T2m - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2359,11 +2348,12 @@ class mjoResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/MJO/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'MJO res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2418,11 +2408,11 @@ class mjoResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'MJO - {i}')
+                self.viewImage = viewImage(path,f'MJO - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2442,11 +2432,12 @@ class et_cycloneResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'ET-Cyclone res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2461,12 +2452,12 @@ class et_cycloneResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2505,11 +2496,11 @@ class et_cycloneResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'ET Cyclone - {i}')
+                self.viewImage = viewImage(path,f'ET Cyclone - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2528,11 +2519,12 @@ class zonal_wind_histResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/Zonal_Wind_Hist/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'zonal_wind_hist res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2547,12 +2539,12 @@ class zonal_wind_histResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2591,11 +2583,11 @@ class zonal_wind_histResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'zonal_wind_hist - {i}')
+                self.viewImage = viewImage(path,f'zonal_wind_hist - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2615,7 +2607,7 @@ class zonal_wind_histResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m res - {i+1}', self)
@@ -2634,12 +2626,12 @@ class zonal_wind_histResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2680,7 +2672,7 @@ class zonal_wind_histResult(QMainWindow):
 
     def openweek1_2(self, path,i):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
                 self.viewImage = viewImage(path,f'T2m - {i}')
                 self.viewImages[i] = self.viewImage
@@ -2702,11 +2694,12 @@ class strat_pathResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/Strat_Path/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'Strat_Path res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2721,12 +2714,12 @@ class strat_pathResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2765,11 +2758,11 @@ class strat_pathResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Strat_Path - {i}')
+                self.viewImage = viewImage(path,f'Strat_Path - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2790,11 +2783,12 @@ class third2Result(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/PatternCC_Atlantic/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'PatCC_RelAmp_EuroAtlanticSec res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2809,12 +2803,12 @@ class third2Result(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2853,11 +2847,11 @@ class third2Result(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'PatEuro - {i}')
+                self.viewImage = viewImage(path,f'PatEuro - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2877,11 +2871,12 @@ class fourthResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2896,12 +2891,12 @@ class fourthResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -2940,11 +2935,11 @@ class fourthResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}')
+                self.viewImage = viewImage(path,f'T2m - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2965,12 +2960,12 @@ class firstResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['HelpText for image 1','HelpText for image 2']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
-            
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
             
@@ -2984,12 +2979,12 @@ class firstResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -3028,11 +3023,11 @@ class firstResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'StripesGeopot - {i}')
+                self.viewImage = viewImage(path,f'StripesGeopot - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3052,11 +3047,12 @@ class stripesprecipResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/StripesPrecip/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesInd_Precip res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -3071,12 +3067,12 @@ class stripesprecipResult(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -3115,11 +3111,11 @@ class stripesprecipResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'StripesInd_Precip - {i}')
+                self.viewImage = viewImage(path,f'StripesInd_Precip - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3139,11 +3135,12 @@ class thirdResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/PatternCC_PNA/{self.model_name}')
-        print(len(self.all_files))
+        #print(len(self.all_files))
         self.imagebuttons=[]
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'PatternCC_PNA res - {i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -3153,17 +3150,17 @@ class thirdResult(QMainWindow):
         back.clicked.connect(self.closee)
         back.setFixedSize(70,30)
         
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half 
         layout = QVBoxLayout()
         ryt_layout = QVBoxLayout()
         
         for i in range(len(self.all_files)//2):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
         
         for i in range(len(self.all_files)//2,len(self.all_files)):
-            #print(self.imagebuttons[i])
+            ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
 
@@ -3202,11 +3199,11 @@ class thirdResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i):
+    def openweek1_2(self, path,i,helpText):
         def clickk():
-            print(path,i)
+            #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'PatternCC_PNA - {i}')
+                self.viewImage = viewImage(path,f'PatternCC_PNA - {i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3217,7 +3214,7 @@ class thirdResult(QMainWindow):
 
 
 class viewImage(QMainWindow):
-    def __init__(self,imageP,title):
+    def __init__(self,imageP,title,helpText):
         super().__init__()
         imageP = os.path.abspath(imageP)
         self.setWindowTitle(title)
@@ -3233,28 +3230,47 @@ class viewImage(QMainWindow):
         image.setAlignment(Qt.AlignCenter)
         self.imagep = imageP
         
-        
-        helpText = QLabel('Here will be the help text on this image.')
+        helpText = QLabel(helpText)
 
         download = QPushButton('Download image', self)
         download.setFixedSize(300,30)
         download.clicked.connect(self.download_image)
 
-        
         layout = QVBoxLayout()
+        ryt_layout = QVBoxLayout()
+        
         layout.addWidget(image)
-        layout.addWidget(helpText,alignment=Qt.AlignCenter)
-        layout.addWidget(download,alignment=Qt.AlignCenter)
+        ryt_layout.addWidget(helpText,alignment=Qt.AlignCenter)
+        ryt_layout.addStretch()
+        ryt_layout.addWidget(download,alignment=Qt.AlignCenter)
+        frame = QFrame()
+        frame.setLayout(layout)
+        ryt_frame = QFrame()
+        ryt_frame.setLayout(ryt_layout)
+        lay = QHBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(ryt_frame)
+        central_widget = QWidget()
+        central_widget.setLayout(lay)
+
+        fr = QFrame()
+        fr.setLayout(lay)
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
+
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(fr)
         
         # Create a central widget to hold the splitter
         central_widget = QWidget()
-        central_widget.setLayout(layout)
+        central_widget.setLayout(central_layout)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.setWidgetResizable(True)
         self.scroll.setWidget(central_widget)
         #central_widget.setLayout(glayout)
         self.setCentralWidget(self.scroll)
+        
     def download_image(self):
          # Replace with the image URL you want to download
         script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -3278,12 +3294,8 @@ class viewImage(QMainWindow):
                 print("Failed to download the image.")
         
 
-    
-
-
 
 class ProgressBar(QMainWindow):
-  
     def __init__(self,parent,dirin,dict_file):
         super().__init__()
         self.setGeometry(200, 200, 500, 300)
@@ -3293,9 +3305,7 @@ class ProgressBar(QMainWindow):
         self.dirin = dirin
         self.dict_file = dict_file
         
-        self.initUI()
-        
-  
+        self.initUI() 
     # method for creating widgets
     def initUI(self):
   
@@ -3377,7 +3387,7 @@ class OutputWindow(QMainWindow):
     
 
     def method(self,checked):
-        # printing the checked status
+        # #printing the checked status
         if checked:
             self.all.setChecked(True)
             self.stripesgeopot.setChecked(True)
