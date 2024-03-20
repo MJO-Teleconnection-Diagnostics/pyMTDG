@@ -1703,8 +1703,9 @@ class ThirdSubWindow(QMainWindow):
         self.close()
         self.parent.show()
     def close_yaml(self):
+        print('I am being called')
         dict_file =self.dict_file
-        if 8 in self.selected or 0 in self.selected:
+        if 7 in self.selected or 0 in self.selected:
             dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
             if self.time_step_interval and self.time_step_interval_24.isChecked():
                 dict_file['forecast time step']= 24
@@ -3274,10 +3275,8 @@ class viewImage(QMainWindow):
     def download_image(self):
          # Replace with the image URL you want to download
         script_directory = os.path.dirname(os.path.abspath(__file__))
-
         # Specify the relative path to the image file
         relative_path = self.imagep # Adjust the relative path as needed
-
         # Construct the source path by joining the script directory and relative path
         source_path = os.path.join(script_directory, relative_path)
 
