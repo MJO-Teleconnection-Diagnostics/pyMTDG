@@ -234,13 +234,19 @@ The MJO-Diagnostics Package computes metrics that require the meteorological fie
 ----------------------------------------------------
  Meteorological parameters:
 ----------------------------------------------------
-* Geopotential at 500mb (???,??) and 100mb(???,??)
-* Precipitation rate (???, mm/day)
+* Geopotential at 500mb an 100mb:
+*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+* Precipitation rate:
+*** Variable can be named any of: 'prate', 'precipitationCal','pr','precip'
+*** Unit: mm/day
 * Zonal and meridional winds at 850mb
 * Zonal wind at 10mb
 * Meridional wind at 500mb
 * Air temperature at 100mb 
-* 2-metre Temperature (t2m, K)
+* 2-metre Temperature:
+*** Variable can be named any of: 't2m', 'T2m', 'temp'
+*** Unit: K
 
 To run the package, the user needs to specify: 
 * DIR_IN: the path of the directory (e.g., /project/$user) containing all input data including forecast and verification data. If the user downloads the ERA-Interim dataset made available with the Package the directory 'mjo_teleconnections_data/' must be located here. 
@@ -1313,8 +1319,10 @@ class ThirdSubWindow(QMainWindow):
         diag_help_texts = ['']*13
 
         diag_help_texts[1] = '''
-        Please include a trailing / in the directory where the geopotential data is located. Data can be 
-        geopotential (units m^2/s^2) or geopotential height. 
+** STRIPES Index for geopotential height**        
+
+Please include a trailing / in the directory where the geopotential data is located. Data can be 
+geopotential (units m^2/s^2) or geopotential height. 
         '''
         diag_help_texts[2] = '''
         Help text for STRIPES Index for precipitation
@@ -1355,7 +1363,7 @@ class ThirdSubWindow(QMainWindow):
         diag_help_texts[9] = '''
 ** Surface Air Temperature**
 
-* Path to T2m model data files for date D or DD: complete the full path and names of files containing daily mean (if daily anomalies need to be computed) or daily anomalies (if daily anomalies are provided) for the initial condition corresponding to date D or DD. E.g., for the forecasts initialized on 1st of the month: /project/$user/$user_dir/file_name_*01.nc or /project/$user/$user_dir/file_name_*.nc; for forecasts initialized on the 15th of the month: /project/$user/$user_dir/file_name_*15 or /project/$user/$user_dir/file_name_*.nc.
+Please include a trailing / in the directory where the 2-meter temperature data is located
 
 
 
