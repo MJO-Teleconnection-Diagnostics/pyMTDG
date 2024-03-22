@@ -7,6 +7,7 @@ import pandas as pd
 import datetime
 from datetime import date, timedelta
 import yaml
+import glob
 import gc
 
 
@@ -85,7 +86,7 @@ dLast=[dStrt[i]+timedelta(days=nyrs*366) for i in range(len(initial_days))]
 # Read in forecast data and create the array to hold the final calculation for each initial date
 
 init_dates=dictionary['Number of initial dates:']
-fcst_files=dictionary['Path to T2m model data files for date']
+fcst_dir=dictionary['Path to T2m model data files for date']
 ds_fcst_name=dictionary['model name']
 ds_names=[ds_obs_name,ds_fcst_name]
 
@@ -98,9 +99,11 @@ ds_fcst_comp_anom_p7 = []
 phases=[3,7]
 weeks=['week2','week3','week4','week5']
 
-for ndate,idate in enumerate(initial_days):
+fileList=np.sort(glob.glob(str(fcst_dir[0]+'*.nc')))
 
-    ds_t2m_fcst=xr.open_mfdataset(fcst_files[ndate],combine='nested',concat_dim='time',parallel=True)
+for ndate,idate in enumerate(initial_days):
+    fcst_files=[f for f in fileList if str(idate)+'.nc' in f]
+    ds_t2m_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
     
     # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
     rgrd_t2m_fcst=regrid_scalar_spharm(ds_t2m_fcst['t2m'],ds_t2m_fcst.latitude,ds_t2m_fcst.longitude,
