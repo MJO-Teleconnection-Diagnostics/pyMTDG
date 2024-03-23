@@ -44,3 +44,21 @@ def correlate(obs,model,lat_min,lat_max,lon_min,lon_max):
     corr=np.corrcoef(x_stacked,y_stacked)
     
     return corr
+
+def get_variable_from_dataset(ds):
+    '''
+        Extract the target variable from the dataset. Convert to target units
+        
+            Parameters
+                ds: xarray dataset
+            Returns
+                da: subsetted dataArray in
+    '''
+    for name in ['t2m', 'T2m','T','temp']:
+        if name in list(ds.keys()):
+            break
+    da = ds[name]
+        
+    
+    return da
+    raise RuntimeError("Couldn't find a geopotential variable name")
