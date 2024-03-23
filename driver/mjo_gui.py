@@ -2271,7 +2271,7 @@ class t2mResult(QMainWindow):
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image 6','Helptext for image 7','Helptext for image 8']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
