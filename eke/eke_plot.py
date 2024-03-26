@@ -398,7 +398,7 @@ for region_n in range ( len ( pattern_corr_regions ) ) :
     axs [ region_n ].set_ylabel ( "eke850 pattern correlation" )
     axs [ region_n ].set_xlim ( -1 , 1 )
     axs [ region_n ].set_ylim ( -1 , 1 )
-    axs [ region_n ].set_title ( "phase" + pattern_corr_regions [ region_n ] )
+    axs [ region_n ].set_title ( pattern_corr_regions [ region_n ] )
 plt.savefig ( plot_dir + "pattern_corr.jpg" , dpi=500 )
 
 plot_levels = 8
