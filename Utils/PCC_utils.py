@@ -57,3 +57,32 @@ def amplitude_metric(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_
             erai_anomaly_variance_temp=np.var(x_stacked)
             amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
     return amp   
+
+def get_variable_from_dataset(ds):
+    '''
+        Extract the target variable from the dataset. Convert to target units
+        
+            Parameters
+                ds: xarray dataset
+                vartype: options are 'gh','prate'. look for Z names or precip. names
+                
+            Returns
+                da: subsetted dataArray in
+    '''
+    
+    
+    for name in ['z', 'Z','gh','z500']:
+        if name in list(ds.keys()):
+            break
+    da = ds[name]
+        
+# convert geopotential to geopotential height if needed
+    for units in ['m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2']:
+        if units == da.units:
+            print('converting geopotential to geopotential height')
+            da = da/9.81
+            da.attrs['units']='m'
+            break
+    return da
+    raise RuntimeError("Couldn't find a geopotential variable name")
+        
