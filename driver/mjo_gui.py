@@ -2864,7 +2864,7 @@ class firstResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['HelpText for image 1','HelpText for image 2']
+        self.helpTexts=['HelpText for image 1','HelpText for image 2','HelpText for image 3']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))

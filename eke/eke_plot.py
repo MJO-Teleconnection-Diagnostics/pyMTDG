@@ -63,11 +63,19 @@ Model_z500_files             = yml_input [ 'Extratropical Cyclone Activity Z500 
 #Model_data_initial_condition = True
 #Smooth_climatology           = False
 #ERAI                         = True
-if ERAI :
-    Reanalysis_name = "ERA-I"
-    reanalysis_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-    reanalysis_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-    reanalysis_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
+if (yml_input['ERAI:']==True):
+    reanalysis_u850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/u850.19790101-20190831.nc'
+    reanalysis_v850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/v850.19790101-20190831.nc'
+    reanalysis_z500_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.19790101-20190831.nc'
+    ds_obs_name='ERAI'
+if (yml_input['ERAI:']==False):
+    ds_obs_name='OBS'
+
+#if ERAI :
+#    Reanalysis_name = "ERA-I"
+#    reanalysis_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+#    reanalysis_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
+#    reanalysis_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
 #    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/u850.19790101-20190831.nc"
 #    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
 #    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
@@ -85,9 +93,11 @@ if ERAI :
 #Model_z500_varname = "gh"
 
 if not RMM :
-    RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
+    #RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
+    RMM_ERA_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
+ 
 
-plot_dir = "../output/Eke/" + Model_name + "/"
+plot_dir = "../output/ET_Cyclone/" + Model_name + "/"
 if not os.path.isdir ( plot_dir ) :
     os.mkdir ( plot_dir )
 
