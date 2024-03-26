@@ -41,7 +41,7 @@ with open ( '../driver/config.yml' , 'r' ) as file:
 
 Model_name                   = yml_input [ 'model name' ]
 Ensemble_size                = int ( yml_input [ 'Number of ensembles:' ] )
-Daily_Mean_Data              = yml_input [ 'Model input file daily mean:' ]
+Daily_Mean_Data              = yml_input [ 'model data daily-mean values' ]
 Forecast_time_step_interval  = yml_input [ 'forecast time step' ]
 Model_data_initial_condition = yml_input [ 'model initial conditions' ]
 Smooth_climatology           = yml_input [ 'smooth climatology:' ]
