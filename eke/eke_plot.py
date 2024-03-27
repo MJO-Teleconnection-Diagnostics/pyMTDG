@@ -69,6 +69,9 @@ if (yml_input['ERAI:']==True):
     reanalysis_z500_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.19790101-20190831.nc'
     ds_obs_name='ERAI'
 if (yml_input['ERAI:']==False):
+    reanalysis_u850_file=yml_input['Extratropical Cyclone Activity zonal wind at 850 hPa observational data files']
+    reanalysis_v850_file=yml_input['Extratropical Cyclone Activity meridional wind at 850 hPa observational data files']
+    reanalysis_z500_file=yml_input['Extratropical Cyclone Activity Z500 observational data files']
     ds_obs_name='OBS'
 
 #if ERAI :
