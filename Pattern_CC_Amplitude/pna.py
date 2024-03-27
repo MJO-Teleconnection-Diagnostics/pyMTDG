@@ -130,13 +130,27 @@ model_yyyymmdd=z500_fcst_anom_reshape['initial_date']
 # In[8]:
 
 
-fil_rmm_erai='/expanse/nfs/cw3e/cwp137/_From_Comet/UFS/rmm_ERA-Interim.nc'
+if (dictionary['RMM:']==False):
+    fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
+
 ds_rmm=xr.open_dataset(fil_rmm_erai,decode_times=False)
-times=ds_rmm['amplitude'].time
+
+times=ds_rmm.time
 init_time=date(1960,1,1)+timedelta(int(times[0]))
 time=[]
 for i in range(len(times)):
         time.append(init_time+timedelta(i))
+
+ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
+
+#fil_rmm_erai='/expanse/nfs/cw3e/cwp137/_From_Comet/UFS/rmm_ERA-Interim.nc'
+#ds_rmm=xr.open_dataset(fil_rmm_erai,decode_times=False)
+#times=ds_rmm['amplitude'].time
+#init_time=date(1960,1,1)+timedelta(int(times[0]))
+#time=[]
+#for i in range(len(times)):
+#        time.append(init_time+timedelta(i))
+
 phase=np.array(ds_rmm['phase'])
 amplitude=np.array(ds_rmm['amplitude'])
 phase_int = np.array(list(map(np.int_, phase)))

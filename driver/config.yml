@@ -1,64 +1,52 @@
 'Compute the z500 anomalies:': false
 DIR_IN: /projects/cstan
 'Daily Anomaly:': true
-'END_DATE:': '20180419'
+'END_DATE:': '20180401'
 'ERAI:': true
+Extratropical Cyclone Activity Z500 model files: /projects/cstan/ufs5/6hourly/z500/gh.500-isobaricInhPa.*.nc
+Extratropical Cyclone Activity Z500 observational data files: /projects/cstan/OBS/
+Extratropical Cyclone Activity meridional wind at 850 hPa model files: /projects/cstan/ufs5/6hourly/v850/v.850-isobaricInhPa.*nc
+Extratropical Cyclone Activity meridional wind at 850 hPa observational data files: /projects/cstan/OBS/
+Extratropical Cyclone Activity zonal wind at 850 hPa model files: /projects/cstan/ufs5/6hourly/u850/u.850-isobaricInhPa.*.nc
+Extratropical Cyclone Activity zonal wind at 850 hPa observational data files: /projects/cstan/OBS/
 'IMERG:': true
 'Initial dates:':
 - 1
 - 15
-'Model input file daily mean:': false
 'Number of ensembles:': '1'
 'Number of initial dates:': 2
 'Path to OLR data files:': /projects/cstan/OBS/
-Path to T2m model data files for date:
-- /projects/cstan/ufs6/daily/mean/t2m/t2m_*01.nc
-- /projects/cstan/ufs6/daily/mean/t2m/t2m_*15.nc
+Path to T2m model data files for date: /projects/cstan/ufs5/daily/mean/t2m/
 'Path to T2m observational data files:': /projects/cstan/OBS/
-Path to meridional wind at 500 hPa date files:
-- /projects/cstan/
-- /projects/cstan/
+Path to meridional wind at 500 hPa date files: /projects/cstan/
 'Path to meridional wind at 500 hPa observational data files:': /projects/cstan/OBS/
-Path to meridional wind at 850 hPa date files:
-- /projects/cstan/
-- /projects/cstan/
+Path to meridional wind at 850 hPa date files: /projects/cstan/
 Path to meridional wind at 850 hPa observational data file: /projects/cstan/OBS/
-'Path to precipitation data files:':
-- /projects/cstan/
-- /projects/cstan/
+'Path to precipitation data files:': /projects/cstan/
 'Path to precipitation observational data files:': /projects/cstan/OBS/
-Path to temperature at 500 hPa data files:
-- /projects/cstan/
-- /projects/cstan/
+Path to temperature at 500 hPa data files: /projects/cstan/
 Path to temperature at 500 hPa observational data files: /projects/cstan/OBS/
-Path to z100 date files:
-- /projects/cstan/
-- /projects/cstan/
+Path to z100 date files: /projects/cstan/
 Path to z100 observational files: /projects/cstan/OBS/
-Path to z500 date files:
-- /projects/cstan/
-- /projects/cstan/
+Path to z500 date files: /projects/cstan/ufs5/daily/mean/z500/
 Path to z500 observational files: /projects/cstan/OBS/
-'Path to zonal wind at 10 hPa data files:':
-- /projects/cstan/
-- /projects/cstan/
-'Path to zonal wind at 10 hPa observational data files:': /projects/cstan/OBS/
-'Path to zonal wind at 200 hPa data files:':
-- /projects/cstan/
-- /projects/cstan/
-'Path to zonal wind at 200 hPa observational data files:': /projects/cstan/OBS/
+'Path to zonal wind at 200 hPa data files:': /projects/cstan/OBS/
 'Path to zonal wind at 850 hPa data files:': /projects/cstan/OBS/
-Path to zonalwind850 date files:
-- /projects/cstan/
-- /projects/cstan/
-Path to zonalwind850 observational files: /projects/cstan/OBS/
+Path to zonalwind10hpa date files: /projects/cstan/
+Path to zonalwind10hpa observational files: /projects/cstan/OBS/
+Path to zonalwind200hpa date files: /projects/cstan/
+Path to zonalwind200hpa observational files: /projects/cstan/OBS/
+Path to zonalwind850hpa date files: /projects/cstan/
+Path to zonalwind850hpa observational files: /projects/cstan/OBS/
 'RMM:': false
 'START_DATE:': '20110401'
-'Select weeks:': ''
-forecast time step: 24
+forecast time step: 6
 'length of forecasts:': '35'
-model initial conditions: false
-model name: UFS6
+model data daily-mean values: false
+model initial conditions: true
+model name: UFS5
 selected:
-- 10
+- 1
+- 7
+- 9
 'smooth climatology:': false
