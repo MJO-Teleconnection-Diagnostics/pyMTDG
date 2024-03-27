@@ -284,13 +284,9 @@ To run the package, the user needs to specify:
         help_label.setWordWrap(True) 
         dir_in_label = QLabel('DIR_IN:', self)
         self.dir_in_text = QLineEdit(self)
-        #self.dir_in_text.setProperty("mandatoryField", True)
         start_date_label = QLabel('START_DATE:', self)
         self.start_date_text = QLineEdit(self)
-        #calendar = QCalendarWidget(self)
 
-        self.era = True
-        self.imerg = True
         end_date_label = QLabel('END_DATE:', self)
         self.end_date_text = QLineEdit(self)
 
@@ -318,7 +314,7 @@ To run the package, the user needs to specify:
         groupbox.setLayout(vbox)
         self.era_yes = QRadioButton("Yes")
         self.era_yes.setChecked(True)
-        self.era_yes.toggled.connect(self.onERAClicked)
+        #self.era_yes.toggled.connect(self.onERAClicked)
         vbox.addWidget(self.era_yes)
         self.era_no = QRadioButton("No")
         vbox.addWidget(self.era_no)
@@ -399,12 +395,6 @@ To run the package, the user needs to specify:
         
         self.setCentralWidget(central_widget)
 
-    def onERAClicked(self):
-        radioButton = self.sender()
-        if radioButton.isChecked():
-            self.era = True
-        else:
-            self.era = False
     
     def open_stripesprecip_window(self):
         if self.dir_in_text.text() == '':
@@ -435,22 +425,16 @@ To run the package, the user needs to specify:
             return
         dict_file=self.dict_file
         dict_file['DIR_IN'] = self.dir_in_text.text()
-        dict_file['START_DATE:']= self.start_date_text.text()
-        dict_file['END_DATE:']= self.end_date_text.text()
-        dict_file['length of forecasts:'] = self.lengthFor_text.text()
-        dict_file['Number of ensembles:'] = self.num_ensm.text()
-        dict_file['Number of initial dates:']= int(self.initial_dates.text())
-        dict_file['Initial dates:' ]= list(map(int,self.initial_dates_values.text().split()))
+        dict_file['START_DATE']= self.start_date_text.text()
+        dict_file['END_DATE']= self.end_date_text.text()
+        dict_file['length of forecasts'] = self.lengthFor_text.text()
+        dict_file['Number of ensembles'] = self.num_ensm.text()
+        dict_file['Number of initial dates']= int(self.initial_dates.text())
+        dict_file['Initial dates' ]= list(map(int,self.initial_dates_values.text().split()))
         ##print(type(self.initial_dates_values.text()),' has values ',list(map(int,self.initial_dates_values.text().split())))
-        if self.era:
-            dict_file['ERAI:'] = True
-        else:
-            dict_file['ERAI:'] = False
-        if self.imerg:
-            dict_file['IMERG:' ]= True
-        else:
-            dict_file['IMERG:'] = False
-        self.stripesprecip_window = modelInformation(self,self.dir_in_text.text(),self.era,dict_file)
+        dict_file['ERAI'] = self.era_yes.isChecked()
+        dict_file['IMERG'] = self.imerg_yes.isChecked()
+        self.stripesprecip_window = modelInformation(self,self.dir_in_text.text(),dict_file['ERAI'],dict_file)
         self.stripesprecip_window.showMaximized()
         self.hide()
     def closee(self):
@@ -490,7 +474,6 @@ The package can be applied to one forecast model. The name of the model will ape
         #Model name
         model_label = QLabel('Model name:', self)
         self.model_name = QLineEdit(self)
-
 
         #Does the model data include the initial conditions?
         self.initial_conds_label = QLabel('Does the model data include the initial conditions?', self)
@@ -611,7 +594,7 @@ The package can be applied to one forecast model. The name of the model will ape
         
         
         dict_file['model initial conditions']= self.initial_conds_yes.isChecked()
-        dict_file['smooth climatology:'] = self.smooth_climatology_yes.isChecked()
+        dict_file['smooth climatology'] = self.smooth_climatology_yes.isChecked()
         
         self.dict_file = dict_file
         
@@ -703,19 +686,18 @@ class stripesprecipWindow(QMainWindow):
         prefix = self.dirin+"/OBS/"
         
         #change labels correctly.
-        dir_in_label = QLabel('Path to OLR data files:', self)
+        dir_in_label = QLabel('Path to OLR observation data files:', self)
         self.olrDataFiles = QLineEdit(self)
         self.olrDataFiles.setText(prefix)
         self.olrDataFiles.setCursorPosition(len(prefix))
 
-        zonalpath = QLabel('Path to zonal wind at 850 hPa data files:', self)
+        zonalpath = QLabel('Path to zonal wind at 850 hPa observation data files:', self)
         self.zonalpathT  = QLineEdit(self)
-        
         self.zonalpathT.setText(prefix)
         self.zonalpathT.setCursorPosition(len(prefix))
         
 
-        zonalpath200 = QLabel('Path to zonal wind at 200 hPa data files:', self)
+        zonalpath200 = QLabel('Path to zonal wind at 200 hPa observation data files:', self)
         self.zonalpath200T = QLineEdit(self)
         self.zonalpath200T.setText(prefix)
         self.zonalpath200T.setCursorPosition(len(prefix))
@@ -814,16 +796,14 @@ class stripesprecipWindow(QMainWindow):
     def openSelectDiagWindow(self):
         dict_file=self.dict_file
         if self.dailyAnomaly:
-            dict_file['Daily Anomaly:'] = True
+            dict_file['Daily Anomaly'] = True
         else:
-            dict_file['Daily Anomaly:'] = False
-        if self.rmm:
-            dict_file['RMM:'] = True
-        else:
-            dict_file['RMM:'] = False
-        dict_file['Path to OLR data files:'] = self.olrDataFiles.text()
-        dict_file['Path to zonal wind at 850 hPa data files:'] = self.zonalpathT.text()
-        dict_file['Path to zonal wind at 200 hPa data files:'] = self.zonalpath200T.text()
+            dict_file['Daily Anomaly'] = False
+        dict_file['RMM'] = self.rmm
+        
+        dict_file['Path to OLR observation data files'] = self.olrDataFiles.text()
+        dict_file['Path to zonal wind at 850 hPa observation data files'] = self.zonalpathT.text()
+        dict_file['Path to zonal wind at 200 hPa observation data files'] = self.zonalpath200T.text()
 
         
         self.third_window = SelectDiagWindow(self,self.dirin,self.era,dict_file)
@@ -1074,7 +1054,7 @@ class ThirdSubWindow(QMainWindow):
         self.prefix = self.dirin+"/OBS/"
         self.dict_file = dict_file
         #self.num_dates = dict_file['Number of initial dates:']
-        self.dates = dict_file['Initial dates:' ]
+        self.dates = dict_file['Initial dates' ]
         
         #set window title and position and size
         self.setWindowTitle('Third Sub Window')
@@ -1098,21 +1078,26 @@ class ThirdSubWindow(QMainWindow):
         self.z500T.setCursorPosition(len(self.pref))
          
         #z500 obs data files:
-        z500obs = QLabel(f'Path to Z500 observational data files:', self)
+        z500obs = QLabel(f'Path to Z500 observation data files:', self)
         self.z500Tobs = QLineEdit(self)
         self.z500Tobs.setText(self.prefix)
         self.z500Tobs.setCursorPosition(len(self.prefix))
         
         
-        #OLD data files
-        dir_OLR_label = QLabel('Path to OLR data files:', self)
+        ##OLD data files
+        dir_OLR_label = QLabel('Path to OLR model data files:', self)
         self.olrDataFiles = QLineEdit(self)
-        self.olrDataFiles.setText(self.prefix)
-        self.olrDataFiles.setCursorPosition(len(self.prefix))
+        self.olrDataFiles.setText(self.pref)
+        self.olrDataFiles.setCursorPosition(len(self.pref))
+        #OLD obs data files
+        dir_OLR_label_obs = QLabel('Path to OLR observation data files:', self)
+        self.olrobsDataFiles = QLineEdit(self)
+        self.olrobsDataFiles.setText(self.prefix)
+        self.olrobsDataFiles.setCursorPosition(len(self.prefix))
 
         
-        #Path to Extratropical cyclone activity data files
-        Ez500 = QLabel(f'Path to Extratropical Cyclone Activity Z500 model data files:', self)
+        '''#Path to Extratropical cyclone activity data files
+        Ez500 = QLabel(f'Path to Z500 model data files for Extratropical Cyclone Activity:', self)
         Emeridional850 = QLabel(f"Path to meridional wind at 850 hPa data files for Extratropical Cyclone Activity:", self)
         Ezonal850 = QLabel(f"Path to zonal wind at 850 hPa data files for Extratropical Cyclone Activity:", self)
 
@@ -1129,29 +1114,29 @@ class ThirdSubWindow(QMainWindow):
         self.Ezonal850T.setCursorPosition(len(self.pref))
         
         #Extratropical cyclone activity obs data files 
-        self.Ez500obs = QLabel(f'Path to Extratropical Cyclone Activity Z500 observational data files:', self)
+        self.Ez500obs = QLabel(f'Path to Z500 observation data files for Extratropical Cyclone Activity:', self)
         self.Ez500Tobs = QLineEdit(self)
         self.Ez500Tobs.setText(self.prefix)
         self.Ez500Tobs.setCursorPosition(len(self.prefix))
 
-        self.Emeridional850obs = QLabel(f'Path to meridional wind at 850 hPa observational data files for Extratropical Cyclone Activity:', self)
+        self.Emeridional850obs = QLabel(f'Path to meridional wind at 850 hPa observation data files for Extratropical Cyclone Activity:', self)
         self.Emeridional850Tobs = QLineEdit(self)
         self.Emeridional850Tobs.setText(self.prefix)
         self.Emeridional850Tobs.setCursorPosition(len(self.prefix))
 
-        self.Ezonal850obs = QLabel(f'Path to zonal wind at 850 hPa observational data files for Extratropical Cyclone Activity:', self)
+        self.Ezonal850obs = QLabel(f'Path to zonal wind at 850 hPa observation data files for Extratropical Cyclone Activity:', self)
         self.Ezonal850Tobs = QLineEdit(self)
         self.Ezonal850Tobs.setText(self.prefix)
-        self.Ezonal850Tobs.setCursorPosition(len(self.prefix))
+        self.Ezonal850Tobs.setCursorPosition(len(self.prefix))'''
 
         # Path to Z100 data files:
-        z100 = QLabel(f'Path to Z100 model data files for date:', self)
+        z100 = QLabel(f'Path to Z100 model data files:', self)
         self.z100T = QLineEdit(self)
         self.z100T.setText(self.pref)
         self.z100T.setCursorPosition(len(self.pref))
 
             
-        z100obs = QLabel(f'Path to Z100 observational data files:', self)
+        z100obs = QLabel(f'Path to Z100 observation data files:', self)
         self.z100Tobs = QLineEdit(self)
         self.z100Tobs.setText(self.prefix)
         self.z100Tobs.setCursorPosition(len(self.prefix))
@@ -1165,7 +1150,7 @@ class ThirdSubWindow(QMainWindow):
         self.zonalwind850T.setCursorPosition(len(self.pref))
         
             
-        zonalwind850obs = QLabel(f'Path to zonal wind at 850 hPa observational data files:', self)
+        zonalwind850obs = QLabel(f'Path to zonal wind at 850 hPa observation data files:', self)
         self.zonalwind850Tobs = QLineEdit(self)
         self.zonalwind850Tobs.setText(self.prefix)
         self.zonalwind850Tobs.setCursorPosition(len(self.prefix))
@@ -1178,7 +1163,7 @@ class ThirdSubWindow(QMainWindow):
         self.zonalwind200T.setCursorPosition(len(self.pref))
 
             
-        zonalwind200obs = QLabel(f'Path to zonal wind at 200 hPa observational data files:', self)
+        zonalwind200obs = QLabel(f'Path to zonal wind at 200 hPa observation data files:', self)
         self.zonalwind200Tobs = QLineEdit(self)
         self.zonalwind200Tobs.setText(self.prefix)
         self.zonalwind200Tobs.setCursorPosition(len(self.prefix))
@@ -1191,12 +1176,10 @@ class ThirdSubWindow(QMainWindow):
         self.zonalwind10T.setText(self.pref)
         self.zonalwind10T.setCursorPosition(len(self.pref))
    
-        zonalwind10obs = QLabel(f'Path to zonal wind at 10 hPa observational data files:', self)
+        zonalwind10obs = QLabel(f'Path to zonal wind at 10 hPa observation data files:', self)
         self.zonalwind10Tobs = QLineEdit(self)
         self.zonalwind10Tobs.setText(self.prefix)
         self.zonalwind10Tobs.setCursorPosition(len(self.prefix))
-
-
 
         # Path to meridional wind at 850 hPa data files:
         meridionalwind850 = QLabel(f'Path to meridional wind at 850 hPa model data files:', self)
@@ -1205,7 +1188,7 @@ class ThirdSubWindow(QMainWindow):
         self.meridionalwind850T.setCursorPosition(len(self.pref))
 
                  
-        meridionalwind850obs = QLabel(f'Path to meridional wind at 850 hPa observational data files:', self)
+        meridionalwind850obs = QLabel(f'Path to meridional wind at 850 hPa observation data files:', self)
         self.meridionalwind850Tobs = QLineEdit(self)
         self.meridionalwind850Tobs.setText(self.prefix)
         self.meridionalwind850Tobs.setCursorPosition(len(self.prefix))
@@ -1216,7 +1199,7 @@ class ThirdSubWindow(QMainWindow):
         self.meridionalwind500T.setText(self.pref)
         self.meridionalwind500T.setCursorPosition(len(self.pref))
 
-        meridionalwind500obs = QLabel(f'Path to meridional wind at 500 hPa observational data files:', self)
+        meridionalwind500obs = QLabel(f'Path to meridional wind at 500 hPa observation data files:', self)
         self.meridionalwind500Tobs = QLineEdit(self)
         self.meridionalwind500Tobs.setText(self.prefix)
         self.meridionalwind500Tobs.setCursorPosition(len(self.prefix))
@@ -1227,7 +1210,7 @@ class ThirdSubWindow(QMainWindow):
         self.temperature500T.setText(self.pref)
         self.temperature500T.setCursorPosition(len(self.pref))
             
-        temperature500obs = QLabel(f'Path to temperature at 500 hPa observational data files:', self)
+        temperature500obs = QLabel(f'Path to temperature at 500 hPa observation data files:', self)
         self.temperature500Tobs = QLineEdit(self)
         self.temperature500Tobs.setText(self.prefix)
         self.temperature500Tobs.setCursorPosition(len(self.prefix))
@@ -1315,7 +1298,7 @@ Please include a trailing / in the directory where the 2-meter temperature data 
         self.t2mT.setText(self.pref)
         self.t2mT.setCursorPosition(len(self.pref))
 
-        t2mobs = QLabel(f'Path to T2m observational data files:', self)
+        t2mobs = QLabel(f'Path to T2m observation data files:', self)
         self.t2mTobs = QLineEdit(self)
         self.t2mTobs.setText(self.prefix)
         self.t2mTobs.setCursorPosition(len(self.prefix))
@@ -1326,7 +1309,7 @@ Please include a trailing / in the directory where the 2-meter temperature data 
         self.precDataT.setText(self.pref)
         self.precDataT.setCursorPosition(len(self.pref))
 
-        precDataobs = QLabel(f'Path to precipitation observational data files:', self)
+        precDataobs = QLabel(f'Path to precipitation observation data files:', self)
         self.precDataTobs = QLineEdit(self)
         self.precDataTobs.setText(self.prefix)
         self.precDataTobs.setCursorPosition(len(self.prefix))
@@ -1490,23 +1473,29 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                 right_layout.addWidget(daily_mean_values_label)
                 right_layout.addWidget(self.groupbox)
                 self.daily_mean_ind = right_layout.count()-1
-                right_layout.addWidget(Ez500)
-                right_layout.addWidget(self.Ez500T)
-                if era == False:
-                    right_layout.addWidget(self.Ez500obs)
-                    right_layout.addWidget(self.Ez500Tobs)
-                right_layout.addWidget(Emeridional850)
-                right_layout.addWidget(self.Emeridional850T)
-                if era == False:
-                    right_layout.addWidget(self.Emeridional850obs)
-                    right_layout.addWidget(self.Emeridional850Tobs)
-                right_layout.addWidget(Ezonal850)
-                right_layout.addWidget(self.Ezonal850T)
-                if era == False:
-                    right_layout.addWidget(self.Ezonal850obs)
-                    right_layout.addWidget(self.Ezonal850Tobs)
-                    
-            
+                
+                if 'z500T' not in rendered:
+                    rendered.append('z500T')
+                    right_layout.addWidget(z500)
+                    right_layout.addWidget(self.z500T)
+                    if era == False:
+                        right_layout.addWidget(z500obs)
+                        right_layout.addWidget(self.z500Tobs)
+                if 'meridionalwind850T' not in rendered:
+                    rendered.append('meridionalwind850T')
+                    right_layout.addWidget(meridionalwind850)
+                    right_layout.addWidget(self.meridionalwind850T)
+                    if era == False:
+                        right_layout.addWidget(meridionalwind850obs)
+                        right_layout.addWidget(self.meridionalwind850Tobs)
+                
+                if 'zonalwind850T' not in rendered:
+                    rendered.append('zonalwind850T')
+                    right_layout.addWidget(zonalwind850)
+                    right_layout.addWidget(self.zonalwind850T)
+                    if dict_file['RMM'] == False and era == False:
+                        right_layout.addWidget(zonalwind850obs)
+                        right_layout.addWidget(self.zonalwind850Tobs)
                     
             if 8 in selected or 0 in selected: #MJO
                 #helptext+=diag_help_texts[8]+'\n\n'
@@ -1517,20 +1506,23 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                 rendered.append('dirOLR') #doesn't have a yaml entry
                 right_layout.addWidget(dir_OLR_label)
                 right_layout.addWidget(self.olrDataFiles)
+                if dict_file['RMM'] == False and era == False:
+                    right_layout.addWidget(dir_OLR_label_obs)
+                    right_layout.addWidget(self.olrobsDataFiles)
                 if 'zonalwind850T' not in rendered:
                     rendered.append('zonalwind850T')
                     right_layout.addWidget(zonalwind850)
                     right_layout.addWidget(self.zonalwind850T)
-                    if era == False:
+                    if dict_file['RMM'] == False and era == False:
                         right_layout.addWidget(zonalwind850obs)
-                        right_layout.addWidget(self.zonalwind850Tobs)
+                        right_layout.addWidget(self.zonalwind850Tobs) 
                 if 'zonalwind200T' not in rendered:
                     rendered.append('zonalwind200T')
                     right_layout.addWidget(zonalwind200)
                     right_layout.addWidget(self.zonalwind200T)
-                    if era == False:
+                    if dict_file['RMM'] == False and era == False:
                         right_layout.addWidget(zonalwind200obs)
-                        right_layout.addWidget(self.zonalwind200Tobs)  
+                        right_layout.addWidget(self.zonalwind200Tobs) 
             if 9 in selected or 0 in selected: #T2m Surface Air Temp
                 #helptext+=diag_help_texts[9]+'\n\n\n'
                 text = diag_help_texts[9]+'\n\n'
@@ -1621,73 +1613,78 @@ Please include a trailing / in the directory where the 2-meter temperature data 
         self.parent.show()
     def close_yaml(self):
         dict_file =self.dict_file
-        if 7 in self.selected or 0 in self.selected:
-            dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
-            if self.time_step_interval and self.time_step_interval_24.isChecked():
-                dict_file['forecast time step']= 24
-            else:
-                dict_file['forecast time step']= 6
-                
+        dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
+        if self.time_step_interval and self.time_step_interval_24.isChecked():
+            dict_file['forecast time step']= 24
+        else:
+            dict_file['forecast time step']= 6
+
         #MJO's OLR data files
-        dict_file['Path to OLR data files:']= self.olrDataFiles.text()
+        dict_file['Path to OLR model data files']= self.olrDataFiles.text()
+        if dict_file['RMM'] == False:
+            dict_file['Path to OLR observation data files'] = self.olrobsDataFiles.text()
+        
         
         #z500 model and its obs
-        dict_file['Path to z500 date files'] = self.z500T.text()
-        dict_file['Path to z500 observational files'] = self.z500Tobs.text()
+        dict_file['Path to Z500 model data files'] = self.z500T.text()
+        dict_file['Path to Z500 observation data files'] = self.z500Tobs.text()
         
         #z100 model and its obs
         dict_file['Path to z100 date files']= self.z100T.text()
-        dict_file['Path to z100 observational files'] = self.z100Tobs.text()
+        dict_file['Path to z100 observation files'] = self.z100Tobs.text()
 
         #zonalwind850 hpa model and obs
-        dict_file['Path to zonalwind850hpa date files'] = self.zonalwind850T.text()
-        dict_file['Path to zonalwind850hpa observational files'] = self.zonalwind850Tobs.text()
+        dict_file['Path to zonal wind at 850 hPa model data files'] = self.zonalwind850T.text()
+        if dict_file['RMM'] == False:
+            dict_file['Path to zonal wind at 850 hPa observation data files'] = self.zonalwind850Tobs.text()
         
         #zonalwind200 hpa model and obs
-        dict_file['Path to zonalwind200hpa date files'] = self.zonalwind200T.text()
-        dict_file['Path to zonalwind200hpa observational files'] = self.zonalwind200Tobs.text()
+        dict_file['Path to zonal wind at 200 hPa model data files'] = self.zonalwind200T.text()
+        if dict_file['RMM'] == False:
+            dict_file['Path to zonal wind at 200 hPa observation data files'] = self.zonalwind200Tobs.text()
         
         #zonalwind10 hpa model and obs
-        dict_file['Path to zonalwind10hpa date files'] = self.zonalwind10T.text()
-        dict_file['Path to zonalwind10hpa observational files'] = self.zonalwind10Tobs.text()
+        dict_file['Path to zonal wind at 10 hPa model data files'] = self.zonalwind10T.text()
+        dict_file['Path to zonal wind at 10 hPa observation data files'] = self.zonalwind10Tobs.text()
 
 
-        #extratropical model files
-        dict_file['Extratropical Cyclone Activity Z500 model files'] = self.Ez500T.text()
-        dict_file['Extratropical Cyclone Activity meridional wind at 850 hPa model files'] = self.Emeridional850T.text()
-        dict_file['Extratropical Cyclone Activity zonal wind at 850 hPa model files'] = self.Ezonal850T.text()
+        '''#extratropical model files
+        dict_file['Path to Extratropical Cyclone Activity Z500 model data files'] = self.Ez500T.text()
+        dict_file['Path to meridional wind at 850 hPa data files for Extratropical Cyclone Activity'] = self.Emeridional850T.text()
+        dict_file['Path to zonal wind at 850 hPa data files for Extratropical Cyclone Activity'] = self.Ezonal850T.text()
+        
         #extratropical obs files
-        dict_file['Extratropical Cyclone Activity Z500 observational data files'] = self.Ez500Tobs.text()
-        dict_file['Extratropical Cyclone Activity meridional wind at 850 hPa observational data files'] = self.Emeridional850Tobs.text()
-        dict_file['Extratropical Cyclone Activity zonal wind at 850 hPa observational data files'] = self.Ezonal850Tobs.text()
+        dict_file['Extratropical Cyclone Activity Z500 observation data files'] = self.Ez500Tobs.text()
+        dict_file['Extratropical Cyclone Activity meridional wind at 850 hPa observation data files'] = self.Emeridional850Tobs.text()
+        dict_file['Extratropical Cyclone Activity zonal wind at 850 hPa observation data files'] = self.Ezonal850Tobs.text()'''
         
         #meridionalwind 850 hPa model and obs
-        dict_file['Path to meridional wind at 850 hPa date files']=self.meridionalwind850T.text()
-        dict_file['Path to meridional wind at 850 hPa observational data file'] = self.meridionalwind850Tobs.text()
+        dict_file['Path to meridional wind at 850 hPa model data files']=self.meridionalwind850T.text()
+        dict_file['Path to meridional wind at 850 hPa observation data files'] = self.meridionalwind850Tobs.text()
         
         #meridionalwind 500 hPa model and obs
-        dict_file['Path to meridional wind at 500 hPa date files'] = self.meridionalwind500T.text()
-        dict_file['Path to meridional wind at 500 hPa observational data files:'] = self.meridionalwind500Tobs.text()
+        dict_file['Path to meridional wind at 500 hPa model data files'] = self.meridionalwind500T.text()
+        dict_file['Path to meridional wind at 500 hPa observation data files'] = self.meridionalwind500Tobs.text()
 
         #Temperature at 500 hPa 
-        dict_file['Path to temperature at 500 hPa data files' ]=self.temperature500T.text()
-        dict_file['Path to temperature at 500 hPa observational data files'] = self.temperature500Tobs.text()
+        dict_file['Path to temperature at 500 hPa model data files' ]=self.temperature500T.text()
+        dict_file['Path to temperature at 500 hPa observation data files'] = self.temperature500Tobs.text()
     
         #Precipitational model and obs data files
-        dict_file['Path to precipitation data files:'] = self.precDataT.text()
-        dict_file['Path to precipitation observational data files:'] = self.precDataTobs.text()
+        dict_file['Path to precipitation model data files'] = self.precDataT.text()
+        dict_file['Path to precipitation observation data files'] = self.precDataTobs.text()
         
         #dict_file['Select weeks:'] = self.selectweeks.text()
         
         #t2m model and obs data
         dict_file['Path to T2m model data files for date'] = self.t2mT.text()
-        dict_file['Path to T2m observational data files:'] = self.t2mTobs.text()
+        dict_file['Path to T2m observation data files'] = self.t2mTobs.text()
         
         #z500 anomalies
         if self.z500anomalies.isChecked():
-            dict_file['Compute the z500 anomalies:'] = True
+            dict_file['Compute the z500 anomalies'] = True
         else:
-            dict_file['Compute the z500 anomalies:'] = False
+            dict_file['Compute the z500 anomalies'] = False
 
         dict_file['selected']=self.selected
         file = open(r'config.yml', 'w') 
@@ -1730,10 +1727,6 @@ Please include a trailing / in the directory where the 2-meter temperature data 
         else:
             #display a window saying process is terminated
             QMessageBox.warning(self, "Process stopped", "Process execution terminated.")
-            #print("Process terminated")
-            #command='cd ..; cd T2m_composites; python t2m_composites.py & python t2m_composites.py & python t2m_composites.py'
-            #self.ret = subprocess.Popen(command,  shell=True)
-        
       
     def showResults(self):
         QMessageBox.information(self, "Process Finished", "Process execution done!")
@@ -1807,7 +1800,6 @@ class LoadingDialog(QDialog):
         self.subprocess_runner = SubprocessRunner(command)
         self.subprocess_runner.finished.connect(self.close)
         self.progress_dialog = QProgressDialog(self)
-        
         self.progress_dialog.setLabelText("Running diagnostics...")
         self.progress_dialog.resize(400, 200)
         self.progress_dialog.setCancelButton(None)
@@ -1891,7 +1883,6 @@ class runCal_View(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-
 
     def showResults(self):
         self.runDiagnostics = EntryWindow(self,self.dict_file)
@@ -2864,7 +2855,7 @@ class firstResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['HelpText for image 1','HelpText for image 2','HelpText for image 3']
+        self.helpTexts=['HelpText for image 1','HelpText for image 2','HelpText for image 3','HelpText for image 4']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
