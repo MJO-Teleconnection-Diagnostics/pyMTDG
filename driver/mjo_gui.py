@@ -36,7 +36,7 @@ class StartWindow(QMainWindow):
         start = QPushButton('Start', self)
         start.setFixedSize(70,30)
         #start.setGeometry(200, 150, 40, 40)
-        start.clicked.connect(self.open_stripesprecip_window)
+        start.clicked.connect(self.open_ViewRes_RunCal_window)
         
         ## Layout
         layout = QVBoxLayout()
@@ -51,26 +51,16 @@ class StartWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-
-    def open_stripesprecip_window(self):
-        self.stripesprecip_window = ViewRes_RunCal(self)
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.open_ViewRes_RunCal_window()
+    def open_ViewRes_RunCal_window(self):
+        self.ViewRes_RunCal_window = ViewRes_RunCal(self)
         self.hide()
     
-diagnostics={'stripesgeopot':1,'stripesprecip':2,'patterncc_pna':3,'patterncc_atlantic':4,'strat_path':5,'zonal_wind_hist':6,'et_cyclone':7,'mjo':8,'t2m':9}
-def get_model_diagnostics2(model_name):
-    diags=[]
-    flag=0
-    selected=[]
-    for model in models:
-        name,diag=model.split()
-        if name == model_name:
-            diags.append(diag)
-            selected.append(diagnostics[diag])
-            flag=1
-    if flag==0:
-        return False,False
-        
-    return model_name,selected
+diagnostics_dir={'stripesgeopot':1,'stripesprecip':2,'patterncc_pna':3,'patterncc_atlantic':4,'strat_path':5,'zonal_wind_hist':6,'et_cyclone':7,'mjo':8,'t2m':9}
+
+
 def list_folders(path):
     folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f))]
     return folders
@@ -79,13 +69,13 @@ def get_model_diagnostics(model_name):
     all_folders = list_folders(start_path)
     diags=[]
     for f in all_folders:
-        fm_path = os.path.join(start_path,f, model_name)
-        # Check if the item is a directory
-        #print(fm_path)
-        if os.path.isdir(fm_path):
-            #print('path exists',fm_path)
-            if f.lower() in diagnostics:
-                diags.append(diagnostics[f.lower()])
+        if f.lower() in diagnostics_dir:
+            fm_path = os.path.join(start_path,f, model_name)
+            # Check if the item is a directory of the diagnostics we know
+            print(fm_path)
+            if os.path.isdir(fm_path):
+                #print('path exists',fm_path)
+                diags.append(diagnostics_dir[f.lower()])
             
     if diags == []:
         return None, None
@@ -123,7 +113,6 @@ class ViewRes_RunCal(QMainWindow):
        
         layout.addWidget(ViewRes,alignment=Qt.AlignCenter)
         layout.addStretch()
-        
         
         ryt_layout.addWidget(runDiag,alignment=Qt.AlignCenter)
         ryt_layout.addStretch()
@@ -170,7 +159,7 @@ class ViewRes_RunCal(QMainWindow):
             dialog = InputDialog()
             result = dialog.exec_()
             if result == QDialog.Accepted:
-                #print('Accepted')
+                #print('When enter or ok button is clicked')
                 self.model_name = dialog.input_text.text()
                 if len(self.model_name)>0:
                     self.model_name,self.selected = get_model_diagnostics(self.model_name)
@@ -303,7 +292,7 @@ To run the package, the user needs to specify:
         
         button2 = QPushButton('Next', self)
         button2.setFixedSize(70,30)
-        button2.clicked.connect(self.open_stripesprecip_window)
+        button2.clicked.connect(self.open_modelInformation_window)
         back = QPushButton('Back', self)
         back.setFixedSize(70,30)
         back.clicked.connect(self.closee)
@@ -314,7 +303,6 @@ To run the package, the user needs to specify:
         groupbox.setLayout(vbox)
         self.era_yes = QRadioButton("Yes")
         self.era_yes.setChecked(True)
-        #self.era_yes.toggled.connect(self.onERAClicked)
         vbox.addWidget(self.era_yes)
         self.era_no = QRadioButton("No")
         vbox.addWidget(self.era_no)
@@ -326,18 +314,14 @@ To run the package, the user needs to specify:
         groupbox2.setLayout(vbox)
         self.imerg_yes = QRadioButton("Yes")
         self.imerg_yes.setChecked(True)
-        #self.imerg_yes.toggled.connect(self.onIMERGClicked)
         vbox.addWidget(self.imerg_yes )
         self.imerg_no = QRadioButton("No")
         vbox.addWidget(self.imerg_no)
         
 
-        #Create a layout for the left half (weather image)
+        #Create a layout for the left half (Help text label)
         left_layout = QVBoxLayout()
-        help = QLabel('Help:',self)
-        
         left_layout.addStretch()
-        #left_layout.addWidget(help)
         left_layout.addWidget(help_label)
         left_layout.addStretch()
         
@@ -396,7 +380,7 @@ To run the package, the user needs to specify:
         self.setCentralWidget(central_widget)
 
     
-    def open_stripesprecip_window(self):
+    def open_modelInformation_window(self):
         if self.dir_in_text.text() == '':
             QMessageBox.warning(self,'Missing fields!',"Please enter the input directory")
             return 
@@ -434,12 +418,15 @@ To run the package, the user needs to specify:
         ##print(type(self.initial_dates_values.text()),' has values ',list(map(int,self.initial_dates_values.text().split())))
         dict_file['ERAI'] = self.era_yes.isChecked()
         dict_file['IMERG'] = self.imerg_yes.isChecked()
-        self.stripesprecip_window = modelInformation(self,self.dir_in_text.text(),dict_file['ERAI'],dict_file)
-        self.stripesprecip_window.showMaximized()
+        self.modelInformation_window = modelInformation(self,self.dir_in_text.text(),dict_file['ERAI'],dict_file)
+        self.modelInformation_window.showMaximized()
         self.hide()
     def closee(self):
         self.close()
         self.parent.show()
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.open_modelInformation_window()
 
 class modelInformation(QMainWindow):
     def __init__(self,parent,dir_in_text,era,dict_file):
@@ -586,13 +573,14 @@ The package can be applied to one forecast model. The name of the model will ape
             self.right_layout.removeWidget(self.groupbox1)
             self.groupbox1.deleteLater()
             self.groupbox1 = None
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.open_stripesprecip_window()
 
     def open_stripesprecip_window(self):
         #commenting out the input validation
         dict_file =self.dict_file
         dict_file['model name'] = self.model_name.text()
-        
-        
         dict_file['model initial conditions']= self.initial_conds_yes.isChecked()
         dict_file['smooth climatology'] = self.smooth_climatology_yes.isChecked()
         
@@ -620,9 +608,7 @@ class stripesprecipWindow(QMainWindow):
         self.setWindowTitle('Daily Anomaly and RMM')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        #Create the weather image widget
-        weather_image = QLabel(self)
-        pixmap = QPixmap('weather.jpg') 
+        
         self.era = era
 
         help_label = QLabel('''
@@ -641,11 +627,6 @@ class stripesprecipWindow(QMainWindow):
        
         #Scale the pixmap to fit the size of the QLabel
         #pixmap = pixmap.scaled(weather_image.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-        weather_image.setPixmap(pixmap)
-        weather_image.resize(pixmap.width(),pixmap.height())
-        # Set the size policy of the QLabel to expand and fill the available space
-        weather_image.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        # Create the text widgets
         
         self.dailyAnomaly=True
 
@@ -780,6 +761,9 @@ class stripesprecipWindow(QMainWindow):
         self.close()
         self.parent.show()
         
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.openSelectDiagWindow() 
         
     
     def onrmmClicked(self):
@@ -834,9 +818,6 @@ class SelectDiagWindow(QMainWindow):
         self.setWindowTitle('Select which diagnostic you want to run')
         self.setGeometry(0, 0, 800, 400)  # Set window position and size
         self.showMaximized()
-        # Create the weather image widget
-        #weather_image = QLabel(self)
-        #pixmap = QPixmap('weather.jpg') 
 
         help_label = QLabel('''
 
@@ -964,6 +945,9 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
     def closee(self):
         self.close()
         self.parent.show()
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.openThirdSubWindow()
     def openThirdSubWindow(self):
         selected=[]
         if(self.all.isChecked()):
@@ -1347,6 +1331,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if era == False:
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Raised)
+                separator.setLineWidth(3)
+                right_layout.addWidget(separator)
             if 2 in selected or 0 in selected: #stripes index for precipitation
                 #helptext+=diag_help_texts[2]+'\n\n'
                 text = diag_help_texts[2]+'\n\n'
@@ -1360,6 +1349,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if era == False:
                         right_layout.addWidget(precDataobs)
                         right_layout.addWidget(self.precDataTobs)
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Raised)
+                separator.setLineWidth(3)
+                right_layout.addWidget(separator)
             '''if 3 in selected or 11 in selected or 0 in selected: #Fraction of the observed STRIPES
                 helptext+=diag_help_texts[3]+'\n\n'
                 if 'z500T' not in rendered:
@@ -1372,6 +1366,7 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                         right_layout.addWidget(self.z500Tobs)
                 right_layout.addWidget(weeks)
                 right_layout.addWidget(self.selectweeks)'''
+            
 
             if 3 in selected or 0 in selected: #Pattern CC over & relative amplitude over PNA
                 #helptext+=diag_help_texts[3]+'\n\n'
@@ -1387,6 +1382,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
                 right_layout.addWidget(self.z500anomalies)
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Raised)
+                separator.setLineWidth(3)
+                right_layout.addWidget(separator)
                 
         
             
@@ -1403,6 +1403,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if era == False:
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
+                    separator = QFrame()
+                    separator.setFrameShape(QFrame.HLine)
+                    separator.setFrameShadow(QFrame.Raised)
+                    separator.setLineWidth(3)
+                    right_layout.addWidget(separator)
                 
             if 5 in selected or 0 in selected: #Stratospheric pathway
                 #helptext+=diag_help_texts[5]+'\n\n'
@@ -1448,6 +1453,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if era == False:
                         right_layout.addWidget(zonalwind10obs)
                         right_layout.addWidget(self.zonalwind10Tobs)
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Raised)
+                separator.setLineWidth(3)
+                right_layout.addWidget(separator)
 
             if 6 in selected or 0 in selected: #histogram of 10hpa zonal wind
                 #helptext+=diag_help_texts[6]+'\n\n'
@@ -1462,6 +1472,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if era == False:
                         right_layout.addWidget(zonalwind10obs)
                         right_layout.addWidget(self.zonalwind10Tobs)
+                    separator = QFrame()
+                    separator.setFrameShape(QFrame.HLine)
+                    separator.setFrameShadow(QFrame.Raised)
+                    separator.setLineWidth(3)
+                    right_layout.addWidget(separator)
                         
             if 7 in selected or 0 in selected: #Extratropical cyclone activity
                 #helptext+=diag_help_texts[7]+'\n\n'
@@ -1496,6 +1511,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if dict_file['RMM'] == False and era == False:
                         right_layout.addWidget(zonalwind850obs)
                         right_layout.addWidget(self.zonalwind850Tobs)
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Raised)
+                separator.setLineWidth(3)
+                right_layout.addWidget(separator)
                     
             if 8 in selected or 0 in selected: #MJO
                 #helptext+=diag_help_texts[8]+'\n\n'
@@ -1523,6 +1543,11 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if dict_file['RMM'] == False and era == False:
                         right_layout.addWidget(zonalwind200obs)
                         right_layout.addWidget(self.zonalwind200Tobs) 
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Raised)
+                separator.setLineWidth(3)
+                right_layout.addWidget(separator)
             if 9 in selected or 0 in selected: #T2m Surface Air Temp
                 #helptext+=diag_help_texts[9]+'\n\n\n'
                 text = diag_help_texts[9]+'\n\n'
@@ -1611,6 +1636,9 @@ Please include a trailing / in the directory where the 2-meter temperature data 
     def closee(self):
         self.close()
         self.parent.show()
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.submi()
     def close_yaml(self):
         dict_file =self.dict_file
         dict_file['model data daily-mean values'] = self.daily_mean_values_yes.isChecked()
@@ -1883,7 +1911,9 @@ class runCal_View(QMainWindow):
     def closee(self):
         self.close()
         self.parent.show()
-
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.runn()
     def showResults(self):
         self.runDiagnostics = EntryWindow(self,self.dict_file)
         self.runDiagnostics.showMaximized()
