@@ -2885,7 +2885,16 @@ class firstResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['HelpText for image 1','HelpText for image 2','HelpText for image 3','HelpText for image 4']
+        self.helpTexts=[
+            '''
+            For geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            ''',
+            '''
+            For geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            ''',
+            '''
+            For geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            ''']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
@@ -2972,7 +2981,13 @@ class stripesprecipResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/StripesPrecip/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=['''
+        For the surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+        ''','''
+        For the surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+        ''','''
+        For the surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+        ''']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesInd_Precip res - {i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
@@ -3212,6 +3227,7 @@ class viewImageStripes(QMainWindow):
         self.imagep = imageP
         
         helpText = QLabel(helpText)
+        helpText.setWordWrap(True)
 
         download = QPushButton('Download image', self)
         download.setFixedSize(300,30)
@@ -3221,6 +3237,7 @@ class viewImageStripes(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         layout.addWidget(image)
+        ryt_layout.addStretch()
         ryt_layout.addWidget(helpText,alignment=Qt.AlignCenter)
         ryt_layout.addStretch()
         ryt_layout.addWidget(download,alignment=Qt.AlignCenter)
