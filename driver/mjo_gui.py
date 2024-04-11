@@ -2188,7 +2188,7 @@ class t2mResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image 6','Helptext for image 7','Helptext for image 8']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'T2m Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2248,7 +2248,7 @@ class t2mResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}',helpText)
+                self.viewImage = viewImage(path,f'T2m Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2276,7 +2276,7 @@ class mjoResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'MJO res - {i+1}', self)
+            buttonn=QPushButton(f'MJO Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -2336,7 +2336,7 @@ class mjoResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'MJO - {i}',helpText)
+                self.viewImage = viewImage(path,f'MJO Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2357,9 +2357,29 @@ class et_cycloneResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image6','Helptext for image7','Helptext for image8','Helptext for image9',]
+        #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image6','Helptext for image7','Helptext for image8','Helptext for image9',]
+        self.helpTexts=[ '''
+Week 3-4 extratropical cyclone activity (EKE850) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+               ''','''
+Week 3-4 extratropical cyclone activity (EKE850) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+              ''','''
+Week 3-4 extratropical cyclone activity (EKE850) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+             ''','''
+Week 3-4 extratropical cyclone activity (EKE850) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+            ''','''
+Pattern correlation of week 3-4 composites of EKE850 (y-axis) and Z500 (x-axis) between Reanalysis and model reforecast over the North Atlantic (20-80N, 90W-30E), the North Pacific and North America (20-80N, 120E-90W), and the Northern Hemisphere (20-80N). The dots represent phases 8-1, 2-3, 4-5 and 6-7, respectively.
+            ''','''
+Week 3-4 500-hPa geopotential height (Z500) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+            ''','''
+Week 3-4 500-hPa geopotential height (Z500) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+            ''','''
+Week 3-4 500-hPa geopotential height (Z500) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+            ''','''
+Week 3-4 500-hPa geopotential height (Z500) composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the northern hemisphere (20-80N) is shown in the upper right corner.
+            ''']
+
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'ET-Cyclone res - {i+1}', self)
+            buttonn=QPushButton(f'ET-Cyclone Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -2423,7 +2443,7 @@ class et_cycloneResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'ET Cyclone - {i}',helpText)
+                self.viewImage = viewImage(path,f'ET Cyclone Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2446,7 +2466,7 @@ class zonal_wind_histResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'zonal_wind_hist res - {i+1}', self)
+            buttonn=QPushButton(f'Zonal wind hist Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -2510,7 +2530,7 @@ class zonal_wind_histResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'zonal_wind_hist - {i}',helpText)
+                self.viewImage = viewImage(path,f'Zonal wind hist Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2533,7 +2553,7 @@ class zonal_wind_histResult(QMainWindow):
         #print(len(self.all_files))
         self.imagebuttons=[]
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'T2m Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i))
             
             self.viewImages.append(False)
@@ -2621,7 +2641,7 @@ class strat_pathResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'Strat_Path res - {i+1}', self)
+            buttonn=QPushButton(f'Strat Path Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -2685,7 +2705,7 @@ class strat_pathResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Strat_Path - {i}',helpText)
+                self.viewImage = viewImage(path,f'Strat Path Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2710,7 +2730,7 @@ class third2Result(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'PatCC_RelAmp_EuroAtlanticSec res - {i+1}', self)
+            buttonn=QPushButton(f'Euro Atl sect Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -2774,7 +2794,7 @@ class third2Result(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'PatEuro - {i}',helpText)
+                self.viewImage = viewImage(path,f'Euro Atl sect Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2788,7 +2808,7 @@ class fourthResult(QMainWindow):
         super().__init__()
         self.parent = parent
         self.model_name = dict_file['model name']
-        self.setWindowTitle('Fraction of the observed STRIPE index for geopotential height results')
+        self.setWindowTitle('Fraction of the observed STRIPE Index for geopotential height results')
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
         self.viewImages=[]
@@ -2798,7 +2818,7 @@ class fourthResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m res - {i+1}', self)
+            buttonn=QPushButton(f'T2m Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -2862,7 +2882,7 @@ class fourthResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m - {i}',helpText)
+                self.viewImage = viewImage(path,f'T2m Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2885,18 +2905,15 @@ class firstResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=[
-            '''
-            Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
-            ''',
-            '''
-            Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
-            ''',
-            '''
-            Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
-            ''']
+        self.helpTexts=['''
+Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            ''','''
+Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            ''','''
+Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+           ''']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
+            buttonn=QPushButton(f'STRIPES Geopot Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2959,7 +2976,7 @@ class firstResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImageStripes(path,f'StripesGeopot - {i}',helpText)
+                self.viewImage = viewImageStripes(path,f'STRIPES Geopot Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2982,14 +2999,14 @@ class stripesprecipResult(QMainWindow):
         #print(len(self.all_files))
         self.imagebuttons=[]
         self.helpTexts=['''
-        For the surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
         ''','''
-        For the surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
         ''','''
-        For the surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
         ''']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'StripesInd_Precip res - {i+1}', self)
+            buttonn=QPushButton(f'STRIPES Precip Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -3053,7 +3070,7 @@ class stripesprecipResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImageStripes(path,f'StripesInd_Precip - {i}',helpText)
+                self.viewImage = viewImageStripes(path,f'STRIPES Precip Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3077,7 +3094,7 @@ class thirdResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'PatternCC_PNA res - {i+1}', self)
+            buttonn=QPushButton(f'PatternCC_PNA Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
             
             self.viewImages.append(False)
@@ -3141,7 +3158,7 @@ class thirdResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'PatternCC_PNA - {i}',helpText)
+                self.viewImage = viewImage(path,f'PatternCC_PNA Fig.{i}',helpText)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
