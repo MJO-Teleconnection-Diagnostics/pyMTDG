@@ -2274,7 +2274,11 @@ class mjoResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/MJO/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=['''
+        MJO index forecast skill: MJO prediction skill for UFS5, 6, 7, 8 reforecasts initialized with active MJO events during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, solid lines) and root-mean squared error (RMSE, dashed lines) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
+        ''','''
+        Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15°S-15°N for active MJO events. The vertical lines indicate 120ºE (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
+        ''']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'MJO Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
@@ -3184,6 +3188,7 @@ class viewImage(QMainWindow):
         self.imagep = imageP
         
         helpText = QLabel(helpText)
+        helpText.setWordWrap(True)
 
         download = QPushButton('Download image', self)
         download.setFixedSize(300,30)
