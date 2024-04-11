@@ -2887,13 +2887,13 @@ class firstResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=[
             '''
-            For geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
             ''',
             '''
-            For geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
             ''',
             '''
-            For geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
+            Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for forecast. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between forecast and observations. Negative (positive) values of the difference indicate forecasts that have less (more) co-variability with the MJO than observed. 
             ''']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'StripesGeopot res - {i+1}', self)
