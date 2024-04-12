@@ -2186,7 +2186,24 @@ class t2mResult(QMainWindow):
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image 6','Helptext for image 7','Helptext for image 8']
+#        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image 6','Helptext for image 7','Helptext for image 8']
+        self.helpTexts=['''
+Surface air temperature (T2m) composite in week 2 after the MJO phase 3 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 2 after the MJO phase 7 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 3 after the MJO phase 3 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 3 after the MJO phase 7 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 4 after the MJO phase 3 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 4 after the MJO phase 7 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 5 after the MJO phase 3 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''','''
+Surface air temperature (T2m) composite in week 5 after the MJO phase 7 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+''']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'T2m Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
@@ -2363,23 +2380,23 @@ class et_cycloneResult(QMainWindow):
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image6','Helptext for image7','Helptext for image8','Helptext for image9',]
         self.helpTexts=[ '''
-Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in phases 2-3 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in phases 2-3 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
                ''','''
-Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in phases 4-5 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in phases 4-5 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level,determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
               ''','''
-Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in pahses 6-7 composite for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in pahses 6-7 composite for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
              ''','''
-Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in pases 8-1 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in pases 8-1 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''','''
 Pattern correlation of week 3-4 composites of EKE850 (y-axis) and Z500 (x-axis) between Reanalysis and model reforecast over the North Atlantic (20-80N, 90W-30E), the North Pacific and North America (20-80N, 120E-90W), and the Northern Hemisphere (20-80N). The dots represent phases 8-1, 2-3, 4-5 and 6-7, respectively.
             ''','''
-500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO phases 2-3 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO phases 2-3 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''','''
-500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO in phases 4-5 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO in phases 4-5 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''','''
-500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO in phases 6-7 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO in phases 6-7 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''','''
-500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO phases 8-1 for Reanalysis (left) and model reforecast (right). Dotted regions represent where the anomalies are statistically significant at the 0.05 level based on a bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
+500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO phases 8-1 for Reanalysis (left) and model reforecast (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''']
 
         for i in range(len(self.all_files)):
