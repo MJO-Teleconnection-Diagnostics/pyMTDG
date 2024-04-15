@@ -42,7 +42,9 @@ if (dictionary['RMM:']==False):
 #           are in different directories.
 # !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
 fc_dir = dictionary['Path to precipitation data files:'][0] + '*.nc*'
-obs_dir = dictionary['Path to precipitation observational data files:'] + '*.nc*'
+
+#obs_dir = dictionary['Path to precipitation observational data files:'] + '*.nc*'
+obs_dir = dir_in+'/IMERG/*.nc4'
 
 # read start and end date
 START_DATE = dictionary['START_DATE:']

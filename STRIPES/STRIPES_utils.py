@@ -320,7 +320,8 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
     if nf==1:
     	ds = xr.open_dataset(obs_dir)
     else:
-    	ds =xr.open_mfdataset(obs_dir)
+    	obs_files = np.sort(glob.glob(obs_dir))
+    	ds =xr.open_mfdataset(obs_files)
     obs = get_variable_from_dataset(ds, vartype)
     
     # subset time
