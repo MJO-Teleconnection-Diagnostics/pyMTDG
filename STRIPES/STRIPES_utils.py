@@ -307,7 +307,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
 
     # read forecast data
     files = np.sort(glob.glob(fc_dir+'*.nc*'))
-    #files = np.sort(glob.glob(fc_dir))
+    
     ds = xr.open_mfdataset(files, combine='nested',
                            concat_dim='time',parallel='true')
     fc = get_variable_from_dataset(ds, vartype)

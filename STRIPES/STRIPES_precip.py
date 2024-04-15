@@ -1,5 +1,5 @@
 '''
-Wrapper around the calculation of the stripes index for z500.
+Wrapper around the calculation of the stripes index for precipitation.
 This code:
     - loads the data
     - passes the calculation of the STRIPES index to functions in STRIPES_utils
@@ -31,7 +31,7 @@ with open(config_file,'r') as file:
 
 dir_in = dictionary['DIR_IN']
 
-if (dictionary['RMM:']==False):
+if (dictionary['RMM']==False):
     # !!! Note: this will need to be updated with a correct final path for the RMM data
     #     This is a pretty small data file (< 1 MB) maybe we shoud just include it in the package
     # fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
@@ -41,14 +41,14 @@ if (dictionary['RMM:']==False):
 # !!! Note: This code ignores situations where the files for different initialization dates 
 #           are in different directories.
 # !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
-fc_dir = dictionary['Path to precipitation data files:'][0] + '*.nc*'
+fc_dir = dictionary['Path to precipitation model data files']
 
 #obs_dir = dictionary['Path to precipitation observational data files:'] + '*.nc*'
 obs_dir = dir_in+'/IMERG/*.nc4'
 
 # read start and end date
-START_DATE = dictionary['START_DATE:']
-END_DATE = dictionary['END_DATE:']
+START_DATE = dictionary['START_DATE']
+END_DATE = dictionary['END_DATE']
 
 # Read model name
 model_name = dictionary['model name']

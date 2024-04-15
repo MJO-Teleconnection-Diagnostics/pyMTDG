@@ -31,7 +31,7 @@ with open(config_file,'r') as file:
 
 dir_in = dictionary['DIR_IN']
 
-if (dictionary['RMM:']==False):
+if (dictionary['RMM']==False):
     # !!! Note: this will need to be updated with a correct final path for the RMM data
     #     This is a pretty small data file (< 1 MB) maybe we shoud just include it in the package
     # fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
@@ -44,16 +44,16 @@ if (dictionary['RMM:']==False):
 #           are in different directories.
 # !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
 #Z500_DIR = dictionary['Path to z500 date files'][0] + '*.nc*'
-Z500_DIR = dictionary['Path to z500 date files'][0]
+Z500_DIR = dictionary['Path to Z500 model data files']
 
 #Z500_DIR_OBS = dictionary['Path to z500 observational files'] + '*.nc*'
 
-if (dictionary['ERAI:']==True):
+if (dictionary['ERAI']==True):
     Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
 
 # read start and end date
-START_DATE = dictionary['START_DATE:']
-END_DATE = dictionary['END_DATE:']
+START_DATE = dictionary['START_DATE']
+END_DATE = dictionary['END_DATE']
 
 # Read model name
 model_name = dictionary['model name']
