@@ -98,9 +98,9 @@ for ilag, lag in enumerate(lags):
     im_bias = axs[2].contourf(lon, lat, bias, extend='both', cmap='RdBu_r', levels=levs_anom)
     cbar_bias = fig.colorbar(im_bias, ax=axs[2], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
     axs[2].set_title(f'Forecast - Obs., week {lag}')
-    
+
     # save
-    if not os.path.exists('../output/STRIPES/'+model_name): 
-        os.mkdir('../output/STRIPES/'+model_name)
-    figname='stripes_precip_wk' + lag 
-    fig.savefig('../output/STRIPES/'+model_name+'/'+figname+'.jpg',dpi=300)
+    if not os.path.exists('../output/StripesPrecip/'+model_name):
+    	os.mkdir('../output/StripesPrecip/'+model_name)
+    figname='stripes_precip_wk' + lag
+    fig.savefig('../output/StripesPrecip/'+model_name+'/'+figname+'.jpg',dpi=300)
