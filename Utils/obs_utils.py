@@ -28,7 +28,7 @@ def select_mjo_event(rmm_index,phase,phase_val):
     mjo_events=rmm_index.where((rmm_index>1) & (phase==phase_val),drop=True)
     return mjo_events
 
-def calcComposites(ds,mjo_events,week,name):
+def calcComposites(ds,mjo_events,week,name,obs=False):
     
     if week == 'week1':
         sday = 0
@@ -48,9 +48,13 @@ def calcComposites(ds,mjo_events,week,name):
     for i in range(len(mjo_events)):
         
         if tLast[i].month != 4:
-            #anoms=ds.sel(time=slice(tStrt[i],tLast[i])).mean(dim='time') # doesn't work for non-unique label
-            anoms=ds.where((ds['time'] >= tStrt[i]) & (ds['time'] <= tLast[i])).mean(dim='time')
-            ds_anoms.append(anoms.to_dataset(name=name))
+            if obs:
+                anoms=ds.where((ds['time'] >= tStrt[i]) & (ds['time'] <= tLast[i])).mean(dim='time')
+                ds_anoms.append(anoms.to_dataset(name=name))
+            else:
+                anoms=ds.sel(time=mjo_events.time[i],forecast_day=slice(sday,sday+7)).mean('forecast_day')
+                ds_anoms.append(anoms.to_dataset(name=name))
+                
     ds_comp_anoms=xr.combine_nested(ds_anoms,concat_dim='mjo_events')
      
     return ds_comp_anoms
