@@ -118,7 +118,7 @@ fcst_anom = reshape_forecast(fcst_anom, nfc=int(len(fcst_anom.time)/len(fcst_fil
 rmm=ds_rmm.sel(time=ds_rmm.time.dt.month.isin([1, 2, 3, 11, 12])& ds_rmm.time.isin(fcst_anom.time))
 fcst_anom=fcst_anom.sel(time=fcst_anom.time.dt.month.isin([1, 2, 3, 11, 12]))
 
-#Select MJO events for MJO phase 3 and 7
+# Select MJO events for MJO phases 3 and 7
 
 phases=[3,7]
 
@@ -128,9 +128,11 @@ for phase in phases:
     mjo_event_phases.append(ds)
 rmm_events=xr.concat(mjo_event_phases, dim='phase')
 
+# Parameters for bootstrap significance
 n_samples=1000
 sig_level=0.95
 
+# Plotting parameters
 lon_0 = 270
 lat_0 = 20
 
@@ -142,19 +144,20 @@ lon_max=obs.longitude[-1]
 cmap='bwr'
 clevs=[-5.0, -4.0, -3.0, -2.0, -1.0, -0.5, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0]
 
+# Main calculation
 weeks=['week2','week3','week4','week5']
 
 for week in weeks:
         
     for p,phase in enumerate(phases):
-            
+        # Composites    
         ds_obs_comp=calcComposites(obs_anom,
                                     rmm_events[p,:].dropna(dim='time',how='any'),
                                     week,var_name,obs=True)                       
         ds_fcst_comp=calcComposites(fcst_anom,
                                     rmm_events[p,:].dropna(dim='time',how='any'),
                                         week,var_name,obs=False)
-        
+        #Significance
         obs_low,obs_high=test_sig(ds_obs_comp['t2m_anom'].dropna(dim='mjo_events',how='any'),
                                         sig_level,n_samples)
         fcst_low,fcst_high=test_sig(ds_fcst_comp['t2m_anom'].dropna(dim='mjo_events',how='any'),
@@ -169,7 +172,7 @@ for week in weeks:
         r_p= correlate(ds_obs_comp['t2m_anom'].mean(dim='mjo_events'),
                         ds_fcst_comp['t2m_anom'].mean(dim='mjo_events'),
                         lat_min,lat_max,lon_min,lon_max)
-        
+        #Plotting 
         plotComposites([ds_obs_comp['t2m_anom'].mean(dim='mjo_events'),
                         ds_fcst_comp['t2m_anom'].mean(dim='mjo_events')], ds_names,
                         clevs, cmap, lon_0, lat_0,
