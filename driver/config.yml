@@ -1,52 +1,43 @@
-'Compute the z500 anomalies:': false
+Compute the z500 anomalies: false
 DIR_IN: /projects/cstan
-'Daily Anomaly:': true
-'END_DATE:': '20180401'
-'ERAI:': true
-Extratropical Cyclone Activity Z500 model files: /projects/cstan/ufs5/6hourly/z500/gh.500-isobaricInhPa.*.nc
-Extratropical Cyclone Activity Z500 observational data files: /projects/cstan/OBS/
-Extratropical Cyclone Activity meridional wind at 850 hPa model files: /projects/cstan/ufs5/6hourly/v850/v.850-isobaricInhPa.*nc
-Extratropical Cyclone Activity meridional wind at 850 hPa observational data files: /projects/cstan/OBS/
-Extratropical Cyclone Activity zonal wind at 850 hPa model files: /projects/cstan/ufs5/6hourly/u850/u.850-isobaricInhPa.*.nc
-Extratropical Cyclone Activity zonal wind at 850 hPa observational data files: /projects/cstan/OBS/
-'IMERG:': true
-'Initial dates:':
+Daily Anomaly: true
+END_DATE: '20180419'
+ERAI: true
+IMERG: true
+Initial dates:
 - 1
 - 15
-'Number of ensembles:': '1'
-'Number of initial dates:': 2
-'Path to OLR data files:': /projects/cstan/OBS/
+Number of ensembles: '1'
+Number of initial dates: 2
+Path to OLR model data files: /projects/cstan/
+Path to OLR observation data files: /projects/cstan/OBS/
 Path to T2m model data files for date: /projects/cstan/ufs5/daily/mean/t2m/
-'Path to T2m observational data files:': /projects/cstan/OBS/
-Path to meridional wind at 500 hPa date files: /projects/cstan/
-'Path to meridional wind at 500 hPa observational data files:': /projects/cstan/OBS/
-Path to meridional wind at 850 hPa date files: /projects/cstan/
-Path to meridional wind at 850 hPa observational data file: /projects/cstan/OBS/
-'Path to precipitation data files:': /projects/cstan/
-'Path to precipitation observational data files:': /projects/cstan/OBS/
-Path to temperature at 500 hPa data files: /projects/cstan/
-Path to temperature at 500 hPa observational data files: /projects/cstan/OBS/
+Path to T2m observation data files: /projects/cstan/OBS/
+Path to Z500 model data files: /projects/cstan/ufs5/daily/mean/z500/
+Path to Z500 observation data files: /projects/cstan/OBS/
+Path to meridional wind at 500 hPa model data files: /projects/cstan/
+Path to meridional wind at 500 hPa observation data files: /projects/cstan/OBS/
+Path to meridional wind at 850 hPa model data files: /projects/cstan/
+Path to meridional wind at 850 hPa observation data files: /projects/cstan/OBS/
+Path to precipitation model data files: /projects/cstan/
+Path to precipitation observation data files: /projects/cstan/OBS/
+Path to temperature at 500 hPa model data files: /projects/cstan/
+Path to temperature at 500 hPa observation data files: /projects/cstan/OBS/
 Path to z100 date files: /projects/cstan/
-Path to z100 observational files: /projects/cstan/OBS/
-Path to z500 date files: /projects/cstan/ufs5/daily/mean/z500/
-Path to z500 observational files: /projects/cstan/OBS/
-'Path to zonal wind at 200 hPa data files:': /projects/cstan/OBS/
-'Path to zonal wind at 850 hPa data files:': /projects/cstan/OBS/
-Path to zonalwind10hpa date files: /projects/cstan/
-Path to zonalwind10hpa observational files: /projects/cstan/OBS/
-Path to zonalwind200hpa date files: /projects/cstan/
-Path to zonalwind200hpa observational files: /projects/cstan/OBS/
-Path to zonalwind850hpa date files: /projects/cstan/
-Path to zonalwind850hpa observational files: /projects/cstan/OBS/
-'RMM:': false
-'START_DATE:': '20110401'
-forecast time step: 6
-'length of forecasts:': '35'
-model data daily-mean values: false
-model initial conditions: true
+Path to z100 observation files: /projects/cstan/OBS/
+Path to zonal wind at 10 hPa model data files: /projects/cstan/
+Path to zonal wind at 10 hPa observation data files: /projects/cstan/OBS/
+Path to zonal wind at 200 hPa model data files: /projects/cstan/
+Path to zonal wind at 200 hPa observation data files: /projects/cstan/OBS/
+Path to zonal wind at 850 hPa model data files: /projects/cstan/
+Path to zonal wind at 850 hPa observation data files: /projects/cstan/OBS/
+RMM: false
+START_DATE: '20110401'
+forecast time step: 24
+length of forecasts: '35'
+model data daily-mean values: true
+model initial conditions: false
 model name: UFS5
 selected:
-- 1
-- 7
 - 9
-'smooth climatology:': false
+smooth climatology: false
