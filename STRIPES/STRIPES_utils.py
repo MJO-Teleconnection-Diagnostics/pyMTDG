@@ -278,7 +278,7 @@ def get_variable_from_dataset(ds,vartype):
         return da
         raise RuntimeError("Couldn't find a precipitation variable name")
 # ===============================================================================================
-def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
+def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=False):
     '''
         Compute the STRIPES index for observations and forecast data
 
@@ -289,6 +289,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
                 vartype: type of variable (options are 'gh', and 'prate')
                 t0: START_DATE (string)
                 t1: END_DATE (string)
+		test: default=False. Use during testing. Returns empty dataArrays
             Returns
                 stripes_obs: list of length 3 of xarray dataArrays of observed stripes index
                 stripes_fc: list of length 3 of xarray dataArrays of forecast stripes index
@@ -307,7 +308,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
 
     # read forecast data
     files = np.sort(glob.glob(fc_dir+'*.nc*'))
-    #files = np.sort(glob.glob(fc_dir))
+    
     ds = xr.open_mfdataset(files, combine='nested',
                            concat_dim='time',parallel='true')
     fc = get_variable_from_dataset(ds, vartype)
@@ -316,9 +317,30 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1):
         fc = fc*86400 # mm/s to mm/day
 
     # read obs
-    ds = xr.open_dataset(obs_dir)
+    nf=len(glob.glob(obs_dir))
+    if nf==1:
+    	ds = xr.open_dataset(obs_dir)
+    else:
+    	obs_files = np.sort(glob.glob(obs_dir))
+    	ds =xr.open_mfdataset(obs_files)
     obs = get_variable_from_dataset(ds, vartype)
-    
+
+    # if testing, stop here
+    if testing:
+        print('testing')
+        nlon = len(obs.longitude)
+        nlat = len(obs.latitude)
+        stripes=xr.DataArray(np.nan*np.ones((nlat,nlon)),attrs={'long_name': 'STRIPES','units':
+	'm'},dims=['latitude','longitude'],coords={"latitude":obs.latitude,"longitude":obs.longitude})
+
+        stripes_obs = []
+        stripes_obs.append(stripes)
+        stripes_obs.append(stripes)
+        stripes_obs.append(stripes)
+
+        return stripes_obs, stripes_obs
+
+
     # subset time
     obs = obs.sel(time=slice(t0,t1))
     # make sure obs is organized time x lat x lon
