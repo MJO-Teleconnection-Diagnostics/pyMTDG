@@ -40,13 +40,13 @@ with open ( '../driver/config.yml' , 'r' ) as file:
     yml_input = yaml.safe_load ( file )
 
 Model_name                   = yml_input [ 'model name' ]
-Ensemble_size                = int ( yml_input [ 'Number of ensembles:' ] )
+Ensemble_size                = int ( yml_input [ 'Number of ensembles' ] )
 Daily_Mean_Data              = yml_input [ 'model data daily-mean values' ]
 Forecast_time_step_interval  = yml_input [ 'forecast time step' ]
 Model_data_initial_condition = yml_input [ 'model initial conditions' ]
-Smooth_climatology           = yml_input [ 'smooth climatology:' ]
-ERAI                         = yml_input [ 'ERAI:' ]
-RMM                          = yml_input [ 'RMM:' ]
+Smooth_climatology           = yml_input [ 'smooth climatology' ]
+ERAI                         = yml_input [ 'ERAI' ]
+RMM                          = yml_input [ 'RMM' ]
 
 Model_u850_files             = yml_input [ 'Extratropical Cyclone Activity zonal wind at 850 hPa model files' ]
 Model_v850_files             = yml_input [ 'Extratropical Cyclone Activity meridional wind at 850 hPa model files' ]
@@ -63,12 +63,12 @@ Model_z500_files             = yml_input [ 'Extratropical Cyclone Activity Z500 
 #Model_data_initial_condition = True
 #Smooth_climatology           = False
 #ERAI                         = True
-if (yml_input['ERAI:']==True):
+if (yml_input['ERAI']==True):
     reanalysis_u850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/u850.19790101-20190831.nc'
     reanalysis_v850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/v850.19790101-20190831.nc'
     reanalysis_z500_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.19790101-20190831.nc'
     ds_obs_name='ERAI'
-if (yml_input['ERAI:']==False):
+if (yml_input['ERAI']==False):
     reanalysis_u850_file=yml_input['Extratropical Cyclone Activity zonal wind at 850 hPa observational data files']
     reanalysis_v850_file=yml_input['Extratropical Cyclone Activity meridional wind at 850 hPa observational data files']
     reanalysis_z500_file=yml_input['Extratropical Cyclone Activity Z500 observational data files']
