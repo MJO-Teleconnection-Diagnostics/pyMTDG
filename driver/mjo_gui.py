@@ -284,11 +284,7 @@ To run the package, the user needs to specify:
 
         num_ensm_label = QLabel('Number of ensembles:', self)
         self.num_ensm = QLineEdit(self)
-        num_initial_dates = QLabel('Number of initial dates:', self)
-        self.initial_dates = QLineEdit(self)
-
-        initial_dates = QLabel('Initial dates:', self)
-        self.initial_dates_values = QLineEdit(self)
+        
         
         button2 = QPushButton('Next', self)
         button2.setFixedSize(70,30)
@@ -338,10 +334,6 @@ To run the package, the user needs to specify:
         right_layout.addWidget(self.end_date_text)
         right_layout.addWidget(num_ensm_label)
         right_layout.addWidget(self.num_ensm)
-        right_layout.addWidget(num_initial_dates)
-        right_layout.addWidget(self.initial_dates)
-        right_layout.addWidget(initial_dates)
-        right_layout.addWidget(self.initial_dates_values)
         right_layout.addWidget(era_label)
         right_layout.addWidget(groupbox)
         right_layout.addWidget(imerg_label)
@@ -396,25 +388,14 @@ To run the package, the user needs to specify:
         if self.num_ensm.text() == '':
             QMessageBox.warning(self,'Missing fields!',"Please enter the number of ensembles")
             return
-        if self.initial_dates.text() == '':
-            QMessageBox.warning(self,'Missing fields!',"Please enter the number of initial dates ")
-            return
-        if self.initial_dates_values.text() == '':
-            QMessageBox.warning(self,'Missing fields!',"Please enter the initial dates ")
-            return
-        num_exp = int(self.initial_dates.text())
-        num_given = len(list(map(int,self.initial_dates_values.text().split())))
-        if num_exp != num_given:
-            QMessageBox.warning(self,"Number of initial dates should match the give number","Please enter "+str(num_exp)+" initial date(s)")
-            return
+        
+        
         dict_file=self.dict_file
         dict_file['DIR_IN'] = self.dir_in_text.text()
         dict_file['START_DATE']= self.start_date_text.text()
         dict_file['END_DATE']= self.end_date_text.text()
         dict_file['length of forecasts'] = self.lengthFor_text.text()
-        dict_file['Number of ensembles'] = self.num_ensm.text()
-        dict_file['Number of initial dates']= int(self.initial_dates.text())
-        dict_file['Initial dates' ]= list(map(int,self.initial_dates_values.text().split()))
+        dict_file['Number of ensembles'] = int(self.num_ensm.text())
         ##print(type(self.initial_dates_values.text()),' has values ',list(map(int,self.initial_dates_values.text().split())))
         dict_file['ERAI'] = self.era_yes.isChecked()
         dict_file['IMERG'] = self.imerg_yes.isChecked()
@@ -1038,7 +1019,7 @@ class ThirdSubWindow(QMainWindow):
         self.prefix = self.dirin+"/OBS/"
         self.dict_file = dict_file
         #self.num_dates = dict_file['Number of initial dates:']
-        self.dates = dict_file['Initial dates' ]
+        
         
         #set window title and position and size
         self.setWindowTitle('Third Sub Window')
