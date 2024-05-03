@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import xarray as xr
 
 def get_rmm_composite_list ( composite_phase_names , model_yyyymmdd , rmm_yyyymmdd , rmm_phase_in , rmm_amplitude_in , amplitude_threshold , start_month , end_month ) :
     rmm_list = [ ]
@@ -30,6 +31,18 @@ def correlate(obs,model,lat_min,lat_max,lon_min,lon_max):
     corr=np.corrcoef(x_stacked,y_stacked)
     return corr
 
+def correlate_atlantic(obs,model,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
+    x1=obs.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min1,lon_max1))
+    y1=model.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min1,lon_max1))
+    x2=obs.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min2,lon_max2))
+    y2=model.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min2,lon_max2))
+    x=xr.concat((x1, x2),dim="longitude")
+    y=xr.concat((y1, y2),dim="longitude")
+    x_stacked=x.stack(grid=('latitude','longitude'))
+    y_stacked=y.stack(grid=('latitude','longitude'))
+    corr=np.corrcoef(x_stacked,y_stacked)
+    return corr
+
 def patterncc(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min,lon_max):
     nn=len(rmm_list_ERA[0,:])
     pcc=np.empty( ( len (timelag),nn) ,dtype=float)
@@ -39,6 +52,18 @@ def patterncc(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat
             erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,inumber], : , : ]
             res_temp=correlate(erai_anomaly_temp,
                 model_z500_temp,lat_min,lat_max,lon_min,lon_max)
+            pcc[itime,inumber]=res_temp[0,1]
+    return pcc
+
+def patterncc_atlantic(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
+    nn=len(rmm_list_ERA[0,:])
+    pcc=np.empty( ( len (timelag),nn) ,dtype=float)
+    for inumber in range (len(rmm_list_ERA[0,:])):
+        for itime in range (len (timelag)):
+            model_z500_temp=modeldata [ rmm_list_model[inumber], itime, : , : ]
+            erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,inumber], : , : ]
+            res_temp=correlate_atlantic(erai_anomaly_temp,
+                model_z500_temp,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
             pcc[itime,inumber]=res_temp[0,1]
     return pcc
     
@@ -56,7 +81,52 @@ def amplitude_metric(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_
             model_z500_variance_temp=np.var(y_stacked)
             erai_anomaly_variance_temp=np.var(x_stacked)
             amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
-    return amp   
+    return amp  
+
+def amplitude_metric_atlantic(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
+    nn=len(rmm_list_ERA[0,:])
+    amp=np.empty( ( len (timelag),nn) ,dtype=float)
+    for inumber in range (len(rmm_list_ERA[0,:])):
+        for itime in range (len (timelag)):
+            model_z500_temp=modeldata [ rmm_list_model[inumber], itime, : , : ]
+            erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,inumber], : , : ]
+            x1=erai_anomaly_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min1,lon_max1))
+            x2=erai_anomaly_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min2,lon_max2))
+            y1=model_z500_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min1,lon_max1))
+            y2=model_z500_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min2,lon_max2))
+            x=xr.concat((x1, x2),dim="longitude")
+            y=xr.concat((y1, y2),dim="longitude")
+            x_stacked=x.stack(grid=('latitude','longitude'))
+            y_stacked=y.stack(grid=('latitude','longitude'))
+            model_z500_variance_temp=np.var(y_stacked)
+            erai_anomaly_variance_temp=np.var(x_stacked)
+            amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
+    return amp
+
+def composites_model(rmm_list_model,modeldata,data_lat_in,data_lon_in):
+    model_z500_composite=np.empty(  ( 4, len ( data_lat_in ) , len ( data_lon_in ) ) ,dtype=float)
+    model_z500_composite[0,:,:]=np.nanmean(modeldata [ rmm_list_model, 0:6, : , : ],axis=(0,1))
+    model_z500_composite[1,:,:]=np.nanmean(modeldata [ rmm_list_model, 7:13, : , : ],axis=(0,1))
+    model_z500_composite[2,:,:]=np.nanmean(modeldata [ rmm_list_model, 14:20, : , : ],axis=(0,1))
+    model_z500_composite[3,:,:]=np.nanmean(modeldata [ rmm_list_model, 21:27, : , : ],axis=(0,1))
+    return model_z500_composite
+
+def composites_era(rmm_list_ERA,eraidata,data_lat_in,data_lon_in):
+    ERA5_z500_composite=np.empty(  ( 4, len ( data_lat_in ) , len ( data_lon_in ) ) ,dtype=float)
+    rmm_list_ERA_new = rmm_list_ERA.flatten()
+    week1_start=0
+    week1_end=len((rmm_list_ERA[0,:]))*7-1
+    ERA5_z500_composite[0,:,:]=np.nanmean(eraidata[ rmm_list_ERA_new[week1_start:week1_end], : , : ],axis=0)
+    week2_start=len((rmm_list_ERA[0,:]))*7
+    week2_end=len((rmm_list_ERA[0,:]))*14-1
+    ERA5_z500_composite[1,:,:]=np.nanmean(eraidata[ rmm_list_ERA_new[week2_start:week2_end], : , : ],axis=0)
+    week3_start=len((rmm_list_ERA[0,:]))*14
+    week3_end=len((rmm_list_ERA[0,:]))*21-1
+    ERA5_z500_composite[2,:,:]=np.nanmean(eraidata[ rmm_list_ERA_new[week3_start:week3_end], : , : ],axis=0)
+    week4_start=len((rmm_list_ERA[0,:]))*21
+    week4_end=len((rmm_list_ERA[0,:]))*28-1
+    ERA5_z500_composite[3,:,:]=np.nanmean(eraidata[ rmm_list_ERA_new[week4_start:week4_end], : , : ],axis=0)
+    return ERA5_z500_composite
 
 def get_variable_from_dataset(ds):
     '''
