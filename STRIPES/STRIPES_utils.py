@@ -271,7 +271,7 @@ def get_variable_from_dataset(ds,vartype):
         raise RuntimeError("Couldn't find a geopotential variable name")
         
     if vartype == 'prate':
-        for name in ['prate', 'precipitationCal','pr','precip']:
+        for name in ['prate', 'precipitationCal','pr','precip','precipitation']:
             if name in list(ds.keys()):
                 break
         da = ds[name]
