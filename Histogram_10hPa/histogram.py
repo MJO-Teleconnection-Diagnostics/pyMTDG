@@ -58,7 +58,8 @@ years = np.arange(SYY,EYY+1)
 
 
 if (dictionary['ERAI']==True):
-    fil_u_obs=dictionary['DIR_IN']+'/ERA-Interim/u1060-1979-2018.nc'
+    #fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128sc.1979.2019.nc'
+    fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u1060-1979-2018.nc'
     ds_obs_name='ERAI'
 if (dictionary['ERAI']==False):
     ds_obs_name='OBS'
@@ -72,7 +73,7 @@ data_r = np.squeeze(data_r.sel(time=data_r.time.dt.year.isin(years)).u)
 if (dictionary['RMM']==False):
     # read RMM index
     # data is from Cheng Zhang, ERA-interim daily data from 1981.1.1-2019.8.31 
-    fil_rmm_erai=dictionary['DIR_IN']+'/ERA-Interim/rmm_ERA-Interim.nc'
+    fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
     rmm = xr.open_mfdataset(fil_rmm_erai,combine='by_coords').compute()
     
     # assign dates
@@ -209,8 +210,8 @@ print(np.shape(data_r_week1_pha1),np.shape(data_r_week1_pha2),np.shape(data_r_we
 
 fcst_dir=dictionary['Path to zonal wind at 10 hPa model data files']
 ds_fcst_name=dictionary['model name']
-DIR = fcst_dir+ds_fcst_name
-
+#DIR = fcst_dir+ds_fcst_name
+DIR = fcst_dir
 
 # In[10]:
 

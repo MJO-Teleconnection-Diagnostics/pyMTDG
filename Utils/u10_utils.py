@@ -5,6 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import date
 import matplotlib.pyplot as plt
+import glob
 
 def data_week(data, date_init, nday1, nday2):
     date_start = date_init + timedelta(days=nday1)
@@ -16,12 +17,33 @@ def data_week(data, date_init, nday1, nday2):
         data_week = tmp_week.mean(dim='time',skipna=True).values+np.nan
     return data_week
 
+def get_variable_from_dataset(ds):
+    '''
+        Extract the target variable from the dataset. Convert to target units
+        
+            Parameters
+                ds: xarray dataset
+            Returns
+                da: subsetted dataArray in
+    '''
+    for name in ['U', 'u','U10','u10']:
+        if name in list(ds.keys()):
+            break
+    da = ds[name]
+
+
+    return da
+    raise RuntimeError("Couldn't find a zonal wind variable name")
+
 def read_data_mo(datafn,lats,levs,VAR,**kwargs):
     lons = kwargs.get('lons', [0,360])
     
-    data = xr.open_mfdataset(datafn,combine='by_coords').compute()
-    if VAR == 'u':
-        data = data.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True).u
+    files = np.sort(glob.glob(datafn+'*.nc*'))
+    data = xr.open_mfdataset(files,combine='by_coords').compute()
+    fcst=get_variable_from_dataset(ds_fcst)
+
+#    if VAR == 'u':
+    data = data.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True).fcst
     return data
 
 def select_mjo_event(rmm_index,phase,phase_val):
