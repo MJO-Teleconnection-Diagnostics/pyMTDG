@@ -226,13 +226,21 @@ The MJO-Diagnostics Package computes metrics that require the meteorological fie
 * Geopotential at 500mb an 100mb:
 *** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 *** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+
 * Precipitation rate:
-*** Variable can be named any of: 'prate', 'precipitationCal','pr','precip'
+*** Variable can be named any of: 'prate', 'precipitationCal','precipitation','precip'
 *** Unit: mm/day
+
 * Zonal and meridional winds at 850mb
+
 * Zonal wind at 10mb
+*** Variable can be named any of: 'U', 'u', 'U10', 'u10' 
+*** Unit: m/s
+
 * Meridional wind at 500mb
+
 * Air temperature at 100mb 
+
 * 2-metre Temperature:
 *** Variable can be named any of: 't2m', 'T2m', 'temp'
 *** Unit: K
@@ -244,16 +252,9 @@ To run the package, the user needs to specify:
 
 * END_DATE: the last date of forecast data in the format YYYYMMDD  
 
-* Length of the forecats (in days): number of forecast leads  
+* Length of the forecats (in days): number of forecast leads; all forecast leads corresponding to one initial condition must be in the same file  
 
 * Number of ensembles: ensemble members  
-
-* Number of initial dates: the number of initial conditions for the forecasts
-                         - if the forecast is initialized, for example 2 times month enter 2
-                         - if the forecast is initialized on particular days of the week, enter 1
-
-* Initial dates: days of initialization in the format D or DD
-               - if the forecast is initialized 2 times a month, for example on the 1st and 15th, enter 1 15 
 
 *Use ERA_I for validation: 
                         - Select 'Yes' (default) if ERA-Interim dataset provided with the package is used for verification (dataset must be downloaded in placed in the 'DIR_IN/mjo_teleconnections_data/erai')
@@ -262,8 +263,6 @@ To run the package, the user needs to specify:
 *Use IMERG for validation: 
                         - Select 'Yes' (default) if IMERG dataset provided with the package is used for verification (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg')
                         - Select 'No' if user provided dataset will be used for verification (user verification dataset must be placed in the directory 'DIR_IN/OBS')
-
-
 
 
 ''')
@@ -394,7 +393,7 @@ To run the package, the user needs to specify:
         dict_file['DIR_IN'] = self.dir_in_text.text()
         dict_file['START_DATE']= self.start_date_text.text()
         dict_file['END_DATE']= self.end_date_text.text()
-        dict_file['length of forecasts'] = self.lengthFor_text.text()
+        dict_file['length of forecasts'] = int(self.lengthFor_text.text())
         dict_file['Number of ensembles'] = int(self.num_ensm.text())
         ##print(type(self.initial_dates_values.text()),' has values ',list(map(int,self.initial_dates_values.text().split())))
         dict_file['ERAI'] = self.era_yes.isChecked()
@@ -1211,24 +1210,30 @@ class ThirdSubWindow(QMainWindow):
         diag_help_texts[1] = '''
 ** STRIPES Index for geopotential height**        
 
-Please include a trailing / in the directory where the geopotential data is located. Data can be 
-geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing / in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
         '''
         diag_help_texts[2] = '''
-        Help text for STRIPES Index for precipitation
+** STRIPES Index for precipitation**
+
+Please include a trailing / in the directory where the precipitatio  data is located.
 '''
         diag_help_texts[3] = '''
-        Help text for Pattern CC and Relative Amplitude over the PNA region
+** Pattern Correlation (CC) and Relative Amplitude for the Pacific North American (PNA) region (20N - 80N, 120E - 60W)**
+
+Please include a trailing / in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
 '''
         diag_help_texts[4] = '''
-        Help text for Pattern CC and Relative Amplitude over the Euro-Atlantic sector
+** Pattern Correlation (CC) and Relative Amplitude for the Euro-Atlantic sector (20N - 80N, 60W - 0)**
+
+Please include a trailing / in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
 '''
 
         diag_help_texts[5] = '''
         Help text for Stratospheric pathway
 '''
         diag_help_texts[6] = '''
-        Help text for Histogram of 10 hPa zonal wind
+**Histogram of 10 hPa zonal wind
+
 '''
         diag_help_texts[7] = '''
 ** Extratropical Cyclone Activity**
@@ -1252,8 +1257,6 @@ geopotential (units m^2/s^2) or geopotential height.
 ** Surface Air Temperature**
 
 Please include a trailing / in the directory where the 2-meter temperature data is located
-
-
 
 '''
        
