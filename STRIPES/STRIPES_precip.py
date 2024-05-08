@@ -43,6 +43,11 @@ if (dictionary['RMM']==False):
 # !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
 fc_dir = dictionary['Path to precipitation model data files']
 
+if (dictionary['IMERG:']==True):
+    obs_name = 'IMERG'
+else:
+    obs_name = 'OBS.'
+
 #obs_dir = dictionary['Path to precipitation observational data files:'] + '*.nc*'
 #obs_dir = dir_in+'/IMERG/*.nc4'
 obs_dir = dir_in+'/mjo_teleconnections_data/imerg/*.nc4'
@@ -85,20 +90,20 @@ for ilag, lag in enumerate(lags):
     #stripes_obs_cyclic, lon_cyclic = add_cyclic_point(stripes_obs[ilag], lon)
     im_obs = axs[0].contourf(lon, lat, stripes_obs[ilag], extend='max', cmap=cmap_obs, levels=levs_obs)
     cbar_obs = fig.colorbar(im_obs, ax=axs[0], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[0].set_title(f'Obs., week {lag}')
+    axs[0].set_title(f'{obs_name}, week {lag}')
 
     # Forecast
     #stripes_fc_cyclic, _ = add_cyclic_point(stripes_fc[ilag], lon)
     im_fc = axs[1].contourf(lon, lat, stripes_fc[ilag], extend='max', cmap=cmap_obs, levels=levs_obs)
     cbar_fc = fig.colorbar(im_fc, ax=axs[1], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[1].set_title(f'Forecast., week {lag}')
+    axs[1].set_title(f'{model_name}, week {lag}') 
 
     # Bias
     #bias = stripes_fc_cyclic - stripes_obs_cyclic
     bias = stripes_fc[ilag] - stripes_obs[ilag]
     im_bias = axs[2].contourf(lon, lat, bias, extend='both', cmap='RdBu_r', levels=levs_anom)
     cbar_bias = fig.colorbar(im_bias, ax=axs[2], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[2].set_title(f'Forecast - Obs., week {lag}')
+    axs[2].set_title(f'{model_name} - {obs_name}, week {lag}') 
 
     # save
     if not os.path.exists('../output/StripesPrecip/'+model_name):
