@@ -46,10 +46,11 @@ if (dictionary['RMM']==False):
 #Z500_DIR = dictionary['Path to z500 date files'][0] + '*.nc*'
 Z500_DIR = dictionary['Path to Z500 model data files']
 
-#Z500_DIR_OBS = dictionary['Path to z500 observational files'] + '*.nc*'
-
 if (dictionary['ERAI']==True):
     Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
+    obs_name = 'ERAI'
+else:
+    obs_name = 'OBS.'
 
 # read start and end date
 START_DATE = dictionary['START_DATE']
@@ -89,14 +90,14 @@ for ilag, lag in enumerate(lags):
     # im_obs = axs[0].contourf(lon_cyclic, lat, stripes_obs_cyclic, extend='max', cmap=cmap_obs, levels=levs_obs)
     im_obs = axs[0].contourf(lon, lat, stripes_obs[ilag], extend='max', cmap=cmap_obs, levels=levs_obs)
     cbar_obs = fig.colorbar(im_obs, ax=axs[0], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[0].set_title(f'Obs., week {lag}')
+    axs[0].set_title(f'{obs_name}, week {lag}')
 
     # Forecast
     # stripes_fc_cyclic, _ = add_cyclic_point(stripes_fc[ilag], lon)
     # im_fc = axs[1].contourf(lon_cyclic, lat, stripes_fc_cyclic, extend='max', cmap=cmap_obs, levels=levs_obs)
     im_fc = axs[1].contourf(lon, lat, stripes_fc[ilag], extend='max', cmap=cmap_obs, levels=levs_obs)
     cbar_fc = fig.colorbar(im_fc, ax=axs[1], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[1].set_title(f'Forecast., week {lag}')
+    axs[1].set_title(f'{model_name}, week {lag}')
 
     # Bias
     # bias = stripes_fc_cyclic - stripes_obs_cyclic
@@ -104,7 +105,7 @@ for ilag, lag in enumerate(lags):
     bias = stripes_fc[ilag] - stripes_obs[ilag]
     im_bias = axs[2].contourf(lon, lat, bias, extend='both', cmap='RdBu_r', levels=levs_anom)
     cbar_bias = fig.colorbar(im_bias, ax=axs[2], orientation='vertical', label=f'STRIPES ({stripes_obs[0].units})')
-    axs[2].set_title(f'Forecast - Obs., week {lag}') 
+    axs[2].set_title(f'{model_name} - {obs_name}, week {lag}') 
 
     # save
     if not os.path.exists('../output/StripesGeopot/'+model_name): 
