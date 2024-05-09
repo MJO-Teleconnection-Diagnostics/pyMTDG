@@ -173,8 +173,19 @@ amp_ufs_p67 = amplitude_metric_atlantic(timelag,rmm_list_ERA_67,rmm_list_model_6
 amp_ufs_p23=np.mean ( amp_ufs_p23,axis= 1   )
 amp_ufs_p67=np.mean ( amp_ufs_p67,axis= 1   )
 
+bootstrap_size = 1000
+P23_atlantic_low=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=True)[0]
+P23_atlantic_high=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=True)[1]
+P67_atlantic_low=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=True)[0]
+P67_atlantic_high=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=True)[1]
+P23_atlantic_low_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,amp=True)[0]
+P23_atlantic_high_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,amp=True)[1]
+P67_atlantic_low_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,amp=True)[0]
+P67_atlantic_high_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,amp=True)[1]
+
 import matplotlib.lines as mlines
 fig = plt.figure(figsize=(12,6))
+x = np.linspace(0, 34, 35)
 plt.rcParams['font.size'] = '14'
 def addlegend(ax):
     P23 = mlines.Line2D([],[], color='b', label='Phases 2&3')
@@ -188,15 +199,18 @@ for i in range(ncol):
     if i==0:
         ax.set_title('a. Pattern Correlation_Euro-Atlantic',loc='left')
         ax.plot(pcc_ufs_p23,color='b',linewidth=2,label='Phases 2&3')
+        ax.fill_between(x, P23_atlantic_low, P23_atlantic_high, color='C0',alpha=0.2)
         ax.plot(pcc_ufs_p67,color='r',linewidth=2,label='Phases 6&7')
+        ax.fill_between(x, P67_atlantic_low, P67_atlantic_high, color='C3',alpha=0.2)
     else:
         ax.set_title('b. Relative Amplitude_Euro-Atlantic',loc='left')
         ax.plot(amp_ufs_p23,color='b',linewidth=2,label='Phases 2&3')
+        ax.fill_between(x, P23_atlantic_low_amp, P23_atlantic_high_amp, color='C0',alpha=0.2)
         ax.plot(amp_ufs_p67,color='r',linewidth=2,label='Phases 6&7')
+        ax.fill_between(x, P67_atlantic_low_amp, P67_atlantic_high_amp, color='C3',alpha=0.2)
     if i==0: addlegend(ax)
     ax.grid(True)
-
-
+    
 # save
 if not os.path.exists('../output/PatternCC_Atlantic/'+dictionary['model name']): 
     os.mkdir('../output/PatternCC_Atlantic/'+dictionary['model name'])
