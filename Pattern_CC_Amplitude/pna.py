@@ -171,9 +171,20 @@ amp_ufs_p67 = amplitude_metric(timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fc
 amp_ufs_p23=np.mean ( amp_ufs_p23,axis= 1   )
 amp_ufs_p67=np.mean ( amp_ufs_p67,axis= 1   )
 
+bootstrap_size = 1000
+P23_PNA_low=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[0]
+P23_PNA_high=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[1]
+P67_PNA_low=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[0]
+P67_PNA_high=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[1]
+P23_PNA_low_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[0]
+P23_PNA_high_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[1]
+P67_PNA_low_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[0]
+P67_PNA_high_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[1]
+
 
 import matplotlib.lines as mlines
 fig = plt.figure(figsize=(12,6))
+x = np.linspace(0, 34, 35)
 plt.rcParams['font.size'] = '14'
 def addlegend(ax):
     P23 = mlines.Line2D([],[], color='b', label='Phases 2&3')
@@ -187,14 +198,17 @@ for i in range(ncol):
     if i==0:
         ax.set_title('a. Pattern Correlation_PNA',loc='left')
         ax.plot(pcc_ufs_p23,color='b',linewidth=2,label='Phases 2&3')
+        ax.fill_between(x, P23_PNA_low, P23_PNA_high, color='C0',alpha=0.2)
         ax.plot(pcc_ufs_p67,color='r',linewidth=2,label='Phases 6&7')
+        ax.fill_between(x, P67_PNA_low, P67_PNA_high, color='C3',alpha=0.2)
     else:
         ax.set_title('b. Relative Amplitude_PNA',loc='left')
         ax.plot(amp_ufs_p23,color='b',linewidth=2,label='Phases 2&3')
+        ax.fill_between(x, P23_PNA_low_amp, P23_PNA_high_amp, color='C0',alpha=0.2)
         ax.plot(amp_ufs_p67,color='r',linewidth=2,label='Phases 6&7')
+        ax.fill_between(x, P67_PNA_low_amp, P67_PNA_high_amp, color='C3',alpha=0.2)
     if i==0: addlegend(ax)
     ax.grid(True)
-
 
 # save
 if not os.path.exists('../output/PatternCC_PNA/'+dictionary['model name']): 
