@@ -55,6 +55,18 @@ def patterncc(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat
             pcc[itime,inumber]=res_temp[0,1]
     return pcc
 
+def patterncc_bootstrap(timelag,random_number,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min,lon_max):
+    nn=len(rmm_list_ERA[0,:])
+    pcc=np.empty( ( len (timelag),nn) ,dtype=float)
+    for inumber in range (len(rmm_list_ERA[0,:])):
+        for itime in range (len (timelag)):
+            model_z500_temp=modeldata [ rmm_list_model[random_number[inumber]], itime, : , : ]
+            erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,random_number[inumber]], : , : ]
+            res_temp=correlate(erai_anomaly_temp,
+                model_z500_temp,lat_min,lat_max,lon_min,lon_max)
+            pcc[itime,inumber]=res_temp[0,1]
+    return pcc
+
 def patterncc_atlantic(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
     nn=len(rmm_list_ERA[0,:])
     pcc=np.empty( ( len (timelag),nn) ,dtype=float)
@@ -62,6 +74,18 @@ def patterncc_atlantic(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,la
         for itime in range (len (timelag)):
             model_z500_temp=modeldata [ rmm_list_model[inumber], itime, : , : ]
             erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,inumber], : , : ]
+            res_temp=correlate_atlantic(erai_anomaly_temp,
+                model_z500_temp,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
+            pcc[itime,inumber]=res_temp[0,1]
+    return pcc
+
+def patterncc_atlantic_bootstrap(timelag,random_number,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
+    nn=len(rmm_list_ERA[0,:])
+    pcc=np.empty( ( len (timelag),nn) ,dtype=float)
+    for inumber in range (len(rmm_list_ERA[0,:])):
+        for itime in range (len (timelag)):
+            model_z500_temp=modeldata [ rmm_list_model[random_number[inumber]], itime, : , : ]
+            erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,random_number[inumber]], : , : ]
             res_temp=correlate_atlantic(erai_anomaly_temp,
                 model_z500_temp,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
             pcc[itime,inumber]=res_temp[0,1]
@@ -83,6 +107,22 @@ def amplitude_metric(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_
             amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
     return amp  
 
+def amplitude_metric_bootstrap(timelag,random_number,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min,lon_max):
+    nn=len(rmm_list_ERA[0,:])
+    amp=np.empty( ( len (timelag),nn) ,dtype=float)
+    for inumber in range (len(rmm_list_ERA[0,:])):
+        for itime in range (len (timelag)):
+            model_z500_temp=modeldata [ rmm_list_model[random_number[inumber]], itime, : , : ]
+            erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,random_number[inumber]], : , : ]
+            x=erai_anomaly_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min,lon_max))
+            y=model_z500_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min,lon_max))
+            x_stacked=x.stack(grid=('latitude','longitude'))
+            y_stacked=y.stack(grid=('latitude','longitude'))
+            model_z500_variance_temp=np.var(y_stacked)
+            erai_anomaly_variance_temp=np.var(x_stacked)
+            amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
+    return amp
+
 def amplitude_metric_atlantic(timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
     nn=len(rmm_list_ERA[0,:])
     amp=np.empty( ( len (timelag),nn) ,dtype=float)
@@ -102,6 +142,62 @@ def amplitude_metric_atlantic(timelag,rmm_list_ERA,rmm_list_model,modeldata,erai
             erai_anomaly_variance_temp=np.var(x_stacked)
             amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
     return amp
+
+def amplitude_metric_atlantic_bootstrap(timelag,random_number,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2):
+    nn=len(rmm_list_ERA[0,:])
+    amp=np.empty( ( len (timelag),nn) ,dtype=float)
+    for inumber in range (len(rmm_list_ERA[0,:])):
+        for itime in range (len (timelag)):
+            model_z500_temp=modeldata [ rmm_list_model[random_number[inumber]], itime, : , : ]
+            erai_anomaly_temp=eraidata [ rmm_list_ERA[itime,random_number[inumber]], : , : ]
+            x1=erai_anomaly_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min1,lon_max1))
+            x2=erai_anomaly_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min2,lon_max2))
+            y1=model_z500_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min1,lon_max1))
+            y2=model_z500_temp.sel(latitude=slice(lat_max,lat_min),longitude=slice(lon_min2,lon_max2))
+            x=xr.concat((x1, x2),dim="longitude")
+            y=xr.concat((y1, y2),dim="longitude")
+            x_stacked=x.stack(grid=('latitude','longitude'))
+            y_stacked=y.stack(grid=('latitude','longitude'))
+            model_z500_variance_temp=np.var(y_stacked)
+            erai_anomaly_variance_temp=np.var(x_stacked)
+            amp[itime,inumber]=math.sqrt(model_z500_variance_temp/erai_anomaly_variance_temp)
+    return amp
+
+def test_significance (N_samples,timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min,lon_max,PCC=False,amp=False):
+    rng = np.random.default_rng()
+    data = np.full ( ( N_samples, len (timelag) ) , np.nan , dtype=float )
+    for n in range (N_samples) :
+       random_numbers = rng.choice ( len(rmm_list_ERA[0,:]), len(rmm_list_ERA[0,:]))
+       if (PCC==True):
+          pcc_temp=patterncc_bootstrap(timelag,random_numbers,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min,lon_max)
+          data[n,:]=np.mean ( pcc_temp,axis= 1   )
+       if (amp==True):
+          amp_temp=amplitude_metric_bootstrap(timelag,random_numbers,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min,lon_max)
+          data[n,:]=np.mean ( amp_temp,axis= 1   )
+    percentile_low = np.full ( ( len (timelag) ) , np.nan , dtype=float )
+    percentile_high = np.full ( ( len (timelag) ) , np.nan , dtype=float )
+    for i in range (len(timelag)):
+       percentile_low[i]=np.percentile(data[:,i], 2.5)
+       percentile_high[i]=np.percentile(data[:,i], 97.5)
+    return percentile_low,percentile_high
+
+def test_significance_atlantic (N_samples,timelag,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=False,amp=False):
+    rng = np.random.default_rng()
+    data = np.full ( ( N_samples, len (timelag) ) , np.nan , dtype=float )
+    for n in range (N_samples) :
+       random_numbers = rng.choice ( len(rmm_list_ERA[0,:]), len(rmm_list_ERA[0,:]))
+       if (PCC==True):
+          pcc_temp=patterncc_atlantic_bootstrap(timelag,random_numbers,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
+          data[n,:]=np.mean ( pcc_temp,axis= 1   )
+       if (amp==True):
+          amp_temp=amplitude_metric_atlantic_bootstrap(timelag,random_numbers,rmm_list_ERA,rmm_list_model,modeldata,eraidata,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
+          data[n,:]=np.mean ( amp_temp,axis= 1   )
+    percentile_low = np.full ( ( len (timelag) ) , np.nan , dtype=float )
+    percentile_high = np.full ( ( len (timelag) ) , np.nan , dtype=float )
+    for i in range (len(timelag)):
+       percentile_low[i]=np.percentile(data[:,i], 2.5)
+       percentile_high[i]=np.percentile(data[:,i], 97.5)
+    return percentile_low,percentile_high
 
 def composites_model(rmm_list_model,modeldata,data_lat_in,data_lon_in):
     model_z500_composite=np.empty(  ( 4, len ( data_lat_in ) , len ( data_lon_in ) ) ,dtype=float)
