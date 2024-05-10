@@ -2733,7 +2733,13 @@ class third2Result(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/PatternCC_Atlantic/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=['''
+Pattern correlation coefficient (forecast vs observations) and relative amplitude (forecast/observations) of 500hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases (a),(c) 2-3 and (b),(d) 6-7. The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by the bootstrap test. The lower boundary represents the minimum 2.5th percentile of the bootstrapping distribution between the models, and the upper boundary represents the maximum 97.5th-percentile distribution between the models. 
+         ''','''
+Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) MJO phases 23 and (left two columns) MJO phases 6-7 for observations and reforecast models. Numbers in the upper-right corners show the pattern CC of reforecasts with respect to observations over the Euro-Atlantic region.
+        '''
+        ]
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'Euro Atl sect Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
@@ -3097,7 +3103,14 @@ class thirdResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/PatternCC_PNA/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=['''
+Pattern correlation coefficient (forecast vs observations) and relative amplitude (forecast/observations) of 500hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases (a),(c) 2-3 and (b),(d) 6-7. The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by the bootstrap test. The lower boundary represents the minimum 2.5th percentile of the bootstrapping distribution between the models, and the upper boundary represents the maximum 97.5th-percentile distribution between the models.''','''
+
+Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) MJO phases 23 and (left two columns) MJO phases 6-7 for observations and reforecast models. Numbers in the upper-right corners show the pattern CC of reforecasts with respect to observations over the PNA region.
+
+'''
+]
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'PatternCC_PNA Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
