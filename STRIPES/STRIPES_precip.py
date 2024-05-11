@@ -43,7 +43,7 @@ if (dictionary['RMM']==False):
 # !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
 fc_dir = dictionary['Path to precipitation model data files']
 
-if (dictionary['IMERG:']==True):
+if (dictionary['IMERG']==True):
     obs_name = 'IMERG'
 else:
     obs_name = 'OBS.'
