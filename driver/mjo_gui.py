@@ -2735,7 +2735,7 @@ class third2Result(QMainWindow):
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         self.helpTexts=['''
-(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases 2-3 (blue) and 6-7 (red). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by the bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile distribution between the models. 
+(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases 2-3 (blue line) and 6-7 (red line). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile. 
          ''','''
 Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) the MJO phases 2-3 and (left two columns) MJO phases 6-7 for observations and models. Numbers in the upper-right corners show the pattern CC of forecasts with respect to observations over the Euro-Atlantic region.
         '''
@@ -2824,7 +2824,7 @@ class fourthResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
@@ -2962,7 +2962,7 @@ Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middl
         lay = QHBoxLayout()
         lay.addWidget(frame)
         lay.addWidget(ryt_frame)
-        central_widget = QWidget()
+        central_widget = QWidget(m)
         central_widget.setLayout(lay)
 
         fr = QFrame()
@@ -3105,7 +3105,7 @@ class thirdResult(QMainWindow):
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         self.helpTexts=['''
-(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the PNA region (20-80N, 120E-60W) vs forecast lead days for the MJO phases 2-3 (blue) and 6-7 (red). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by the bootstrap test. The lower boundary represents the minimum 2.5th percentile of the bootstrapping distribution between the models, and the upper boundary represents the maximum 97.5th-percentile distribution between the models.''','''
+(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the PNA region (20-80N, 120E-60W) vs forecast lead days for the MJO phases 2-3 (blue) and 6-7 (red). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile.''','''
 
 Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) the MJO phases 2-3 and (left two columns) MJO phases 6-7 for observations and  model. Numbers in the upper-right corners show the pattern CC of model with respect to observations over the PNA region.
 
