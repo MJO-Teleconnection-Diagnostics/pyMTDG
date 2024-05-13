@@ -2879,7 +2879,7 @@ Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middl
         lay = QHBoxLayout()
         lay.addWidget(frame)
         lay.addWidget(ryt_frame)
-        central_widget = QWidget(m)
+        central_widget = QWidget()
         central_widget.setLayout(lay)
 
         fr = QFrame()
@@ -3122,6 +3122,7 @@ class viewImage(QMainWindow):
         helpTextWidget.setWordWrap(True)
         helpTextWidget.setAlignment(Qt.AlignCenter)
         helpTextWidget.setFixedWidth(800)
+        helpTextWidget.setFixedHeight(150)
         
         
 
@@ -3184,6 +3185,7 @@ class viewImageStripes(QMainWindow):
         helpText = QLabel(helpText)
         helpText.setWordWrap(True)
         helpText.setFixedWidth(800)
+        helpText.setFixedHeight(150)
         
         
 
