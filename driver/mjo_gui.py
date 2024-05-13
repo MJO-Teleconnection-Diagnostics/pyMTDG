@@ -1366,6 +1366,7 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
                 right_layout.addWidget(self.z500anomalies)
+                rendered.append('z500anomalies')
                 separator = QFrame()
                 separator.setFrameShape(QFrame.HLine)
                 separator.setFrameShadow(QFrame.Raised)
@@ -1387,6 +1388,9 @@ Please include a trailing / in the directory where the 2-meter temperature data 
                     if era == False:
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
+                if 'z500anomalies' not in rendered:
+                    right_layout.addWidget(self.z500anomalies)
+                    rendered.append('z500anomalies')
                     separator = QFrame()
                     separator.setFrameShape(QFrame.HLine)
                     separator.setFrameShadow(QFrame.Raised)
@@ -2814,93 +2818,6 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
         self.close()
         self.parent.show()
 
-class fourthResult(QMainWindow):
-    def __init__(self,parent,dict_file):
-        super().__init__()
-        self.parent = parent
-        self.model_name = dict_file['model name']
-        self.setWindowTitle('Fraction of the observed STRIPE Index for geopotential height results')
-        self.setGeometry(200, 200, 400, 200)  # Set window position and size
-        #self.setMaximumSize(width, height)
-        self.viewImages=[]
-        #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
-        #print(len(self.all_files))
-        self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
-        for i in range(len(self.all_files)):
-            buttonn=QPushButton(f'T2m Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
-            
-            self.viewImages.append(False)
-            self.imagebuttons.append(buttonn)
-            
-       
-        back = QPushButton('Back', self)
-        back.clicked.connect(self.closee)
-        back.setFixedSize(70,30)
-        
-        #Create a layout for the left half (weather image)
-        layout = QVBoxLayout()
-        ryt_layout = QVBoxLayout()
-        
-        for i in range(len(self.all_files)//2):
-            ##print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
-            layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
-        
-        for i in range(len(self.all_files)//2,len(self.all_files)):
-            ##print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
-            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
-
-        
-    
-
-        frame = QFrame()
-        frame.setLayout(layout)
-        ryt_frame = QFrame()
-        ryt_frame.setLayout(ryt_layout)
-        #Create a layout for the right half (text widgets and button)
-        frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-
-        lay = QHBoxLayout()
-        lay.addWidget(frame)
-        lay.addWidget(ryt_frame)
-        central_widget = QWidget()
-        central_widget.setLayout(lay)
-
-        fr = QFrame()
-        fr.setLayout(lay)
-        # Create a central widget to hold the splitter
-        main_widget = QWidget()
-
-        
-        central_layout = QVBoxLayout()
-        central_layout.addWidget(fr)
-        back.setStyleSheet("""
-        QPushButton:hover {
-            background-color: gray;
-        }
-    """)
-        central_layout.addWidget(back,alignment=Qt.AlignCenter)
-        main_widget.setLayout(central_layout)
-        self.setCentralWidget(main_widget)
-
-
-    def openweek1_2(self, path,i,helpText):
-        def clickk():
-            #print(path,i)
-            if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m Fig.{i}',helpText)
-                self.viewImages[i] = self.viewImage
-                #self.viewImage1.closed.connect(self.quit1)
-                self.viewImages[i].show()
-        return clickk
-    def closee(self):
-        self.close()
-        self.parent.show()
 
 
 class firstResult(QMainWindow):
@@ -3201,18 +3118,20 @@ class viewImage(QMainWindow):
         image.setAlignment(Qt.AlignCenter)
         self.imagep = imageP
         
-        helpText = QLabel(helpText)
-        helpText.setWordWrap(True)
+        helpTextWidget = QLabel(helpText)
+        helpTextWidget.setWordWrap(True)
+        helpTextWidget.setAlignment(Qt.AlignCenter)
+        helpTextWidget.setFixedWidth(800)
+        
+        
 
         download = QPushButton('Download image', self)
-        download.setFixedSize(300,30)
         download.clicked.connect(self.download_image)
 
         layout = QVBoxLayout()
-        layout.addWidget(image)
-        layout.addWidget(helpText,alignment=Qt.AlignCenter)
-        layout.addStretch()
-        layout.addWidget(download,alignment=Qt.AlignCenter)
+        layout.addWidget(image, alignment=Qt.AlignCenter)
+        layout.addWidget(helpTextWidget, alignment=Qt.AlignCenter)
+        layout.addWidget(download, alignment=Qt.AlignCenter)
         
         central_widget = QWidget()
         central_widget.setLayout(layout)
@@ -3264,6 +3183,9 @@ class viewImageStripes(QMainWindow):
         
         helpText = QLabel(helpText)
         helpText.setWordWrap(True)
+        helpText.setFixedWidth(800)
+        
+        
 
         download = QPushButton('Download image', self)
         download.setFixedSize(300,30)
@@ -3273,9 +3195,7 @@ class viewImageStripes(QMainWindow):
         ryt_layout = QVBoxLayout()
         
         layout.addWidget(image)
-        ryt_layout.addStretch()
         ryt_layout.addWidget(helpText,alignment=Qt.AlignCenter)
-        ryt_layout.addStretch()
         ryt_layout.addWidget(download,alignment=Qt.AlignCenter)
         frame = QFrame()
         frame.setLayout(layout)
