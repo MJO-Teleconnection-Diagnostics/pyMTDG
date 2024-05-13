@@ -73,6 +73,6 @@ variables:
 time = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
     20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34 ;
 ~~~
-The Extra-tropical Cyclone Activity diagnostic requires 6-hourly data forecast data for each ensemble member. The forecast files can include the initial condition (analysis) but is not a requirement. 
+The Extra-tropical Cyclone Activity diagnostic requires 6-hourly forecast data for each ensemble member. The forecast files can include the initial condition (analysis) but is not a requirement. 
 
 The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from here. The data is provided on the native grid (`latitude=256, longitude=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, IMERG <a href="https://gpm.nasa.gov/data/imerg"></a> is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitude=241`,`longitude=480`).
