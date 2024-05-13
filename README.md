@@ -10,8 +10,9 @@ Contents:
 3. [Data format](#data)
 
 ## 1. Software and computational requirements <a name="introduction"></a>
-The packages has been developed using Python 3.9.
-SLURM (salloc) is enaabled but is not required.
+The packages has been developed using `Python 3.9`.
+
+SLURM (`salloc`) is enabled but is not required.
 
 ## 2. Obtaining the code <a name="code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
