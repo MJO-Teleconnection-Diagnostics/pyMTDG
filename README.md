@@ -7,6 +7,7 @@ Stan, C., C. Zheng, E. K.-M. Chang, D. I. V. Domeisen, C. Garfienkel, A. M. Jenn
 Contents:
 1. [Software requirements](#introduction)
 2. [Obtaining the code](#code)
+3. [Data format](#data)
 
 ## 1. Software requirements <a name="introduction"></a>
 Some text
