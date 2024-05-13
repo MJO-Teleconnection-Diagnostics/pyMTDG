@@ -44,7 +44,7 @@ python mjo_gui.py
 ~~~
 
 ## 3. Data format <a name="data"></a>
-The packaage can only data in netcdf format. Most diagnostics work with daily mean of ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads as the time dimension. In the exaample below, the forecast initiaal condition is 2018-03-15. 
+The packaage can only data in netcdf format. Most diagnostics work with daily mean of ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads as the time dimension. In the example below, the forecast initial condition is 2018-03-15. 
 ~~~
 netcdf z500_20180315 {
 dimensions:
@@ -68,4 +68,7 @@ variables:
 		z500:_FillValue = NaNf ;
 		z500:units = "gpm" ;
 		z500:name = "Geopotential Height" ;
+
+time = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34 ;
 ~~~
