@@ -9,8 +9,9 @@ Contents:
 2. [Obtaining the code](#code)
 3. [Data format](#data)
 
-## 1. Software requirements <a name="introduction"></a>
-Some text
+## 1. Software and computational requirements <a name="introduction"></a>
+The packages has been developed using Python 3.9.
+SLURM (salloc) is enaabled but is not required.
 
 ## 2. Obtaining the code <a name="code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
@@ -40,4 +41,31 @@ c. Go to the `driver` directory to run the code.
 ~~~
 cd driver
 python mjo_gui.py
+~~~
+
+## 3. Data format <a name="data"></a>
+The packaage can only data in netcdf format. Most diagnostics work with daily mean of ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads as the time dimension. In the exaample below, the forecast initiaal condition is 2018-03-15. 
+~~~
+netcdf z500_20180315 {
+dimensions:
+	latitude = 721 ;
+	longitude = 1440 ;
+	time = 35 ;
+variables:
+	float latitude(latitude) ;
+		latitude:units = "degrees_north" ;
+		latitude:standard_name = "latitude" ;
+		latitude:long_name = "latitude" ;
+		latitude:stored_direction = "decreasing" ;
+	float longitude(longitude) ;
+		longitude:units = "degrees_east" ;
+		longitude:standard_name = "longitude" ;
+		longitude:long_name = "longitude" ;
+	int time(time) ;
+		time:units = "days since 2018-03-15 00:00:00" ;
+		time:calendar = "proleptic_gregorian" ;
+	float z500(time, latitude, longitude) ;
+		z500:_FillValue = NaNf ;
+		z500:units = "gpm" ;
+		z500:name = "Geopotential Height" ;
 ~~~
