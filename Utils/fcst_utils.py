@@ -4,6 +4,7 @@ import numpy as np
 import xarray as xr
 import spharm
 import _spherepack
+import csv 
 
 def calcAnom(ds,anom_name):
     # Save the original dates 
@@ -208,3 +209,17 @@ def is_ndjfm(month):
     ''' Returns true if winter month
     '''
     return (month >= 11) | (month <= 3)
+
+def write_output_text(file_name,headers,fields):
+    ''' headers: must be in the format ['header1','header2','header3', ...]
+        fields: values to be written oud in the format [field1,field2, ...]; same number as the number of headers
+        field1, filed2, ...: 1-D vectors
+    '''
+    with open(file_name+'.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
+        for i in range(len(fields[0])):
+            field=[]
+            for j in range(len(fields)):
+                field.append(fields[j][i])
+            writer.writerow(field) 

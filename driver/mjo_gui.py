@@ -805,7 +805,7 @@ class SelectDiagWindow(QMainWindow):
 On this page, the user can select all diagnostics, one diagnostic or multiple diagnostics. On the next page, the user will be prompted to provide additional information about the forecast data files required for each of the diagnostics.
 
 * The Extratropical Cyclone Activity
-    - Provides composites of 24-h difference filtered eddy kinetic energy at 850-hPa (computed using U850 and V850) and the spatial correlation coefficient between forecast and reanalysis composites ...
+    - Provides composites of 24-h difference filtered eddy kinetic energy at 850-hPa (computed using U850 and V850) and the spatial correlation coefficient between forecast and reanalysis composites. 
 
                             ''')
         help_label.setWordWrap(True)
@@ -1210,22 +1210,22 @@ class ThirdSubWindow(QMainWindow):
         diag_help_texts[1] = '''
 ** STRIPES Index for geopotential height**        
 
-Please include a trailing / in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
         '''
         diag_help_texts[2] = '''
 ** STRIPES Index for precipitation**
 
-Please include a trailing / in the directory where the precipitatio  data is located.
+Please include a trailing '/' in the directory where the precipitatio  data is located.
 '''
         diag_help_texts[3] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Pacific North American (PNA) region (20N - 80N, 120E - 60W)**
 
-Please include a trailing / in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
 '''
         diag_help_texts[4] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Euro-Atlantic sector (20N - 80N, 60W - 0)**
 
-Please include a trailing / in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
 '''
 
         diag_help_texts[5] = '''
@@ -1241,12 +1241,12 @@ Please include a trailing / in the directory where the geopotential data is loca
 - If model data contains ensembles, the input data for U850 and V850 must be provided for each ensemble member. Using the ensemble mean will result in eddy kinetic energy with underestimated amplitude.
 - If model and verification data have different resolutions, it is highly recommended to provide the data on the same grid. Although this package has regridding capabilities it may take hours to days to complete the regridding especially for large ensembles. Usage of spherical harmonics is recommended for regridding of wind components. 
 
-* Path to Extratropical Cyclone Activity Z500 model data files: Enter the name of Z500 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members. E.g., for one ensemble member only: /project/$userid/z500_2011040100_e00.nc. For multiple ensemble members the count of ensemble members should also start from  '00', /project/$userid/z500_2011040100_e00.nc, /project/$userid/z500_2011040100_e01.nc'
+* Path to Extratropical Cyclone Activity Z500 model data files: Enter the name of Z500 files in the format <file_name*.nc> where * must contain 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members. E.g., for one ensemble member only: /project/$userid/z500_2011040100_e00.nc. For multiple ensemble members the count of ensemble members should also start from  '00', /project/$userid/z500_2011040100_e00.nc, /project/$userid/z500_2011040100_e01.nc'
 
 
-* Path to Extratropical Cyclone Activity U850  model data files: Enter the name of U850 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members.
+* Path to Extratropical Cyclone Activity U850  model data files: Enter the name of U850 files in the format <file_name*.nc> where * must contain 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
 
-* Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name_YYYYMMDDHH_exx.nc> where 'exx' denotes the ensemble members.
+* Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name*.nc> where * must contain'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
 '''
         diag_help_texts[8] = '''
         Help text for MJO
@@ -1256,7 +1256,7 @@ Please include a trailing / in the directory where the geopotential data is loca
         diag_help_texts[9] = '''
 ** Surface Air Temperature**
 
-Please include a trailing / in the directory where the 2-meter temperature data is located
+Please include a trailing '/' in the directory where the 2-meter temperature data is located
 
 '''
        
@@ -1948,15 +1948,7 @@ class FinalWindow(QMainWindow):
         #pixmap = QPixmap('weather.jpg') 
 
         help_label = QLabel('''
-        DIR_IN: Please enter the input data directory path
-        START_DATE: Please enter the start date
-        END_DATE: Please enter the end date
-        Length of the forecats (in days): Please enter the length of the forecats in days
-        Number of ensembles: Please enter the number of ensembles
-        Number of initial dates: Please enter the number of initial dates
-        Initial dates: Please enter all the intial dates
-        Use ERA_I for validation: Please check this box if ERA_I is used for validation
-        Use IMERG for validation: Please check this box if IMERG is used for validation
+Figures for the listed dignostics are available from previous calculations.
                             ''')
         
         '''weather_image.setPixmap(pixmap)
@@ -2280,9 +2272,9 @@ class mjoResult(QMainWindow):
         #print(len(self.all_files))
         self.imagebuttons=[]
         self.helpTexts=['''
-        MJO index forecast skill: MJO prediction skill for forecasts initialized with active MJO events during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, solid lines) and root-mean squared error (RMSE, dashed lines) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
+MJO index forecast skill: MJO prediction skill for forecasts initialized with active MJO events during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, solid lines) and root-mean squared error (RMSE, dashed lines) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
         ''','''
-        Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15S-15N for active MJO events. The vertical lines indicate 120E (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
+Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15S-15N for active MJO events. The vertical lines indicate 120E (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
         ''']
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'MJO Fig.{i+1}', self)
