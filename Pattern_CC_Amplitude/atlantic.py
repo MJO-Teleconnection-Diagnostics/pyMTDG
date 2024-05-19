@@ -217,92 +217,103 @@ if not os.path.exists('../output/PatternCC_Atlantic/'+dictionary['model name']):
 figname='z500_PatternCC&Amplitude_Atlantic' 
 fig.savefig('../output/PatternCC_Atlantic/'+dictionary['model name']+'/'+figname+'.jpg',dpi=300)
 
+write_output_text('../output/PatternCC_Atlantic/'+dictionary['model name']+'/'+figname,
+        ['PatternCC P23','PatternCC_low P23','PatternCC_high P23',
+         'PatternCC P67','PatternCC_low P67','PatternCC _high P67',
+         'RelAmp P23','RelAmp_low P23','RelAmp_high P23',
+         'RelAmp P67','RelAmp_low P67','RelAmp_high P67'],
+        [pcc_ufs_p23,P23_atlantic_low, P23_atlantic_high,
+         pcc_ufs_p67,P67_atlantic_low, P67_atlantic_high,
+         amp_ufs_p23,P23_atlantic_low_amp, P23_atlantic_high_amp,
+         amp_ufs_p67,P67_atlantic_low_amp, P67_atlantic_high_amp])
 
-model_z500_composite_p23=composites_model(rmm_list_model_23,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
-model_z500_composite_p67=composites_model(rmm_list_model_67,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
+if (dictionary['Compute composites']==True):
+
+   model_z500_composite_p23=composites_model(rmm_list_model_23,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
+   model_z500_composite_p67=composites_model(rmm_list_model_67,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
 
 
-ERA5_z500_composite_p23=composites_era(rmm_list_ERA_23,erai_anomaly,era_lat_in,era_lon_in)
-ERA5_z500_composite_p67=composites_era(rmm_list_ERA_67,erai_anomaly,era_lat_in,era_lon_in)
+   ERA5_z500_composite_p23=composites_era(rmm_list_ERA_23,erai_anomaly,era_lat_in,era_lon_in)
+   ERA5_z500_composite_p67=composites_era(rmm_list_ERA_67,erai_anomaly,era_lat_in,era_lon_in)
 
 
-coords= {
-    'phase':[1,2,3,4],
-    'latitude':era_lat_in,
-    'longitude':era_lon_in
-}
+   coords= {
+       'phase':[1,2,3,4],
+       'latitude':era_lat_in,
+       'longitude':era_lon_in
+   }
 
 
-xr_ERA5_z500_composite_p23= xr.DataArray(ERA5_z500_composite_p23,coords)
-xr_ERA5_z500_composite_p67= xr.DataArray(ERA5_z500_composite_p67,coords)
-xr_model_z500_composite_p23= xr.DataArray(model_z500_composite_p23,coords)
-xr_model_z500_composite_p67= xr.DataArray(model_z500_composite_p67,coords)
+   xr_ERA5_z500_composite_p23= xr.DataArray(ERA5_z500_composite_p23,coords)
+   xr_ERA5_z500_composite_p67= xr.DataArray(ERA5_z500_composite_p67,coords)
+   xr_model_z500_composite_p23= xr.DataArray(model_z500_composite_p23,coords)
+   xr_model_z500_composite_p67= xr.DataArray(model_z500_composite_p67,coords)
 
 
 #########Euro-Atlantic region#############
-lat_min=20
-lat_max=80
-lon_min1=300
-lon_max1=360
-lon_min2=0
-lon_max2=90
-PCC_Atlantic_composite_p23_round=np.empty( ( 4) ,dtype=float)
-PCC_Atlantic_composite_p67_round=np.empty( ( 4) ,dtype=float)
-PCC_Atlantic_composite_p23=np.empty( ( 4) ,dtype=float)
-PCC_Atlantic_composite_p67=np.empty( ( 4) ,dtype=float)
-for i in range ( 4 ) :
-  res_temp_p23=correlate_atlantic(xr_ERA5_z500_composite_p23[i,:,:], xr_model_z500_composite_p23[i,:,:],lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
-  res_temp_p67=correlate_atlantic(xr_ERA5_z500_composite_p67[i,:,:], xr_model_z500_composite_p67[i,:,:],lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
-  PCC_Atlantic_composite_p23[i]=res_temp_p23[0,1]
-  PCC_Atlantic_composite_p67[i]=res_temp_p67[0,1]
-  PCC_Atlantic_composite_p23_round[i] = round(PCC_Atlantic_composite_p23[i], 2)
-  PCC_Atlantic_composite_p67_round[i] = round(PCC_Atlantic_composite_p67[i], 2)
+   lat_min=20
+   lat_max=80
+   lon_min1=300
+   lon_max1=360
+   lon_min2=0
+   lon_max2=90
+   PCC_Atlantic_composite_p23_round=np.empty( ( 4) ,dtype=float)
+   PCC_Atlantic_composite_p67_round=np.empty( ( 4) ,dtype=float)
+   PCC_Atlantic_composite_p23=np.empty( ( 4) ,dtype=float)
+   PCC_Atlantic_composite_p67=np.empty( ( 4) ,dtype=float)
+   for i in range ( 4 ) :
+     res_temp_p23=correlate_atlantic(xr_ERA5_z500_composite_p23[i,:,:], xr_model_z500_composite_p23[i,:,:],lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
+     res_temp_p67=correlate_atlantic(xr_ERA5_z500_composite_p67[i,:,:], xr_model_z500_composite_p67[i,:,:],lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
+     PCC_Atlantic_composite_p23[i]=res_temp_p23[0,1]
+     PCC_Atlantic_composite_p67[i]=res_temp_p67[0,1]
+     PCC_Atlantic_composite_p23_round[i] = round(PCC_Atlantic_composite_p23[i], 2)
+     PCC_Atlantic_composite_p67_round[i] = round(PCC_Atlantic_composite_p67[i], 2)
 
 
 # Plot Euro-Atlantic region Z500 composites
 
-lags = ['1','2','3','4'] # in weeks
-lon = era_lon_in
-lat = era_lat_in
-levs_anom = np.arange(-60,60,10)
-fig=plot.figure(refwidth=5)
-axes=fig.subplots(nrows=4,ncols=4,proj='cyl',proj_kw={'lon_0': 0})
+   lags = ['1','2','3','4'] # in weeks
+   lon = era_lon_in
+   lat = era_lat_in
+   levs_anom = np.arange(-60,60,10)
+   fig=plot.figure(refwidth=5)
+   axes=fig.subplots(nrows=4,ncols=4,proj='cyl',proj_kw={'lon_0': 0})
 
-axes.format(coast=True, latlines=20, lonlines=40,
+   axes.format(coast=True, latlines=20, lonlines=40,
                   lonlim=(-60,90),latlim=(20,80),
                   lonlabels=(True,False),
                   latlabels=(True,False),abc=True)
 
-for ilag, lag in enumerate(lags):
+   for ilag, lag in enumerate(lags):
 
 
-    # Observations
-    h1=axes[ilag,0].contourf(lon,lat,xr_ERA5_z500_composite_p23[ilag],extend='both',
+       # Observations
+       h1=axes[ilag,0].contourf(lon,lat,xr_ERA5_z500_composite_p23[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-    axes[ilag,0].format(title='Obs. Phases 2&3_Week ' + lag)
+       axes[ilag,0].format(title='Obs. Phases 2&3_Week ' + lag)
     
-    # Forecast
-    h2=axes[ilag,1].contourf(lon,lat,xr_model_z500_composite_p23[ilag],extend='both',
+       # Forecast
+       h2=axes[ilag,1].contourf(lon,lat,xr_model_z500_composite_p23[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-    axes[ilag,1].format(title='Model Phases 2&3_Week ' + lag)
-    axes[ilag,1].set_title(PCC_Atlantic_composite_p23_round[ilag], loc = "right")
+       axes[ilag,1].format(title=dictionary['model name']+' Phases 2&3_Week ' + lag)
+       axes[ilag,1].set_title(PCC_Atlantic_composite_p23_round[ilag], loc = "right")
     
-    h3=axes[ilag,2].contourf(lon,lat,xr_ERA5_z500_composite_p67[ilag],extend='both',
+       h3=axes[ilag,2].contourf(lon,lat,xr_ERA5_z500_composite_p67[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-    axes[ilag,2].format(title='Obs. Phases 6&7_Week ' + lag)
+       axes[ilag,2].format(title='Obs. Phases 6&7_Week ' + lag)
     
-    h4=axes[ilag,3].contourf(lon,lat,xr_model_z500_composite_p67[ilag],extend='both',
+       h4=axes[ilag,3].contourf(lon,lat,xr_model_z500_composite_p67[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-    axes[ilag,3].format(title='Model Phases 6&7_Week ' + lag)
-    axes[ilag,3].set_title(PCC_Atlantic_composite_p67_round[ilag], loc = "right")
+       axes[ilag,3].format(title=dictionary['model name']+' Phases 6&7_Week ' + lag)
+       axes[ilag,3].set_title(PCC_Atlantic_composite_p67_round[ilag], loc = "right")
 
-fig.colorbar(h1, loc='b', extend='both', label='Z500 anomaly',
+   fig.colorbar(h1, loc='b', extend='both', label='Z500 anomaly',
                      width='1.5em', extendsize='2em', shrink=0.3,)
 
 
 # save
-if not os.path.exists('../output/PatternCC_Atlantic/'+dictionary['model name']): 
-    os.mkdir('../output/PatternCC_Atlantic/'+dictionary['model name'])
-figname='z500_composites_Atlantic' 
+   if not os.path.exists('../output/PatternCC_Atlantic/'+dictionary['model name']): 
+       os.mkdir('../output/PatternCC_Atlantic/'+dictionary['model name'])
+   figname='z500_composites_Atlantic' 
 fig.savefig('../output/PatternCC_Atlantic/'+dictionary['model name']+'/'+figname+'.jpg',dpi=300)
 
