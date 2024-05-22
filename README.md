@@ -73,6 +73,43 @@ variables:
 time = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
     20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34 ;
 ~~~
-The Extra-tropical Cyclone Activity diagnostic requires 6-hourly forecast data for each ensemble member. The forecast files can include the initial condition (analysis) but is not a requirement. Each forecast experiment must be aggregated into one file with the `forecast_hour` as the record dimension. 
+The Extra-tropical Cyclone Activity diagnostic requires 6-hourly forecast data for each ensemble member. The forecast files can include the initial condition (analysis) but is not a requirement. Each forecast experiment must be aggregated into one file with the `forecast_hour` as the record dimension. In the example below the forecast initial condition is 2018-03-15. The initial condition (forecast_hour=0) is included. 
+~~~
+netcdf gh.500-isobaricInhPa.2018031500_e00 {
+dimensions:
+        forecast_hour = 140 ;
+        latitude = 121 ;
+        longitude = 240 ;
+variables:
+        float z(forecast_hour, latitude, longitude) ;
+                z:time = 0. ;
+                z:_FillValue = NaNf ;
+                z:missing_value = NaNf ;
+                z:GRIB_centre = "kwbc" ;
+                z:GRIB_centreDescription = "US National Weather Service - NCEP" ;
+         double forecast_hour(forecast_hour) ;
+                forecast_hour:units = "hour" ;
+                forecast_hour:axis = "Z" ;
+        double latitude(latitude) ;
+                latitude:standard_name = "latitude" ;
+                latitude:long_name = "latitude" ;
+                latitude:units = "degrees_north" ;
+                latitude:axis = "Y" ;
+        double longitude(longitude) ;
+                longitude:standard_name = "longitude" ;
+                longitude:long_name = "longitude" ;
+                longitude:units = "degrees_east" ;
+                longitude:axis = "X" ;
+	forecast_hour = 0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 
+    	90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 
+    	180, 186, 192, 198, 204, 210, 216, 222, 228, 234, 240, 246, 252, 258, 
+    	264, 270, 276, 282, 288, 294, 300, 306, 312, 318, 324, 330, 336, 342, 
+    	348, 354, 360, 366, 372, 378, 384, 390, 396, 402, 408, 414, 420, 426, 
+    	432, 438, 444, 450, 456, 462, 468, 474, 480, 486, 492, 498, 504, 510, 
+    	516, 522, 528, 534, 540, 546, 552, 558, 564, 570, 576, 582, 588, 594, 
+    	600, 606, 612, 618, 624, 630, 636, 642, 648, 654, 660, 666, 672, 678, 
+    	684, 690, 696, 702, 708, 714, 720, 726, 732, 738, 744, 750, 756, 762, 
+    	768, 774, 780, 786, 792, 798, 804, 810, 816, 822, 828, 834 ;
+~~~
 
 The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from here. The data is provided on the native grid (`latitudes=256, longitudes=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, [Integrated Multi-satellitE Retrivers for GPM](https://gpm.nasa.gov/data/imerg), IMERG, is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitudes=241`,`longitudes=480`). The package will interpolate the forecast data to the the IMERG grid. 
