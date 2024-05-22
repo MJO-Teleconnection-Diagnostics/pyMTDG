@@ -26,7 +26,7 @@ def get_variable_from_dataset(ds):
             Returns
                 da: subsetted dataArray in
     '''
-    for name in ['U', 'u','U10','u10']:
+    for name in ['U', 'u', 'uwnd','U10','u10','uwnd10']:
         if name in list(ds.keys()):
             break
     da = ds[name]
