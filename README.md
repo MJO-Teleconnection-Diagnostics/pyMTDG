@@ -131,8 +131,68 @@ The package includes ERA-Interim fields for validation. The ERA-Interim data can
 ## 4. Variables <a name="vars"></a>
 The list of diagnostics and required meteorological fields:
 ~~~
-# STRIPES Index for Geopotential:
+STRIPES Index for Geopotential:
 	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'	
 ~~~
+~~~
+STRIPES Index for precipitation:
+	* Precipitation rate:
+	*** Variable can be named any of: 'prate', 'precipitationCal','precipitation','precip'
+	*** Unit: mm/day
+~~~
+~~~
+Pattern Correlation and Relative Amplitude of the MJO teleconnections over the PNA region:
+	* Geopotential at 500 hPa
+ 	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+~~~
+~~~
+Pattern Correlation and Relative Amplitude of the MJO teleconnections over the Atlantic region:
+	* Geopotential at 500 hPa
+ 	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+~~~
+~~~
+Extra-tropical Cyclone Activity:
+	* Geopotential at 500 hPa
+ 	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+	* Zonal and meridional winds at 850mb
+	*** Zonal wind can be named any of: 'U','u', 'uwnd', U850', 'u850', 'uwnd850'
+	*** Meridional wind can be named any of: 'V', 'v', 'vwnd', 'V850', 'v850', 'vwnd850'
+	*** Unit: m/s
+~~~
+~~~
+Histogram of zonal wind at 10mb:
+	* Zonal wind at 10mb
+	*** Variable can be named any of: 'U', 'u', 'uwnd', 'U10', 'u10', 'uwnd10' 
+	*** Unit: m/s
+~~~
+~~~
+Stratosphere:
+	*
+	*** Variable can be named any of:
+	*** Unit:
+~~~
+~~~
+Madden-Julian Oscillation (MJO)
+	* Zonal winds at 850mb:
+	*** Variable can be any of: 'U', 'u','uwnd','U850', 'u850',uwnd850'
+	* Zonal winds at 200mb:
+	*** Variable can be any of: 'U', 'u','uwnd','U200', 'u200',uwnd200'
+	*** Unit: m/s
+	* Outgoing Longwave Radiation (OLR):
+	*** Variable can be named any of: 'olr', 'ulwf'
+	*** Unit can be any of 'w/m^2','w/m**2'
+~~~
+~~~
+Composites of 2-meter temperature over the Northern Hemisphere midlatitudes:
+	* 2-meter Temperature:
+	*** Variable can be named any of: 't2m', 'T2m', 'temp'
+	*** Unit: K
+~~~
+
+
+
