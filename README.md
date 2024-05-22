@@ -16,8 +16,6 @@ SLURM (`salloc`) is enabled but is not required.
 
 Required packages:
 
-`+` numpy
-
 `+` proplot
 
 `+` pyqt5
