@@ -15,7 +15,7 @@ The packages has been developed using `Python 3.9`.
 SLURM (`salloc`) is enabled but is not required.
 
 Required packages:
-`-' numpy
+`-` numpy
 - pyqt5
 - pyspharm
 - scipy
