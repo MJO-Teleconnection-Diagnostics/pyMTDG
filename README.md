@@ -130,13 +130,9 @@ The package includes ERA-Interim fields for validation. The ERA-Interim data can
 
 ## 4. Variables <a name="vars"></a>
 The list of diagnostics and required meteorological fields:
-
-`STRIPES Index for Geopotential`:
-
-	Geopotential at 500 hPa
-
+~~~
+STRIPES Index for Geopotential:
+	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
-  
-	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
-	
-
+	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'	
+~~~
