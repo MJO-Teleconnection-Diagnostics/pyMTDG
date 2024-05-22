@@ -15,11 +15,11 @@ The packages has been developed using `Python 3.9`.
 SLURM (`salloc`) is enabled but is not required.
 
 Required packages:
--- numpy
--- pyqt5
--- pyspharm
--- scipy
--- xarray
+`-' numpy
+- pyqt5
+- pyspharm
+- scipy
+- xarray
 
 ## 2. Obtaining the code <a name="code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
