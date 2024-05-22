@@ -189,7 +189,7 @@ Madden-Julian Oscillation (MJO)
 ~~~
 ~~~
 Composites of 2-meter temperature over the Northern Hemisphere midlatitudes:
-	* 2-meter Temperature:
+	* 2-meter temperature:
 	*** Variable can be named any of: 't2m', 'T2m', 'temp'
 	*** Unit: K
 ~~~
