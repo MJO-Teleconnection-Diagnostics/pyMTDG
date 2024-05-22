@@ -16,15 +16,15 @@ SLURM (`salloc`) is enabled but is not required.
 
 Required packages:
 
-`-` numpy
+`+` numpy
 
-`-` pyqt5
+`+` pyqt5
 
-`-` pyspharm
+`+` pyspharm
 
-`-` scipy
+`+` scipy
 
-`-` xarray
+`+` xarray
 
 ## 2. Obtaining the code <a name="code"></a>
 To checkout and run the code, no git knowledge is required. To obtain the code you need to do the following:
