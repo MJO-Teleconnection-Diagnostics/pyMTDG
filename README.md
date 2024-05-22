@@ -8,6 +8,7 @@ Contents:
 1. [Software requirements](#introduction)
 2. [Obtaining the code](#code)
 3. [Data format](#data)
+4. [Variables](#vars)
 
 ## 1. Software and computational requirements <a name="introduction"></a>
 The package has been developed using `Python 3.9`.
