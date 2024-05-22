@@ -178,9 +178,9 @@ Stratosphere:
 ~~~
 ~~~
 Madden-Julian Oscillation (MJO)
-	* Zonal winds at 850mb:
+	* Zonal wind at 850mb:
 	*** Variable can be any of: 'U', 'u','uwnd','U850', 'u850',uwnd850'
-	* Zonal winds at 200mb:
+	* Zonal wind at 200mb:
 	*** Variable can be any of: 'U', 'u','uwnd','U200', 'u200',uwnd200'
 	*** Unit: m/s
 	* Outgoing Longwave Radiation (OLR):
