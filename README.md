@@ -17,9 +17,13 @@ SLURM (`salloc`) is enabled but is not required.
 Required packages:
 
 `-` numpy
+
 `-` pyqt5
+
 `-` pyspharm
+
 `-` scipy
+
 `-` xarray
 
 ## 2. Obtaining the code <a name="code"></a>
