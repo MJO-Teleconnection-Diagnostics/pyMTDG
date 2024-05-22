@@ -18,6 +18,8 @@ Required packages:
 
 `+` numpy
 
+`+` proplot
+
 `+` pyqt5
 
 `+` pyspharm
