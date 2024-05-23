@@ -34,6 +34,7 @@ from eke_util import calcPatCorr
 from eke_util import get_plot_level_spacing
 from eke_util import plot_max_level
 from eke_util import plotComposites
+from fcst_utils import write_output_text
 
 ###### Input from yml file ( UFS )
 with open ( '../driver/config.yml' , 'r' ) as file:
@@ -403,6 +404,13 @@ for region_n in range ( len ( pattern_corr_regions ) ) :
     axs [ region_n ].set_ylim ( -1 , 1 )
     axs [ region_n ].set_title ( pattern_corr_regions [ region_n ] )
 plt.savefig ( plot_dir + "pattern_corr.jpg" , dpi=500 )
+
+##### save correlations
+file_name="pattern_corr"
+    
+for region_n in range ( len ( pattern_corr_regions ) ):
+    write_output_text(plot_dir+file_name+'_'+pattern_corr_regions[region_n],
+                      phase_names,pattern_correlation_z500[region_n,:])           
 
 plot_levels = 8
 fig_title_names = [ "Reanalysis" , Model_name ]
