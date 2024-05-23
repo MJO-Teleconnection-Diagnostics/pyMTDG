@@ -215,11 +215,17 @@ def write_output_text(file_name,headers,fields):
         fields: values to be written oud in the format [field1,field2, ...]; same number as the number of headers
         field1, filed2, ...: 1-D vectors
     '''
+    
     with open(file_name+'.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(headers)
-        for i in range(len(fields[0])):
-            field=[]
-            for j in range(len(fields)):
-                field.append(fields[j][i])
-            writer.writerow(field) 
+        
+        if len(fields)<=4:
+            writer.writerow(fields)
+        else:
+            for i in range(len(fields[0])):
+                xx=[]
+                for j in range(len(fields)):
+                    xx.append(fields[j][i])
+                print(xx)
+                writer.writerow(xx)
