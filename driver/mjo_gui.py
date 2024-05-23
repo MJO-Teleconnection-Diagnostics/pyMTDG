@@ -1849,18 +1849,16 @@ class LoadingDialog(QDialog):
 
 
 def get_all_files_in_directory(directory):
-    #Check if the path is a directory
-    abs_directory = os.path.abspath(directory)
-    
-    # Check if the path is a directory
+    abs_directory = os.path.abspath(directory)  
     if not os.path.isdir(abs_directory):
         #print(f"{abs_directory} is not a valid directory.")
         return
     
     # Get a list of all files in the directory
     files = [os.path.join(abs_directory, file) for file in os.listdir(abs_directory) if os.path.isfile(os.path.join(abs_directory, file))]
+    non_csv_files = [file for file in files if not file.lower().endswith('.csv')]
     
-    return files
+    return non_csv_files
 
 class runCal_View(QMainWindow):
     def __init__(self,parent):
@@ -2185,8 +2183,10 @@ Surface air temperature (T2m) composite in week 5 after the MJO phase 3 for Rean
 Surface air temperature (T2m) composite in week 5 after the MJO phase 7 for Reanalysis (left) and model (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
 ''']
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            ##add code to check csv for the current fig
             buttonn=QPushButton(f'T2m Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
         back = QPushButton('Back', self)
@@ -2241,11 +2241,11 @@ Surface air temperature (T2m) composite in week 5 after the MJO phase 7 for Rean
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'T2m Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2271,14 +2271,17 @@ class mjoResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/MJO/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
+        
         self.helpTexts=['''
 MJO index forecast skill: MJO prediction skill for forecasts initialized with active MJO events during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, solid lines) and root-mean squared error (RMSE, dashed lines) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
         ''','''
 Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15S-15N for active MJO events. The vertical lines indicate 120E (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
         ''']
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            ##Add code to check for csv files
             buttonn=QPushButton(f'MJO Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2333,11 +2336,11 @@ Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'MJO Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'MJO Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2380,8 +2383,18 @@ Pattern correlation of week 3-4 composites of EKE850 (y-axis) and Z500 (x-axis) 
             ''']
 
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            ##add csv code
+            file_name = self.all_files[i]
+            if 'pattern_corr.jpg' in file_name:
+                #incluse csv
+                idx = file_name.index('pattern_corr.jpg')
+                csv_file1 = file_name[:idx]+'pattern_corr_Northern Hemisphere.csv'
+                csv_file2 = file_name[:idx]+'pattern_corr_North Atlantic.csv'
+                csv_file3 = file_name[:idx]+'pattern_corr_North Pacific + North America.csv'
+                self.csv_files = [csv_file1, csv_file2, csv_file3]
             buttonn=QPushButton(f'ET-Cyclone Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2440,11 +2453,11 @@ Pattern correlation of week 3-4 composites of EKE850 (y-axis) and Z500 (x-axis) 
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'ET Cyclone Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'ET Cyclone Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2452,6 +2465,7 @@ Pattern correlation of week 3-4 composites of EKE850 (y-axis) and Z500 (x-axis) 
     def closee(self):
         self.close()
         self.parent.show()
+        
 class zonal_wind_histResult(QMainWindow):
     def __init__(self,parent,dict_file):
         super().__init__()
@@ -2467,8 +2481,10 @@ class zonal_wind_histResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            #add csv code
             buttonn=QPushButton(f'Zonal wind hist Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2527,11 +2543,11 @@ class zonal_wind_histResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Zonal wind hist Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'Zonal wind hist Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2642,8 +2658,10 @@ class strat_pathResult(QMainWindow):
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            #Add code for csv files
             buttonn=QPushButton(f'Strat Path Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2702,11 +2720,11 @@ class strat_pathResult(QMainWindow):
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Strat Path Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'Strat Path Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2736,9 +2754,22 @@ class third2Result(QMainWindow):
 Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) the MJO phases 2-3 and (left two columns) MJO phases 6-7 for observations and models. Numbers in the upper-right corners show the pattern CC of forecasts with respect to observations over the Euro-Atlantic region.
         '''
         ]
+        
         for i in range(len(self.all_files)):
             buttonn=QPushButton(f'Euro Atl sect Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            file_name = self.all_files[i]
+            self.csv_files=[]
+            #check if the figure has csv files
+            if 'z500_PatternCC&Amplitude_Atlantic' in file_name:
+                #incluse csv
+                print('read')
+                idx = file_name.index('z500_PatternCC&Amplitude_Atlantic')
+                csv_file1 = file_name[:idx]+'z500_PatternCC&Amplitude_Atlantic.csv'
+                print(csv_file1)
+                self.csv_files.append(csv_file1)
+                
+                
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2797,11 +2828,11 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Euro Atl sect Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'Euro Atl sect Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2825,6 +2856,7 @@ class firstResult(QMainWindow):
         self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
         #print(len(self.all_files))
         self.imagebuttons=[]
+        
         self.helpTexts=['''
 Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for model. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between model and observations. Negative (positive) values of the difference indicate regions that have less (more) co-variability with the MJO than observed. 
             ''','''
@@ -2833,8 +2865,11 @@ Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middl
 Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middle) STRIPES index (m) for model. Larger values of the STRIPES index indicate higher amplitude co-variability of the 500 hPa geopotential height with the MJO. (bottom) Difference in the STRIPES index (m) between model and observations. Negative (positive) values of the difference indicate regions that have less (more) co-variability with the MJO than observed. 
            ''']
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            #check if the figure has csv files
+            ##Add code to check and add csv files
             buttonn=QPushButton(f'STRIPES Geopot Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
             
@@ -2892,11 +2927,11 @@ Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middl
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImageStripes(path,f'STRIPES Geopot Fig.{i}',helpText)
+                self.viewImage = viewImageStripes(path,f'STRIPES Geopot Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2926,8 +2961,9 @@ Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) 
 Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) STRIPES index (mm) for model. Larger values of the STRIPES index indicate higher amplitude co-variability of the surface precipitation rate with the MJO. (bottom) Difference in the STRIPES index (mm) between model and observations. Negative (positive) values of the difference indicate regions that have less (more) co-variability with the MJO than observed. 
         ''']
         for i in range(len(self.all_files)):
+            self.csv_files=[]
             buttonn=QPushButton(f'STRIPES Precip Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -2986,11 +3022,11 @@ Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) 
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImageStripes(path,f'STRIPES Precip Fig.{i}',helpText)
+                self.viewImage = viewImageStripes(path,f'STRIPES Precip Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3010,6 +3046,7 @@ class thirdResult(QMainWindow):
         self.viewImages=[]
         #Create the weather image widget
         self.all_files=get_all_files_in_directory(f'../output/PatternCC_PNA/{self.model_name}')
+        
         #print(len(self.all_files))
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
@@ -3021,8 +3058,17 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
 '''
 ]
         for i in range(len(self.all_files)):
+            self.csv_files=[]
+            file_name = self.all_files[i]
+            if 'z500_PatternCC&Amplitude_PNA' in file_name:
+                #incluse csv
+                print('read')
+                idx = file_name.index('z500_PatternCC&Amplitude_PNA')
+                csv_file1 = file_name[:idx]+'z500_PatternCC&Amplitude_PNA.csv'
+                print(csv_file1)
+                self.csv_files.append(csv_file1)
             buttonn=QPushButton(f'PatternCC_PNA Fig.{i+1}', self)
-            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i]))
+            buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
             self.viewImages.append(False)
             self.imagebuttons.append(buttonn)
@@ -3081,11 +3127,11 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
         self.setCentralWidget(main_widget)
 
 
-    def openweek1_2(self, path,i,helpText):
+    def openweek1_2(self, path,i,helpText,csv_files):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'PatternCC_PNA Fig.{i}',helpText)
+                self.viewImage = viewImage(path,f'PatternCC_PNA Fig.{i}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3095,7 +3141,7 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
         self.parent.show()
 
 class viewImage(QMainWindow):
-    def __init__(self,imageP,title,helpText):
+    def __init__(self,imageP,title,helpText,csv_files):
         super().__init__()
         imageP = os.path.abspath(imageP)
         self.setWindowTitle(title)
@@ -3109,7 +3155,7 @@ class viewImage(QMainWindow):
         image.setPixmap(pixmap)
         image.setAlignment(Qt.AlignCenter)
         self.imagep = imageP
-        
+        self.csv_files = csv_files
         helpTextWidget = QLabel(helpText)
         helpTextWidget.setWordWrap(True)
         helpTextWidget.setAlignment(Qt.AlignCenter)
@@ -3120,11 +3166,17 @@ class viewImage(QMainWindow):
 
         download = QPushButton('Download image', self)
         download.clicked.connect(self.download_image)
+        
+        
 
         layout = QVBoxLayout()
         layout.addWidget(image, alignment=Qt.AlignCenter)
         layout.addWidget(helpTextWidget, alignment=Qt.AlignCenter)
         layout.addWidget(download, alignment=Qt.AlignCenter)
+        if csv_files:
+            download_csv = QPushButton('Download CSV', self)
+            download_csv.clicked.connect(self.download_csv)
+            layout.addWidget(download_csv, alignment=Qt.AlignCenter)
         
         central_widget = QWidget()
         central_widget.setLayout(layout)
@@ -3155,10 +3207,31 @@ class viewImage(QMainWindow):
             except Exception as e:
             
                 print("Failed to download the image.")
+    
+    def download_csv(self):
+        csv_files = self.csv_files  # Replace this with your actual list attribute
+        
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        destination_directory = QFileDialog.getExistingDirectory(self, "Select Destination Directory")
+        if not destination_directory:
+            print("No destination directory selected.")
+            return
+        for csv_file in csv_files:
+            source_path = os.path.join(script_directory, csv_file)
+            
+            if not os.path.exists(source_path):
+                print(f"Source file not found: {source_path}")
+                continue
+            try:
+                shutil.copy(source_path, destination_directory)
+                print(f"Successfully copied {csv_file} to {destination_directory}")
+            except Exception as e:
+                print(f"Failed to copy {csv_file}. Error: {e}")
+
 
 
 class viewImageStripes(QMainWindow):
-    def __init__(self,imageP,title,helpText):
+    def __init__(self,imageP,title,helpText,csv_files):
         super().__init__()
         imageP = os.path.abspath(imageP)
         self.setWindowTitle(title)
