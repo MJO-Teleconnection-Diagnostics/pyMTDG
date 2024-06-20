@@ -2372,6 +2372,8 @@ Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in 
 Extratropical cyclone activity (EKE850) composite in weeks 3-4 after the MJO in phases 8-1 for Reanalysis (left) and model (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculations. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''','''
 Pattern correlation of week 3-4 composites of EKE850 (y-axis) and Z500 (x-axis) between Reanalysis and model over the North Atlantic (20-80N, 90W-30E), the North Pacific and North America (20-80N, 120E-90W), and the Northern Hemisphere (20-80N). The dots represent phases 8-1, 2-3, 4-5 and 6-7, respectively.
+
+The correlation coefficients are saved in the CSV file below. A file is generated for each of the three regions. 
             ''','''
 500-hPa geopotential height (Z500) composite in weeks 3-4 after the MJO phases 2-3 for Reanalysis (left) and model (right). Dotted regions represent areas where anomalies are statistically significant at the 0.05 level, determined through bootstrap resampling calculation. Pattern correlation between model and Reanalysis over the Northern Hemisphere (20-80N) is shown in the upper right corner.
             ''','''
@@ -2749,7 +2751,9 @@ class third2Result(QMainWindow):
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         self.helpTexts=['''
-(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases 2-3 (blue line) and 6-7 (red line). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile. 
+(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases 2-3 (blue line) and 6-7 (red line). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile.
+
+The correlation coefficients are saved in the CSV file below. 
          ''','''
 Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) the MJO phases 2-3 and (left two columns) MJO phases 6-7 for observations and models. Numbers in the upper-right corners show the pattern CC of forecasts with respect to observations over the Euro-Atlantic region.
         '''
