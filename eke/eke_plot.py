@@ -409,8 +409,11 @@ plt.savefig ( plot_dir + "pattern_corr.jpg" , dpi=500 )
 file_name="pattern_corr"
     
 for region_n in range ( len ( pattern_corr_regions ) ):
-    write_output_text(plot_dir+file_name+'_'+pattern_corr_regions[region_n],
-                      phase_names,pattern_correlation_z500[region_n,:])           
+    write_output_text( plot_dir+file_name+'_'+pattern_corr_regions[region_n],
+                       np.insert(phase_names,0,''),
+                       [np.insert(np.array(pattern_correlation_eke850[ region_n , : ],dtype=object),0,'eke850'),
+                        np.insert(np.array(pattern_correlation_z500[region_n,:],dtype=object),0,'z500')]
+                     )           
 
 plot_levels = 8
 fig_title_names = [ "Reanalysis" , Model_name ]
