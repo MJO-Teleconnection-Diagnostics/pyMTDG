@@ -2162,7 +2162,7 @@ class t2mResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/T2m/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/T2m/{self.model_name}'))
         self.imagebuttons=[]
 #        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image 6','Helptext for image 7','Helptext for image 8']
         self.helpTexts=['''
@@ -2245,7 +2245,7 @@ Surface air temperature (T2m) composite in week 5 after the MJO phase 7 for Rean
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'T2m Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'T2m Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2268,7 +2268,7 @@ class mjoResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/MJO/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/MJO/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         
@@ -2340,7 +2340,7 @@ Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'MJO Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'MJO Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2358,7 +2358,7 @@ class et_cycloneResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
         self.viewImages=[]
-        self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image6','Helptext for image7','Helptext for image8','Helptext for image9',]
@@ -2459,7 +2459,7 @@ The correlation coefficients are saved in the CSV file below. A file is generate
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'ET Cyclone Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'ET Cyclone Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2478,7 +2478,7 @@ class zonal_wind_histResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/Zonal_Wind_Hist/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/Zonal_Wind_Hist/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
@@ -2549,7 +2549,7 @@ class zonal_wind_histResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Zonal wind hist Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'Zonal wind hist Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2655,7 +2655,7 @@ class strat_pathResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/Strat_Path/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/Strat_Path/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
@@ -2726,7 +2726,7 @@ class strat_pathResult(QMainWindow):
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Strat Path Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'Strat Path Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2746,14 +2746,14 @@ class third2Result(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/PatternCC_Atlantic/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/PatternCC_Atlantic/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         self.helpTexts=['''
 (a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the Euro-Atlantic region (20-80N, 60W-90E) vs forecast lead days for the MJO phases 2-3 (blue line) and 6-7 (red line). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile.
 
-The correlation coefficients are saved in the CSV file below. 
+Pattern correlation coefficients and Relative amplitudes are saved in the CSV file below. 
          ''','''
 Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) the MJO phases 2-3 and (left two columns) MJO phases 6-7 for observations and models. Numbers in the upper-right corners show the pattern CC of forecasts with respect to observations over the Euro-Atlantic region.
         '''
@@ -2836,7 +2836,7 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'Euro Atl sect Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'Euro Atl sect Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2857,7 +2857,7 @@ class firstResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/StripesGeopot/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         
@@ -2935,7 +2935,7 @@ Geopotential height at 500 hPa: (top) STRIPES index (m) for observations. (middl
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImageStripes(path,f'STRIPES Geopot Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImageStripes(path,f'STRIPES Geopot Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -2954,7 +2954,7 @@ class stripesprecipResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/StripesPrecip/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/StripesPrecip/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         self.helpTexts=['''
@@ -3030,7 +3030,7 @@ Surface precipitation rate: (top) STRIPES index (mm) for observations. (middle) 
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImageStripes(path,f'STRIPES Precip Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImageStripes(path,f'STRIPES Precip Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
@@ -3049,13 +3049,16 @@ class thirdResult(QMainWindow):
         #self.setMaximumSize(width, height)
         self.viewImages=[]
         #Create the weather image widget
-        self.all_files=get_all_files_in_directory(f'../output/PatternCC_PNA/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/PatternCC_PNA/{self.model_name}'))
         
         #print(len(self.all_files))
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         self.helpTexts=['''
-(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the PNA region (20-80N, 120E-60W) vs forecast lead days for the MJO phases 2-3 (blue) and 6-7 (red). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile.''','''
+(a) Pattern correlation coefficient (forecast vs observations) and (b) relative amplitude (forecast/observations) of 500 hPa geopotential height anomalies over the PNA region (20-80N, 120E-60W) vs forecast lead days for the MJO phases 2-3 (blue) and 6-7 (red). The color shadings indicate the 95% confidence intervals for MJO phases 2-3 (light blue) and phases 6-7 (light pink) determined by a bootstrap test. The lower boundary represents the minimum 2.5th percentile and the upper boundary represents the maximum 97.5th-percentile.
+
+Pattern correlation coefficients and Relative amplitudes are saved in the CSV file below. 
+''','''
 
 Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left two columns) the MJO phases 2-3 and (left two columns) MJO phases 6-7 for observations and  model. Numbers in the upper-right corners show the pattern CC of model with respect to observations over the PNA region.
 
@@ -3135,7 +3138,7 @@ Composites of weekly averaged Z500 anomalies from week 1 to week 4 after (left t
         def clickk():
             #print(path,i)
             if self.viewImages[i] == False or self.viewImage.isVisible() == False:
-                self.viewImage = viewImage(path,f'PatternCC_PNA Fig.{i}',helpText,csv_files)
+                self.viewImage = viewImage(path,f'PatternCC_PNA Fig.{i+1}',helpText,csv_files)
                 self.viewImages[i] = self.viewImage
                 #self.viewImage1.closed.connect(self.quit1)
                 self.viewImages[i].show()
