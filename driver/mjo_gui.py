@@ -2358,7 +2358,8 @@ class et_cycloneResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
         self.viewImages=[]
-        self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
+        #self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
+        self.all_files=sorted(get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4','Helptext for image5','Helptext for image6','Helptext for image7','Helptext for image8','Helptext for image9',]
