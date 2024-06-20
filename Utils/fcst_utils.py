@@ -220,8 +220,10 @@ def write_output_text(file_name,headers,fields):
         writer = csv.writer(file)
         writer.writerow(headers)
         
-        if len(fields)<=4:
-            writer.writerow(fields)
+        if len(fields)<=2:
+            for i in range(len(fields)):
+                writer.writerow(fields[i])
+
         else:
             for i in range(len(fields[0])):
                 xx=[]
