@@ -53,6 +53,12 @@ EYY = int(tEnd[0:4])
 NYRS = EYY-SYY
 years = np.arange(SYY,EYY+1)
 
+fcst_dir=dictionary['Path to zonal wind at 10 hPa model data files']
+ds_fcst_name=dictionary['model name']
+model_fcst_dir = fcst_dir+str(ds_fcst_name)+'/'
+tmp = os.listdir(fcst_dir+str(ds_fcst_name))
+dummy = sorted(tmp)
+fileList = [model_fcst_dir+f for f in dummy]
 
 # In[5]:
 
@@ -218,7 +224,7 @@ DIR = fcst_dir
 
 VAR = 'u'
 lats = 60; levs = 10; lons = [0,360]
-p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5 = mjo_week_mo(DIR, VAR, SYY, EYY, lats, levs, lons, 
+p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5 = mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, 
                                                                                        mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 
