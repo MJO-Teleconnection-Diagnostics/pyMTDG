@@ -232,6 +232,9 @@ The MJO-Diagnostics Package computes metrics that require the meteorological fie
 *** Unit: mm/day
 
 * Zonal and meridional winds at 850mb
+*** Zonal wind can be named any of: 'U','u', 'uwnd', U850', 'u850', 'uwnd850'
+*** Meridional wind can be named any of: 'V', 'v', 'vwnd', 'V850', 'v850', 'vwnd850'
+*** Unit: m/s
 
 * Zonal wind at 10mb
 *** Variable can be named any of: 'U', 'u', 'U10', 'u10' 
@@ -2358,10 +2361,7 @@ class et_cycloneResult(QMainWindow):
         self.setGeometry(200, 200, 400, 200)  # Set window position and size
         #self.setMaximumSize(width, height)
         self.viewImages=[]
-<<<<<<< HEAD
-=======
         #self.all_files=get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}')
->>>>>>> 0026e9dbcad4108fa47127811a0ee19ad44baba0
         self.all_files=sorted(get_all_files_in_directory(f'../output/ET_Cyclone/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
@@ -2485,7 +2485,12 @@ class zonal_wind_histResult(QMainWindow):
         self.all_files=sorted(get_all_files_in_directory(f'../output/Zonal_Wind_Hist/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=[''' 
+Histograms of zonal-mean zonal wind at 10 hPa and 60°N (U1060) for November-March forecasts for week 1-2 following the MJO phases 1–2 (blue) and phases 5–6 (yellow). The solid blue and yellow lines indicate the mean values of U1060 during phases 1–2 and 5–6, respectively. The dashed blue and yellow lines indicate the 5th and 95th percentile of U1060 during phases 1-2 and 5-6, respectively
+'''
+]
+        
         for i in range(len(self.all_files)):
             self.csv_files=[]
             #add csv code

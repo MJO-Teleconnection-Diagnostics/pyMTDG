@@ -35,15 +35,14 @@ def get_variable_from_dataset(ds):
     return da
     raise RuntimeError("Couldn't find a zonal wind variable name")
 
-def read_data_mo(datafn,lats,levs,VAR,**kwargs):
+def read_data_mo(datafn,lats,levs,**kwargs):
     lons = kwargs.get('lons', [0,360])
     
-    files = np.sort(glob.glob(datafn+'*.nc*'))
-    data = xr.open_mfdataset(files,combine='by_coords').compute()
-    fcst=get_variable_from_dataset(ds_fcst)
-
-#    if VAR == 'u':
-    data = data.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True).fcst
+    #files = np.sort(glob.glob(datafn+'*.nc*'))
+    data_tmp = xr.open_mfdataset(datafn,combine='by_coords').compute()
+    fcst = get_variable_from_dataset(data_tmp)
+    
+    data = fcst.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True)
     return data
 
 def select_mjo_event(rmm_index,phase,phase_val):
@@ -96,7 +95,7 @@ def comb_list(data_pha1, data_pha2, data_pha3, data_pha4, data_pha5, data_pha6, 
     return data_out
 
 # MJO events
-def mjo_week_mo(DIR, VAR, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
+def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
     INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
     INITDAY = kwargs.get('INITDAY', ['01','15'])
     nt = kwargs.get('nt', 7)
@@ -124,8 +123,8 @@ def mjo_week_mo(DIR, VAR, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             if iyear == EYY and im >= 3:
                 continue
             for ii in range(len(INITDAY)):
-                datafn = DIR+f'/'+VAR+'_plevs_'+str(iyear)+INITMON[im]+INITDAY[ii]+'.nc'
-                data = read_data_mo(datafn,lats,levs,VAR,lons=lons)
+                datafn = [f for f in fileList if str(iyear)+INITMON[im]+INITDAY[ii]+'.nc' in f]
+                data = read_data_mo(datafn,lats,levs,lons=lons)
                 date_init = datetime(year=iyear,month=int(INITMON[im]),day=int(INITDAY[ii]))
                 if date_init in mjo_pha1_dates:
                     data_week1_pha1.append(data_week(data, date_init, 0, nt))

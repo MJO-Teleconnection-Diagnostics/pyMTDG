@@ -400,11 +400,11 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
                                      "longitude": fc_anom.longitude})
         # regrid if needed
         if not len(fc_anom.latitude)==len(obs_anom.latitude):
-            stripes = regrid_scalar_spharm_AJ(stripes, 
-                                              stripes.latitude,
-                                              stripes.longitude,
-                                              obs_anom.latitude,
-                                              obs_anom.longitude)
+            stripes = regrid_scalar_spharm(stripes, 
+                                           stripes.latitude,
+                                           stripes.longitude,
+                                           obs_anom.latitude,
+                                           obs_anom.longitude)
 
         stripes_fc.append(stripes)
         del lagcomp

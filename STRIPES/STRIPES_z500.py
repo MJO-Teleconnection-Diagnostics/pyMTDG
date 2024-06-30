@@ -10,6 +10,8 @@ import xarray as xr
 import numpy as np
 import yaml
 from pathlib import Path
+import sys
+sys.path.insert(0, '../Utils')
 from STRIPES_utils import *
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
@@ -19,12 +21,25 @@ import os
 
 # -------------------------------------------------------
 # Read yaml file
-config_file=Path('../driver/config.yml').resolve()
-with open(config_file,'r') as file:
-    try:
-        dictionary = yaml.safe_load(file)
-    except yaml.YAMLError as e:
-        print(e)
+try:
+    config_file=Path('../driver/config.yml').resolve()
+    with open(config_file,'r') as file:
+        try:
+            dictionary = yaml.safe_load(file)
+        except yaml.YAMLError as e:
+            print(e)
+except FileNotFoundError:
+    print('no config file found, using OSU HPC data paths')
+    datadir = '/ceoas/jenneylab/bridges2_transfer/ufs_data'
+    dictionary={
+            'DIR_IN':datadir,
+            'Path to Z500 model data files':datadir+'/Prototype5/gh/',
+            'ERAI':True,
+            'RMM':False,
+            'START_DATE':'20110401',
+            'END_DATE':'20180419',
+            'model name':'UFS5',
+            }
         
 # Load RMM data. 
 # !!! Note: This code does not handle the case where RMM data is computed
