@@ -57,7 +57,7 @@ cd driver
 python mjo_gui.py
 ~~~
 
-## 3. Data format <a name="data"></a>
+## 3. Model data format <a name="data"></a>
 The package can only read data in the netcdf format. Most diagnostics work with daily mean and ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads (days) as the record dimension. In the example below, the forecast initial condition is 2018-03-15. 
 ~~~
 netcdf z500_20180315 {
