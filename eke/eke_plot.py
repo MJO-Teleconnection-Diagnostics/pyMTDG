@@ -51,7 +51,7 @@ RMM                          = yml_input [ 'RMM' ]
 
 Model_u850_files             = yml_input [ 'Path to zonal wind at 850 hPa model data files' ]
 Model_v850_files             = yml_input [ 'Path to meridional wind at 850 hPa model data files' ]
-Model_z500_files             = yml_input [ 'Path to Z500 model data files' ]
+Model_z500_files             = yml_input [ 'Path to Z500 model data files for EKE' ]
 
 ###### Input from yml file (UFS)
 #ERAI = True
