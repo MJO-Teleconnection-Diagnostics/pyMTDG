@@ -72,7 +72,7 @@ if (yml_input['ERAI']==True):
 if (yml_input['ERAI']==False):
     reanalysis_u850_file=yml_input['Path to zonal wind at 850 hPa observation data files']
     reanalysis_v850_file=yml_input['Path to meridional wind at 850 hPa observation data files']
-    reanalysis_z500_file=yml_input['Path to Z500 observation data files']
+    reanalysis_z500_file=yml_input['Path to Z500 observation data files for EKE']
     ds_obs_name='OBS'
 
 #if ERAI :
