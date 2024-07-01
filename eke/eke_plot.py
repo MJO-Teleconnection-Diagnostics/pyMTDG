@@ -51,7 +51,7 @@ RMM                          = yml_input [ 'RMM' ]
 
 Model_u850_files             = yml_input [ 'Path to zonal wind at 850 hPa model data files' ]
 Model_v850_files             = yml_input [ 'Path to meridional wind at 850 hPa model data files' ]
-Model_z500_files             = yml_input [ 'Path to Z500 model data files for EKE' ]
+Model_z500_files             = yml_input [ 'Path to Z500 model data files ' ]
 
 ###### Input from yml file (UFS)
 #ERAI = True
@@ -72,7 +72,7 @@ if (yml_input['ERAI']==True):
 if (yml_input['ERAI']==False):
     reanalysis_u850_file=yml_input['Path to zonal wind at 850 hPa observation data files']
     reanalysis_v850_file=yml_input['Path to meridional wind at 850 hPa observation data files']
-    reanalysis_z500_file=yml_input['Path to Z500 observation data files for EKE']
+    reanalysis_z500_file=yml_input['Path to Z500 observation data files']
     ds_obs_name='OBS'
 
 #if ERAI :
