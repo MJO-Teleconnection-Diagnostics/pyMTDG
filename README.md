@@ -58,7 +58,10 @@ python mjo_gui.py
 ~~~
 
 ## 3. Data format <a name="data"></a>
-The package can only read data in the netcdf format. Most diagnostics work with daily mean and ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads (days) as the record dimension. In the example below, the forecast initial condition is 2018-03-15. 
+The package can only read data in the netcdf format. 
+
+### 3.1 Forecast <a name="data"></a>
+Most diagnostics work with daily mean and ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads (days) as the record dimension. In the example below, the forecast initial condition is 2018-03-15. 
 ~~~
 netcdf z500_20180315 {
 dimensions:
@@ -126,7 +129,10 @@ variables:
     	768, 774, 780, 786, 792, 798, 804, 810, 816, 822, 828, 834 ;
 ~~~
 
+### 3.2 Observations <a name="data"></a>
 The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from here. The data is provided on the native grid (`latitudes=256, longitudes=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, [Integrated Multi-satellitE Retrivers for GPM](https://gpm.nasa.gov/data/imerg), IMERG, is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitudes=241`,`longitudes=480`). The package will interpolate the forecast data to the the IMERG grid.
+
+The package also works with user specified validation data. These data must be on the same grid as the forecast data. The `Histogram of zonal wind at 10mb` diagnostic requires the zonal mean zonal wind.  
 
 ## 4. Variables <a name="vars"></a>
 The list of diagnostics and required meteorological fields:
