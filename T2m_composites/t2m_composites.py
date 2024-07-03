@@ -9,6 +9,7 @@ from datetime import date, timedelta
 import yaml
 import glob
 import gc
+import copy
 
 
 import sys
@@ -66,7 +67,7 @@ if (dictionary['Daily Anomaly'] == True):
     var_name='t2m_anom'
     obs_anom=calcAnomObs(obs.sel(time=slice(tBegin,tEnd)),var_name)
 if (dictionary['Daily Anomaly'] == False):
-    obs_anom=obs
+    obs_anom=copy.deepcopy(obs)
     del obs
 
 # Select all days in November-December-January-February-March
@@ -92,21 +93,24 @@ fcst_files=np.sort(glob.glob(str(fcst_dir+'*.nc')))
 ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
 fcst=get_variable_from_dataset(ds_fcst)
     
-if (dictionary['Daily Anomaly'] == True):
+if (dictionary['ERAI'] == True):
     # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
     rgrd_fcst=regrid_scalar_spharm(fcst,ds_fcst.latitude,ds_fcst.longitude,
                                         ds_obs.latitude,ds_obs.longitude)
+else:
+    rgrd_fcst=copy.deepcopy(fcst)
 del ds_fcst
 gc.collect()
     
-# Calculate forecast anomalies
-fcst_anom=calcAnom(rgrd_fcst,'t2m_anom')
+# If required alculate forecast anomalies
+if (dictionary['Daily Anomaly'] == True): 
+    fcst_anom=calcAnom(rgrd_fcst,'t2m_anom')
     
 del rgrd_fcst
 gc.collect()
         
 if (dictionary['Daily Anomaly'] == False):
-    fcst_anom=fcst
+    fcst_anom=copy.deepcopy(fcst)
 del fcst
 
 # Reshape 1D time dimension of UFS anomalies to 2D
