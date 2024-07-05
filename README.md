@@ -38,7 +38,7 @@ a. Clone the repository.
 git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
 
-Check what you just cloned (by default you will have only the __main branch):
+Check what you just cloned (by default you will have only the * *main branch):
 
 ~~~
 cd MJO-Teleconnections
