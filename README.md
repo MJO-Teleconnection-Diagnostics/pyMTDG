@@ -43,7 +43,7 @@ Check what you just cloned (by default you will have only the `main` branch):
 ~~~
 cd MJO-Teleconnections
 git branch
-*main
+* main
 ~~~
 
   a.2 Clone the repository and fetch only a single branch
