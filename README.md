@@ -32,10 +32,18 @@ To checkout and run the code, no git knowledge is required. To obtain the code y
 
 a. Clone the repository.
 
-  a.1 Clone the repository: master and all other branches
+  a.1 Clone the repository:
   
 ~~~
 git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
+~~~
+
+Check what you just cloned (by default you will have only the `main` branch):
+
+~~~
+cd MJO-Teleconnections
+git branch
+*main
 ~~~
 
   a.2 Clone the repository and fetch only a single branch
