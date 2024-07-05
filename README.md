@@ -48,9 +48,9 @@ git branch
 
 To see all branches:
 
-~~ 
+~~~
 git branch -a
-~~
+~~~
 
   a.2 Clone the repository and fetch only a single branch
 ~~~
