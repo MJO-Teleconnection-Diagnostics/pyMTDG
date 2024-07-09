@@ -35,6 +35,8 @@ except FileNotFoundError:
             'DIR_IN':datadir,
             'Path to Z500 model data files':datadir+'/Prototype5/gh/',
             'ERAI':True,
+            #'ERAI':False,
+            'Path to Z500 observation data files':datadir+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc',
             'RMM':False,
             'START_DATE':'20110401',
             'END_DATE':'20180419',
@@ -65,7 +67,7 @@ if (dictionary['ERAI']==True):
     Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
     obs_name = 'ERAI'
 else:
-    Z500_DIR_OBS = dictionary['Path to observational data files']
+    Z500_DIR_OBS = dictionary['Path to Z500 observation data files']
     obs_name = 'OBS.'
 
 # read start and end date
