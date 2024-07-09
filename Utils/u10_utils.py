@@ -6,6 +6,7 @@ from datetime import timedelta
 from datetime import date
 import matplotlib.pyplot as plt
 import glob
+import os
 
 def data_week(data, date_init, nday1, nday2):
     date_start = date_init + timedelta(days=nday1)
@@ -35,14 +36,16 @@ def get_variable_from_dataset(ds):
     return da
     raise RuntimeError("Couldn't find a zonal wind variable name")
 
-def read_data_mo(datafn,lats,levs,**kwargs):
+#def read_data_mo(datafn,lats,levs,**kwargs):
+def read_data_mo(datafn,lats,**kwargs):
     lons = kwargs.get('lons', [0,360])
     
     #files = np.sort(glob.glob(datafn+'*.nc*'))
     data_tmp = xr.open_mfdataset(datafn,combine='by_coords').compute()
     fcst = get_variable_from_dataset(data_tmp)
     
-    data = fcst.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True)
+    #data = fcst.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True)
+    data = fcst.sel(latitude=lats).mean(dim=('longitude'),skipna=True)
     return data
 
 def select_mjo_event(rmm_index,phase,phase_val):
@@ -95,7 +98,8 @@ def comb_list(data_pha1, data_pha2, data_pha3, data_pha4, data_pha5, data_pha6, 
     return data_out
 
 # MJO events
-def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
+#def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
+def mjo_week_mo(fileList, SYY, EYY, lats, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
     INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
     INITDAY = kwargs.get('INITDAY', ['01','15'])
     nt = kwargs.get('nt', 7)
@@ -124,7 +128,8 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
                 continue
             for ii in range(len(INITDAY)):
                 datafn = [f for f in fileList if str(iyear)+INITMON[im]+INITDAY[ii]+'.nc' in f]
-                data = read_data_mo(datafn,lats,levs,lons=lons)
+                #data = read_data_mo(datafn,lats,levs,lons=lons)
+                data = read_data_mo(datafn,lats,lons=lons)
                 date_init = datetime(year=iyear,month=int(INITMON[im]),day=int(INITDAY[ii]))
                 if date_init in mjo_pha1_dates:
                     data_week1_pha1.append(data_week(data, date_init, 0, nt))
@@ -210,28 +215,36 @@ def histogram_mjo(EXP,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data_wee
                   data_week1_pha56,data_week2_pha56,data_week3_pha56,data_week4_pha56,data_week5_pha56,
                  data_r_week1_pha12,data_r_week2_pha12,data_r_week3_pha12,data_r_week4_pha12,data_r_week5_pha12,
                  data_r_week1_pha56,data_r_week2_pha56,data_r_week3_pha56,data_r_week4_pha56,data_r_week5_pha56):
-    fig = plt.figure(figsize=(20,2))
-    fig_title = [EXP+' Week1-2', EXP+' Week3-5', 'ERA-Interim Week1-2', 'ERA-Interim Week3-5']
+    #fig = plt.figure(figsize=(20,2))
+    fig = plt.figure(figsize=(8,6))
+    fig_title = ['ERA-Interim Week1-2', 'ERA-Interim Week3-5', EXP+' Week1-2', EXP+' Week3-5']
     count = 1
     for ii in range(4):
         if ii == 0: 
-            tmp = np.hstack(data_week1_pha12+data_week2_pha12)
-            tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
-        if ii == 1:
-            tmp = np.hstack(data_week3_pha12+data_week4_pha12+data_week5_pha12)
-            tmp1 = np.hstack(data_week3_pha56+data_week4_pha56+data_week5_pha56)
-        if ii == 2: 
             tmp = np.hstack(data_r_week1_pha12+data_r_week2_pha12)
             tmp1 = np.hstack(data_r_week1_pha56+data_r_week2_pha56)
-        if ii == 3: 
+        if ii == 1:
             tmp = np.hstack(data_r_week3_pha12+data_r_week4_pha12+data_r_week5_pha12)
             tmp1 = np.hstack(data_r_week3_pha56+data_r_week4_pha56+data_r_week5_pha56)
+        if ii == 2: 
+            tmp = np.hstack(data_week1_pha12+data_week2_pha12)
+            tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
+        if ii == 3: 
+            tmp = np.hstack(data_week3_pha12+data_week4_pha12+data_week5_pha12)
+            tmp1 = np.hstack(data_week3_pha56+data_week4_pha56+data_week5_pha56)
         weights = np.ones_like(tmp) / float(len(tmp))
         weights_1 = np.ones_like(tmp1) / float(len(tmp1))
-        ax = fig.add_subplot(1,5,count) #-30,80,5   -10,300,10   -10,36,2   -5,30,1.5
-        cmin, cmax, cinterv = -30,80,5 
+        #ax = fig.add_subplot(1,5,count) #-30,80,5   -10,300,10   -10,36,2   -5,30,1.5
+        ax = fig.add_subplot(2,2,count) #-30,80,5   -10,300,10   -10,36,2   -5,30,1.5
+        cmin, cmax, cinterv = -30,80,5
         plt.hist(tmp,bins=np.arange(cmin, cmax, cinterv), weights=weights, edgecolor="black", color="blue", alpha = 0.7)
         plt.hist(tmp1,bins=np.arange(cmin, cmax, cinterv), weights=weights_1, edgecolor="black", color="yellow", alpha = 0.5)
+        plt.subplots_adjust(left=0.1,
+                    bottom=0.1, 
+                    right=0.9, 
+                    top=0.9, 
+                    wspace=0.2, 
+                    hspace=0.4)
         ax.legend(labels=['MJO12', 'MJO56'])
         plt.vlines(np.nanmean(tmp), 0, 0.52, colors='b')
         plt.vlines(np.nanpercentile(tmp, 5), 0, 0.52, colors='b', linestyle='dashed')
@@ -246,6 +259,8 @@ def histogram_mjo(EXP,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data_wee
             ax.set_ylabel('Frequency')
         ax.grid(axis='y')
         count += 1
+    if not os.path.exists('../output/Zonal_Wind_Hist/'+EXP): 
+        os.mkdir('../output/Zonal_Wind_Hist/'+EXP)
     plt.savefig('../output/Zonal_Wind_Hist/'+EXP+'/'+fig_name+'.png',bbox_inches = 'tight')
     return
 
