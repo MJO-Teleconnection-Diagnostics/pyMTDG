@@ -65,6 +65,7 @@ if (dictionary['ERAI']==True):
     Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
     obs_name = 'ERAI'
 else:
+    Z500_DIR_OBS = dictionary['Path to observational data files']
     obs_name = 'OBS.'
 
 # read start and end date
@@ -80,7 +81,8 @@ stripes_obs, stripes_fc = calcSTRIPES_forecast_obs(Z500_DIR,
                                                    RMM_FILE, 
                                                    'gh', 
                                                    START_DATE, 
-                                                   END_DATE)
+                                                   END_DATE,
+                                                   erai_imerg_obs=dictionary['ERAI'])
 # -------------------------------------------------------
 # Plot
 lags = ['1-2', '2-3', '3-4']  # in weeks

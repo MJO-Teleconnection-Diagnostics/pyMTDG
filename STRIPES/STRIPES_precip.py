@@ -60,12 +60,11 @@ fc_dir = dictionary['Path to precipitation model data files']
 
 if (dictionary['IMERG']==True):
     obs_name = 'IMERG'
+    #obs_dir = dir_in+'/IMERG/*.nc4'
+    obs_dir = dir_in+'/mjo_teleconnections_data/imerg/*.nc4'
 else:
+    obs_dir = dictionary['Path to precipitation observation data files']    
     obs_name = 'OBS.'
-
-#obs_dir = dictionary['Path to precipitation observational data files:'] + '*.nc*'
-#obs_dir = dir_in+'/IMERG/*.nc4'
-obs_dir = dir_in+'/mjo_teleconnections_data/imerg/*.nc4'
 
 # read start and end date
 START_DATE = dictionary['START_DATE']
@@ -81,7 +80,8 @@ stripes_obs, stripes_fc = calcSTRIPES_forecast_obs(fc_dir,
                                                    RMM_FILE, 
                                                    'prate', 
                                                    START_DATE, 
-                                                   END_DATE)
+                                                   END_DATE,
+                                                   erai_imerg_obs=dictionary['IMERG'])
 # -------------------------------------------------------
 # Plot
 lags = ['1-2', '2-3', '3-4']  # in weeks
