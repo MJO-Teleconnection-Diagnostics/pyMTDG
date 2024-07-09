@@ -278,7 +278,7 @@ def get_variable_from_dataset(ds,vartype):
         return da
         raise RuntimeError("Couldn't find a precipitation variable name")
 # ===============================================================================================
-def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=False):
+def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=False, erai_imerg_obs=True):
     '''
         Compute the STRIPES index for observations and forecast data
 
@@ -289,7 +289,9 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
                 vartype: type of variable (options are 'gh', and 'prate')
                 t0: START_DATE (string)
                 t1: END_DATE (string)
-		test: default=False. Use during testing. Returns empty dataArrays
+        		testing: default=False. Use during testing. Returns empty dataArrays
+                erai_imerg_obs: default=True. If false, skip regridding. 
+
             Returns
                 stripes_obs: list of length 3 of xarray dataArrays of observed stripes index
                 stripes_fc: list of length 3 of xarray dataArrays of forecast stripes index
@@ -400,11 +402,19 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
                                      "longitude": fc_anom.longitude})
         # regrid if needed
         if not len(fc_anom.latitude)==len(obs_anom.latitude):
-            stripes = regrid_scalar_spharm(stripes, 
-                                           stripes.latitude,
-                                           stripes.longitude,
-                                           obs_anom.latitude,
-                                           obs_anom.longitude)
+
+            if not erai_imerg_obs:
+
+                raise ValueError ('Verification data must be on the same grid as'
+                                + ' forecast data for user-specified OBS data.')
+
+            else:
+
+                stripes = regrid_scalar_spharm(stripes, 
+                                               stripes.latitude,
+                                               stripes.longitude,
+                                               obs_anom.latitude,
+                                               obs_anom.longitude)
 
         stripes_fc.append(stripes)
         del lagcomp
