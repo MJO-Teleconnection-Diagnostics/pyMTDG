@@ -603,7 +603,7 @@ class stripesprecipWindow(QMainWindow):
                     - Select 'Yes' if forecast data is provided as daily mean values
                     - Select 'No' if forecast data is provided as daily anomaly values
 
-* Compute the RMM index: The selction of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 1984). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1979-08/31/2019. 
+* Compute the RMM index: The selction of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 2004). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1979-08/31/2019. 
     - Select 'No' to use the RMM index included in the Package
     - Select 'Yes' to compute the RMM index using new datasets; the user is required to provide the paths of these datasets, which must be staged in 'DIR_IN/OBS'
                             ''')
