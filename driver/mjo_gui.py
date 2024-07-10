@@ -436,7 +436,7 @@ The package can be applied to one forecast model. The name of the model will ape
                     - Select 'No' if model data do not include the initial conditions
 
 * Smooth climatology:
-                  - Select 'Yes' only for the CNRM model version CM6.1 (S2S database), EMC, ESRL, and NRL models (SubX or SubC project), and models that are initialized on the the same day of the week (e.g., Wednesday)
+                  - Select 'Yes' only for the CNRM model version CM6.1 (S2S database), EMC, ESRL, and NRL models (SubX or SubC project), and models that are initialized on the same day of the week (e.g., Wednesday)
                   - Select 'No' for most models in the S2S database
 
 
