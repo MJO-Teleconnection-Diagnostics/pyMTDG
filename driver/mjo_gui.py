@@ -1082,17 +1082,17 @@ class ThirdSubWindow(QMainWindow):
         self.Ezonal850T.setCursorPosition(len(self.pref))
         
         #Extratropical cyclone activity obs data files 
-        self.Ez500obs = QLabel(f'Path to Z500 observation data files for Extratropical Cyclone Activity:', self)
+        Ez500obs = QLabel(f'Path to Z500 observation data files for Extratropical Cyclone Activity:', self)
         self.Ez500Tobs = QLineEdit(self)
         self.Ez500Tobs.setText(self.prefix)
         self.Ez500Tobs.setCursorPosition(len(self.prefix))
 
-        self.Emeridional850obs = QLabel(f'Path to meridional wind at 850 hPa observation data files for Extratropical Cyclone Activity:', self)
+        Emeridional850obs = QLabel(f'Path to meridional wind at 850 hPa observation data files for Extratropical Cyclone Activity:', self)
         self.Emeridional850Tobs = QLineEdit(self)
         self.Emeridional850Tobs.setText(self.prefix)
         self.Emeridional850Tobs.setCursorPosition(len(self.prefix))
 
-        self.Ezonal850obs = QLabel(f'Path to zonal wind at 850 hPa observation data files for Extratropical Cyclone Activity:', self)
+        Ezonal850obs = QLabel(f'Path to zonal wind at 850 hPa observation data files for Extratropical Cyclone Activity:', self)
         self.Ezonal850Tobs = QLineEdit(self)
         self.Ezonal850Tobs.setText(self.prefix)
         self.Ezonal850Tobs.setCursorPosition(len(self.prefix))
@@ -1494,8 +1494,8 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(Emeridional850)
                     right_layout.addWidget(self.Emeridional850T)
                     if era == False:
-                        right_layout.addWidget(Emeridionalwind850obs)
-                        right_layout.addWidget(self.Emeridionalwind850Tobs)
+                        right_layout.addWidget(Emeridional850obs)
+                        right_layout.addWidget(self.Emeridional850Tobs)
                 
                 if 'Ezonal850T' not in rendered:
                     rendered.append('Ezonal850T')
