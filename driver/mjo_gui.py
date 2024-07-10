@@ -223,10 +223,9 @@ The MJO-Diagnostics Package computes metrics that require the meteorological fie
 ----------------------------------------------------
  Meteorological parameters:
 ----------------------------------------------------
-* Geopotential at 500mb and 100mb:
+* Geopotential at 500mb an 100mb:
 *** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 *** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
-*** Data must be 3d
 
 * Precipitation rate:
 *** Variable can be named any of: 'prate', 'precipitationCal','precipitation','precip'
@@ -1238,7 +1237,6 @@ Please include a trailing '/' in the directory where the geopotential data is lo
         diag_help_texts[6] = '''
 **Histogram of 10 hPa zonal wind
 
-Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located. 
 '''
         diag_help_texts[7] = '''
 ** Extratropical Cyclone Activity**
@@ -1494,8 +1492,8 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(Emeridional850)
                     right_layout.addWidget(self.Emeridional850T)
                     if era == False:
-                        right_layout.addWidget(Emeridionalwind850obs)
-                        right_layout.addWidget(self.Emeridionalwind850Tobs)
+                        right_layout.addWidget(Emeridional850obs)
+                        right_layout.addWidget(self.Emeridional850Tobs)
                 
                 if 'Ezonal850T' not in rendered:
                     rendered.append('Ezonal850T')
@@ -1670,14 +1668,14 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
 
 
         #extratropical model files
-        dict_file['Path to Extratropical Cyclone Activity Z500 model data files'] = self.Ez500T.text()
+        dict_file['Path to Z500 model data files for Extratropical Cyclone Activity'] = self.Ez500T.text()
         dict_file['Path to meridional wind at 850 hPa data files for Extratropical Cyclone Activity'] = self.Emeridional850T.text()
         dict_file['Path to zonal wind at 850 hPa data files for Extratropical Cyclone Activity'] = self.Ezonal850T.text()
         
         #extratropical obs files
-        dict_file['Extratropical Cyclone Activity Z500 observation data files'] = self.Ez500Tobs.text()
-        dict_file['Extratropical Cyclone Activity meridional wind at 850 hPa observation data files'] = self.Emeridional850Tobs.text()
-        dict_file['Extratropical Cyclone Activity zonal wind at 850 hPa observation data files'] = self.Ezonal850Tobs.text()
+        dict_file['Path to Z500 observation data files for Extratropical Cyclone Activity'] = self.Ez500Tobs.text()
+        dict_file['Path to meridional wind at 850 hPa observation data files Extratropical Cyclone Activity'] = self.Emeridional850Tobs.text()
+        dict_file['Path to zonal wind at 850 hPa observation data files Extratropical Cyclone Activity'] = self.Ezonal850Tobs.text()
         
         #meridionalwind 850 hPa model and obs
         dict_file['Path to meridional wind at 850 hPa model data files']=self.meridionalwind850T.text()
