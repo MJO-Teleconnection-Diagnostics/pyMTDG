@@ -149,7 +149,6 @@ The package includes ERA-Interim fields for validation. The ERA-Interim data can
 The package also works with user specified validation data. These data must be on the same grid as the forecast data. 
 The `Histogram of zonal wind at 10mb` diagnostic requires the zonal mean zonal wind at 60 N.
 The RMM Index can also be specified. The file must contain the time series of:
-
 	-[x] RMM Index amplitude, `amplitude(time)`
  	-[x] MJO phase,`phase(time)`
   	-[x] `RMM1(time)`
