@@ -1698,7 +1698,7 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
         #dict_file['Select weeks:'] = self.selectweeks.text()
         
         #t2m model and obs data
-        dict_file['Path to T2m model data files for date'] = self.t2mT.text()
+        dict_file['Path to T2m model data files'] = self.t2mT.text()
         dict_file['Path to T2m observation data files'] = self.t2mTobs.text()
         
         #z500 anomalies
