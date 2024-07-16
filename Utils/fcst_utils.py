@@ -81,6 +81,41 @@ def interpolate_scalar(ds_in,nlon_out,nlat_out,grid_type,var_name):
     output_regrid['time']=ds_in.time
     return output_regrid 
   
+def get_lat_name(data):
+    '''
+    Get latitude name of xarray dataArray or Dataset
+
+        Parameters:
+            data: xarray dataArray or Dataset with named spatial
+                  dimensions
+
+        Returns:
+            name: the name of the latitude dimension ('latitude' or 'lat')
+    '''
+
+    for name in ['lat', 'latitude']:
+        if name in data.coords:
+            return name
+    raise RuntimeError('Could not find a latitude coordinate')
+
+def get_lon_name(data):
+    '''
+    Get longitude name of xarray dataArray or Dataset
+
+        Parameters:
+            data: xarray dataArray or Dataset with named spatial
+                  dimensions
+
+        Returns:
+            name: the name of the longitude dimension ('longitude' or 'lon')
+    '''
+
+    for name in ['lon', 'longitude']:
+        if name in data.coords:
+            return name
+    raise RuntimeError('Could not find a longitude coordinate')
+
+
 def regrid_scalar_spharm(data, lat_in, lon_in, lat_out, lon_out):
     '''
     Regrid global scalar data using spherical harmonics.
@@ -99,15 +134,17 @@ def regrid_scalar_spharm(data, lat_in, lon_in, lat_out, lon_out):
                          re-arranged so that latitude & longitude are leading
     '''
     # dimension names
+    latname = get_lat_name(data)
+    lonname = get_lon_name(data)
     dims = data.dims
-    dims_not_lat_lon = list(set(['latitude','longitude']) ^ set(dims))
+    dims_not_lat_lon = list(set([latname,lonname]) ^ set(dims))
     
     ingrid = spharm.Spharmt(len(lon_in), len(lat_in), gridtype='regular')
     outgrid = spharm.Spharmt(len(lon_out), len(lat_out), gridtype='regular')
     
     # From spharm documentation: input data dimensionality needs to be 
     # (lat, lon, ...), and max. 3D
-    data = data.transpose('latitude','longitude',...)
+    data = data.transpose(latname,lonname,...)
     
     if data.ndim>2:
         # Works for 3D or 4D data
