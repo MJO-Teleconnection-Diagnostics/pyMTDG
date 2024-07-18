@@ -199,6 +199,50 @@ def regrid_vector_spharm ( u_input , v_input , grid_input , grid_output ) :   # 
     v_out, w_out, ierror = _spherepack.vhses(nlon_out,br_out,bi_out,cr_out,ci_out,grid_output.wvhses,lwork_out)
     return w_out,-v_out
 
+def regrid(fc, obs, fc_lat, fc_lon, obs_lat, obs_lon, scalar=True)
+    '''
+    Wrapper around the regridding functions. Either returns the data or regrids
+    depending on a comparison of the lengths of latitudes between data and 
+    data for comparison. 
+
+        Parameters
+            fc: forecast data
+            obs: observational data
+            fc_lat: latitude values corresponding to forecast data 
+            fc_lon: longitude values corresponding to forecast data
+            obs_lat: latitude values corresponding to observational data
+            obs_lon: longitude values corresponding to observational data
+            scalar: default=True. Flag to send data to regrid_vector (if False) or regrid_scalar (if True)
+                    NOTE: scalar=False not implemented!! Don't use this with vector data
+
+        Returns
+            fc_regrid: the forecast data (regridded or not)
+            obs_regrid: the observational data (regridded or not)
+    '''
+
+    n_fc_lat = len(fc_lat)
+    n_obs_lat = len(obs_lat)
+
+    # Compare the length of fc_lat to obs_lat
+    # Do nothing if they are the same
+    if n_fc_lat == n_obs_lat:
+        return fc, obs
+   # Regrid forecast to obs if forecast is higher res 
+    elif n_fc_lat > n_obs_lat:
+        if scalar:
+            print('Regridding forecast to verification grid...')
+            fc_regrid = regrid_scalar_spharm(fc, fc_lat, fc_lon, obs_lat, obs_lon)
+            return fc_regrid, obs
+        else:
+            raise RuntimeError ('Regrid wrapper does not work with vector input. Use regrid_vector_spharm')
+    # Regrid obs to forecast if observational data is higher res
+    else:
+        if scalar:
+            print('Regridding verification to forecast grid...')
+            obs_regrid = regrid_scalar_spharm(obs, obs_lat, obs_lon, fc_lat, fc_lon)
+            return fc, obs_regrid
+        else
+            raise RuntimeError('Regrid wrapper does not work with vector input. Use regrid_vector_spharm')
 
 def reshape_forecast(fc,nfc=35):
     ''' Reshape forecast data so the time dimension

@@ -377,14 +377,16 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
                                         minlag = minlag, 
                                         obs = True)
         stripes=compSTRIPES(lagcomp.values, [5,6,7,8])
-        stripes_obs.append(xr.DataArray(stripes,
-                                        attrs={'long_name': 'STRIPES', 
-                                                'units': obs_anom.units},
-                                        dims=['latitude','longitude'],
-                                        coords={"latitude": obs_anom.latitude,
-                                                "longitude": obs_anom.longitude}))
-        del stripes
+
+        stripes_obs_TEMP=xr.DataArray(stripes,
+                                   attrs={'long_name': 'STRIPES',
+                                          'units': obs_anom.units},
+                                   dims=['latitude','longitude'],
+                                   coords={"latitude": obs_anom.latitude,
+                                           "longitude": obs_anom.longitude})    
         del lagcomp
+        del stripes
+        gc.collect()
 
         # ----- Forecast -----
         lagcomp = calc_lagged_composite(fc_anom,
@@ -394,31 +396,31 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
                                         minlag = minlag, 
                                         obs = False)
         stripes=compSTRIPES(lagcomp.values, [5,6,7,8])
-        stripes=xr.DataArray(stripes, 
+        stripes_fc_TEMP=xr.DataArray(stripes, 
                              attrs={'long_name': 'STRIPES', 
                                     'units': obs_anom.units},
                              dims=['latitude','longitude'],
                              coords={"latitude": fc_anom.latitude,
                                      "longitude": fc_anom.longitude})
-        # regrid if needed
-        if not len(fc_anom.latitude)==len(obs_anom.latitude):
 
-            if not erai_imerg_obs:
-
-                raise ValueError ('Verification data must be on the same grid as'
-                                + ' forecast data for user-specified OBS data.')
-
-            else:
-
-                stripes = regrid_scalar_spharm(stripes, 
-                                               stripes.latitude,
-                                               stripes.longitude,
-                                               obs_anom.latitude,
-                                               obs_anom.longitude)
-
-        stripes_fc.append(stripes)
         del lagcomp
         del stripes
+        gc.collect()
+
+        # ----- Regrid if needed -----
+        stripes_fc_TEMP, stripes_obs_TEMP = regrid(stripes_fc_TEMP,
+                                                   stripes_obs_TEMP,
+                                                   fc_anom.latitude,
+                                                   fc_anom.longitude,
+                                                   obs_anom.latitude,
+                                                   obs_anom.longitude,
+                                                   scalar=True)
+        
+
+        stripes_obs.append(stripes_obs_TEMP)
+        stripes_fc.append(stripes_fc_TEMP)
+        del stripes_fc_TEMP
+        del stripes_obs_TEMP
         gc.collect()
         
     return stripes_obs, stripes_fc
