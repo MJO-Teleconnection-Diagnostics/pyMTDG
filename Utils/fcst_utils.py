@@ -199,7 +199,7 @@ def regrid_vector_spharm ( u_input , v_input , grid_input , grid_output ) :   # 
     v_out, w_out, ierror = _spherepack.vhses(nlon_out,br_out,bi_out,cr_out,ci_out,grid_output.wvhses,lwork_out)
     return w_out,-v_out
 
-def regrid(fc, obs, fc_lat, fc_lon, obs_lat, obs_lon, scalar=True)
+def regrid(fc, obs, fc_lat, fc_lon, obs_lat, obs_lon, scalar=True):
     '''
     Wrapper around the regridding functions. Either returns the data or regrids
     depending on a comparison of the lengths of latitudes between data and 
@@ -241,7 +241,7 @@ def regrid(fc, obs, fc_lat, fc_lon, obs_lat, obs_lon, scalar=True)
             print('Regridding verification to forecast grid...')
             obs_regrid = regrid_scalar_spharm(obs, obs_lat, obs_lon, fc_lat, fc_lon)
             return fc, obs_regrid
-        else
+        else:
             raise RuntimeError('Regrid wrapper does not work with vector input. Use regrid_vector_spharm')
 
 def reshape_forecast(fc,nfc=35):
