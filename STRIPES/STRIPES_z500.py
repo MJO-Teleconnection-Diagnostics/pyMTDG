@@ -57,10 +57,6 @@ if (dictionary['RMM']==False):
 
     
 # where are the z500 data files located?
-# !!! Note: This code ignores situations where the files for different initialization dates 
-#           are in different directories.
-# !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
-#Z500_DIR = dictionary['Path to z500 date files'][0] + '*.nc*'
 Z500_DIR = dictionary['Path to Z500 model data files']
 
 if (dictionary['ERAI']==True):
@@ -83,8 +79,7 @@ stripes_obs, stripes_fc = calcSTRIPES_forecast_obs(Z500_DIR,
                                                    RMM_FILE, 
                                                    'gh', 
                                                    START_DATE, 
-                                                   END_DATE,
-                                                   erai_imerg_obs=dictionary['ERAI'])
+                                                   END_DATE)
 # -------------------------------------------------------
 # Plot
 lags = ['1-2', '2-3', '3-4']  # in weeks

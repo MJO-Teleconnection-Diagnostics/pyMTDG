@@ -278,7 +278,7 @@ def get_variable_from_dataset(ds,vartype):
         return da
         raise RuntimeError("Couldn't find a precipitation variable name")
 # ===============================================================================================
-def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=False, erai_imerg_obs=True):
+def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=False): 
     '''
         Compute the STRIPES index for observations and forecast data
 
@@ -290,8 +290,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
                 t0: START_DATE (string)
                 t1: END_DATE (string)
         		testing: default=False. Use during testing. Returns empty dataArrays
-                erai_imerg_obs: default=True. If false, skip regridding. 
-
+            
             Returns
                 stripes_obs: list of length 3 of xarray dataArrays of observed stripes index
                 stripes_fc: list of length 3 of xarray dataArrays of forecast stripes index
