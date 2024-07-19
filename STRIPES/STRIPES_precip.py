@@ -77,8 +77,7 @@ stripes_obs, stripes_fc = calcSTRIPES_forecast_obs(fc_dir,
                                                    RMM_FILE, 
                                                    'prate', 
                                                    START_DATE, 
-                                                   END_DATE,
-                                                   erai_imerg_obs=dictionary['IMERG'])
+                                                   END_DATE) 
 # -------------------------------------------------------
 # Plot
 lags = ['1-2', '2-3', '3-4']  # in weeks
