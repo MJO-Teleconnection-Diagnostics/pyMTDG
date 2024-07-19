@@ -160,13 +160,13 @@ The list of diagnostics and required meteorological fields:
 STRIPES Index for Geopotential:
 	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
-	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'	
+	*** Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'	
 ~~~
 ~~~
 STRIPES Index for precipitation:
 	* Precipitation rate:
 	*** Variable can be named any of: 'prate', 'precipitationCal','precipitation','precip'
-	*** Unit: mm/day
+	*** Unit: mm/day OR conversion to mm/day will occur for any of the following: 'kg m**-2 s**-1','kg/m2/s','kg m-2 s-1','mm/s','mm s**-1', 'mm s-1'
 ~~~
 ~~~
 Pattern Correlation and Relative Amplitude of the MJO teleconnections over the PNA region:
