@@ -90,7 +90,7 @@ stripesmax = np.ceil(np.nanmax(np.asarray([np.nanmax(stripes_obs), np.nanmax(str
 stripes_anom_lim = 0.2 * stripesmax
 
 levs_obs = np.round(np.linspace(0,stripesmax,num=20), decimals=1)
-levs_anom = np.round(np.arange(-1*stripes_anom_lim, stripes_anom_lim, num=20), decimals=2)
+levs_anom = np.round(np.linspace(-1*stripes_anom_lim, stripes_anom_lim, num=20), decimals=2)
 
 for ilag, lag in enumerate(lags):
     # Create a new figure and axes for each lag
