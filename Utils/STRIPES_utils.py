@@ -278,7 +278,7 @@ def get_variable_from_dataset(ds,vartype):
 
         # convert kg/m2/s to mm/day if needed
         for units in ['kg m**-2 s**-1','kg/m2/s','kg m-2 s-1','mm/s','mm s**-1', 'mm s-1']:
-            if units == ds.units:
+            if units == da.units:
                 print('converting kg/m2/s to mm/day')
                 da = da * 86400
                 da.attrs['units']='mm/day'
