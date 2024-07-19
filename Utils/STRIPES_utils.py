@@ -275,6 +275,15 @@ def get_variable_from_dataset(ds,vartype):
             if name in list(ds.keys()):
                 break
         da = ds[name]
+
+        # convert kg/m2/s to mm/day if needed
+        for units in ['kg m**-2 s**-1','kg/m2/s','kg m-2 s-1','mm/s','mm s**-1', 'mm s-1']:
+            if units == ds.units:
+                print('converting kg/m2/s to mm/day')
+                da = da * 86400
+                da.attrs['units']='mm/day'
+                break
+
         return da
         raise RuntimeError("Couldn't find a precipitation variable name")
 # ===============================================================================================
