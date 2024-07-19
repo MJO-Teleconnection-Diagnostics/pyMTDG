@@ -52,10 +52,7 @@ if (dictionary['RMM']==False):
      RMM_FILE = dir_in+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
     #RMM_FILE = dir_in+'/erai/rmm_ERA-Interim.nc'
     
-# where are the z500 data files located?
-# !!! Note: This code ignores situations where the files for different initialization dates 
-#           are in different directories.
-# !!! Suggestion: gui should check directories for a trailing / and ensure consistency?
+# where are the data files located?
 fc_dir = dictionary['Path to precipitation model data files']
 
 if (dictionary['IMERG']==True):
