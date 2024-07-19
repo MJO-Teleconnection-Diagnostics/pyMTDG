@@ -86,8 +86,13 @@ lags = ['1-2', '2-3', '3-4']  # in weeks
 lon = stripes_obs[0].longitude
 lat = stripes_obs[0].latitude
 cmap_obs = 'YlGnBu'
-levs_obs = np.arange(0, 110, 10)
-levs_anom = np.arange(-25, 30, 5)
+
+# Find the maximum value of stripes for plotting limits
+stripesmax = np.floor(np.nanmax(np.asarray([np.nanmax(stripes_obs), np.nanmax(stripes_fc)])))
+stripes_anom_lim = 0.175 * stripesmax
+
+levs_obs = np.round(np.linspace(0,stripesmax,num=20), decimals=1)
+levs_anom = np.round(np.linspace(-1*stripes_anom_lim, stripes_anom_lim, num=20), decimals=1)
 
 for ilag, lag in enumerate(lags):
     # Create a new figure and axes for each lag
