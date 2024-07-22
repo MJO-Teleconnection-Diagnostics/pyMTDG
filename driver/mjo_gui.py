@@ -1509,7 +1509,7 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     rendered.append('Ezonal850T')
                     right_layout.addWidget(Ezonal850)
                     right_layout.addWidget(self.Ezonal850T)
-                    if dict_file['RMM'] == False and era == False:
+                    if era == False:
                         right_layout.addWidget(Ezonal850obs)
                         right_layout.addWidget(self.Ezonal850Tobs)
                 separator = QFrame()
