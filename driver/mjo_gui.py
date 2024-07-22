@@ -254,7 +254,7 @@ To run the package, the user needs to specify:
 
 * START_DATE: the start date of forecast data in the format YYYYMMDD 
 
-* END_DATE: the last date of forecast data in the format YYYYMMDD  
+* END_DATE: the last date of forecast data in the format YYYYMMDD. Note: This should NOT be the date of the last initial condition of the forecast.   
 
 * Length of the forecats (in days): number of forecast leads; all forecast leads corresponding to one initial condition must be in the same file  
 
@@ -603,9 +603,9 @@ class stripesprecipWindow(QMainWindow):
                     - Select 'Yes' if forecast data is provided as daily mean values
                     - Select 'No' if forecast data is provided as daily anomaly values
 
-* Compute the RMM index: The selction of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 2004). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1981-08/31/2019. 
-    - Select 'No' to use the RMM index included in the Package
-    - Select 'Yes' to compute the RMM index using new datasets; the user is required to provide the paths of these datasets, which must be staged in 'DIR_IN/OBS'
+* User input RMM index: The selction of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 2004). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1981-08/31/2019. 
+    - Select 'No' to use the RMM index included in the package
+    - Select 'Yes' otherwise; the user is required to provide the path and name of the RMM index file (must be located in the'DIR_IN/OBS')
                             ''')
         help_label.setWordWrap(True)
        
@@ -628,7 +628,7 @@ class stripesprecipWindow(QMainWindow):
 
         self.rmm = False
         #RMM Index
-        rmm_label = QLabel('Compute RMM Index:', self)
+        rmm_label = QLabel('User input RMM index:', self)
         groupbox = QGroupBox()
         vbox = QVBoxLayout()
         groupbox.setLayout(vbox)
@@ -655,17 +655,22 @@ class stripesprecipWindow(QMainWindow):
         self.olrDataFiles = QLineEdit(self)
         self.olrDataFiles.setText(prefix)
         self.olrDataFiles.setCursorPosition(len(prefix))
+        
+        rmmOpath = QLabel('Path to RMM index observation data file:', self)
+        self.rmmOpathT  = QLineEdit(self)
+        self.rmmOpathT.setText(prefix)
+        self.rmmOpathT.setCursorPosition(len(prefix))
 
-        zonalpath = QLabel('Path to zonal wind at 850 hPa observation data files:', self)
-        self.zonalpathT  = QLineEdit(self)
-        self.zonalpathT.setText(prefix)
-        self.zonalpathT.setCursorPosition(len(prefix))
+        #zonalpath = QLabel('Path to zonal wind at 850 hPa observation data files:', self)
+        #self.zonalpathT  = QLineEdit(self)
+        #self.zonalpathT.setText(prefix)
+        #self.zonalpathT.setCursorPosition(len(prefix))
         
 
-        zonalpath200 = QLabel('Path to zonal wind at 200 hPa observation data files:', self)
-        self.zonalpath200T = QLineEdit(self)
-        self.zonalpath200T.setText(prefix)
-        self.zonalpath200T.setCursorPosition(len(prefix))
+        #zonalpath200 = QLabel('Path to zonal wind at 200 hPa observation data files:', self)
+        #self.zonalpath200T = QLineEdit(self)
+        #self.zonalpath200T.setText(prefix)
+        #self.zonalpath200T.setCursorPosition(len(prefix))
 
         but = QPushButton('Next', self)
         but.setFixedSize(70,30)
@@ -674,12 +679,14 @@ class stripesprecipWindow(QMainWindow):
         self.groupbox = QGroupBox()
         vbox = QVBoxLayout()
         self.groupbox.setLayout(vbox)
-        vbox.addWidget(dir_in_label)
-        vbox.addWidget(self.olrDataFiles)
-        vbox.addWidget(zonalpath)
-        vbox.addWidget(self.zonalpathT)
-        vbox.addWidget(zonalpath200)
-        vbox.addWidget(self.zonalpath200T)
+        #vbox.addWidget(dir_in_label)
+        #vbox.addWidget(self.olrDataFiles)
+        vbox.addWidget(rmmOpath)
+        vbox.addWidget(self.rmmOpathT)
+        #vbox.addWidget(zonalpath)
+        #vbox.addWidget(self.zonalpathT)
+        #vbox.addWidget(zonalpath200)
+        #vbox.addWidget(self.zonalpath200T)
         vbox.addWidget(but)
 
         back = QPushButton('Back', self)
@@ -769,9 +776,10 @@ class stripesprecipWindow(QMainWindow):
             dict_file['Daily Anomaly'] = False
         dict_file['RMM'] = self.rmm
         
-        dict_file['Path to OLR observation data files'] = self.olrDataFiles.text()
-        dict_file['Path to zonal wind at 850 hPa observation data files'] = self.zonalpathT.text()
-        dict_file['Path to zonal wind at 200 hPa observation data files'] = self.zonalpath200T.text()
+        #dict_file['Path to OLR observation data files'] = self.olrDataFiles.text()
+        #dict_file['Path to zonal wind at 850 hPa observation data files'] = self.zonalpathT.text()
+        #dict_file['Path to zonal wind at 200 hPa observation data files'] = self.zonalpath200T.text()
+        dict_file['Path to RMM observation data file'] = self.rmmOpathT.text()
 
         
         self.third_window = SelectDiagWindow(self,self.dirin,self.era,dict_file)
@@ -1246,12 +1254,12 @@ Please include a trailing '/' in the directory where the 10 hPa zonal wind data 
 - If model data contains ensembles, the input data for U850 and V850 must be provided for each ensemble member. Using the ensemble mean will result in eddy kinetic energy with underestimated amplitude.
 - If model and verification data have different resolutions, it is highly recommended to provide the data on the same grid. Although this package has regridding capabilities it may take hours to days to complete the regridding especially for large ensembles. Usage of spherical harmonics is recommended for regridding of wind components. 
 
-* Path to Extratropical Cyclone Activity Z500 model data files: Enter the name of Z500 files in the format <file_name*.nc> where * must contain 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members. E.g., for one ensemble member only: /project/$userid/z500_2011040100_e00.nc. For multiple ensemble members the count of ensemble members should also start from  '00', /project/$userid/z500_2011040100_e00.nc, /project/$userid/z500_2011040100_e01.nc'
+* Path to Extratropical Cyclone Activity Z500 model data files: Enter the name of Z500 files in the format <file_name*.nc> where * must contain ONLY 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members. E.g., for one ensemble member only: /project/$userid/z500_2011040100_e00.nc. For multiple ensemble members the count of ensemble members should also start from  '00', /project/$userid/z500_2011040100_e00.nc, /project/$userid/z500_2011040100_e01.nc'
 
 
-* Path to Extratropical Cyclone Activity U850  model data files: Enter the name of U850 files in the format <file_name*.nc> where * must contain 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
+* Path to Extratropical Cyclone Activity U850  model data files: Enter the name of U850 files in the format <file_name*.nc> where * must contain ONLY 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
 
-* Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name*.nc> where * must contain'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
+* Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name*.nc> where * must contain ONLY 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
 '''
         diag_help_texts[8] = '''
         Help text for MJO
