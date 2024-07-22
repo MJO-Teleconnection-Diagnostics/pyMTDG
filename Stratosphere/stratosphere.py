@@ -12,11 +12,15 @@ from datetime import timedelta
 from datetime import date
 
 import pandas as pd
+
+import matplotlib.pyplot as plt # matplotlib version 3.2 and custom version 3.3
+import proplot as plot
  
 import yaml
 import glob
 import gc
 import proplot as plot
+import os
 
 
 import sys
@@ -71,15 +75,16 @@ ds_names=[ds_obs_name,ds_fcst_name]
 
 
 fcst_files=np.sort(glob.glob(str(fcst_dir+'*.nc')))
-ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
+ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True,engine='h5netcdf')
 fcst=get_variable_from_dataset(ds_fcst)
 
-rgrd_fcst=regrid_scalar_spharm(fcst,ds_fcst.latitude,ds_fcst.longitude,
-                                        ds_obs.latitude,ds_obs.longitude)
+#rgrd_fcst=regrid_scalar_spharm(fcst,ds_fcst.latitude,ds_fcst.longitude, 
+#    ds_obs.latitude,ds_obs.longitude)
+
 del ds_fcst
 gc.collect()
-del rgrd_fcst
-gc.collect()
+#del rgrd_fcst
+#gc.collect()
         
 
 fcst_anom=fcst  #for this metric we use the raw data, not anomalies, but I'm reusing code written for other packages so I kept this in 
@@ -129,29 +134,42 @@ with plot.rc.context(fontsize='20px'):
         fig2=plot.figure(refwidth=6.5)
         axes2=fig2.subplots(nrows=1,ncols=4,proj='npstere',proj_kw={'lon_0': lon_0})
           
-for whichwk in weeks:       
+for wk,week in enumerate(weeks):
+    if week == 'week1':
+        sday = 0
+    if week == 'week2':
+        sday = 7
+    if week == 'week3':
+        sday = 14
+    if week == 'week4':
+        sday = 21
+    if week == 'week5':
+        sday = 28
  
 		#I'm pretty sure this is a bug and needs to be fixed
-            thisplottablemean = np.nanmean(np.nanmean(np.nanmean(fcst_anom[:, [0, 1, 2, 3, 8, 9], protoind, :, :, whichwk], 1), 2), 6)
-            thisplottablemean = thisplottablemean - np.nanmean(thisplottablemean, 1)
+            #thisplottablemean = np.nanmean(np.nanmean(np.nanmean(fcst_anom[:, [0, 1, 2, 3, 8, 9], protoind, :, :, whichwk], 1), 2), 6)
+            #thisplottablemean = np.nanmean(np.nanmean(np.nanmean(fcst_anom[:, [0, 1, 2, 3, 8, 9], :, :, whichwk], 1), 2), 6)
+            #thisplottablemean = thisplottablemean - np.nanmean(thisplottablemean, 1)
+    thisplottablemean = np.squeeze(np.nanmean(np.nanmean(fcst_anom[:,sday:sday+6, :, :], axis=1), axis=0))
+    thisplottablemean = thisplottablemean - np.nanmean(thisplottablemean, axis=0)
 
 # based on https://github.com/cristianastan2/MJO-Teleconnections/blob/develop/Utils/t2m_utils.py
   
-            h=axes[whichwk].contourf(thisplottablemean,cmap=cmap,lw=1,ec='none',extend='both',levels= clevs)
+    h=axes[wk].contourf(fcst_anom.longitude, fcst_anom.latitude,thisplottablemean,cmap=cmap,lw=1,ec='none',extend='both',levels= clevs)
 
-            if (p==0):
-                axes[whichwk].format(title=weeks[p])
-            else:
-                axes[whichwk].format(title=weeks[p],rtitle='{:.2f}'.format(rcorr))
+    #if (p==0):
+    #    axes[wk].format(title=weeks[p])
+    #else:
+    #    axes[wk].format(title=weeks[p],rtitle='{:.2f}'.format(rcorr))
 
-            axes[whichwk].format(coast='True',boundinglat=lat_0,grid=False,suptitle=week+whichwk)
+    axes[wk].format(coast='True',boundinglat=lat_0,grid=False,suptitle=week)
 
-            fig.colorbar(h, loc='b', extend='both', label='Z* [stationary waves]',
+    fig.colorbar(h, loc='b', extend='both', label='Z* [stationary waves]',
                           width='2em', extendsize='3em', shrink=0.8,
                         )
-            if not os.path.exists('../output/Strat_Path/'): 
-                os.mkdir('../output/Strat_Path/')
-            fig.savefig('../output/Strat_path/Zstat' + ds_fcst_name + '.jpg',dpi=300)
+    if not os.path.exists('../output/Strat_Path/'): 
+        os.mkdir('../output/Strat_Path/')
+    fig.savefig('../output/Strat_Path/Zstat' + ds_fcst_name + '.jpg',dpi=300)
 
 
 
@@ -159,26 +177,29 @@ for whichwk in weeks:
 
 
 	#I'm pretty sure this is a bug and needs to be fixed
-            thisplottablemean = np.nanmean(np.nanmean(np.nanmean(pha_obs_ndjfm[:, [0, 1, 2, 3, 8, 9], protoind, :, :, whichwk], 1), 2), 6)
-            thisplottablemean = thisplottablemean - np.nanmean(thisplottablemean, 1)
+            #thisplottablemean = np.nanmean(np.nanmean(np.nanmean(pha_obs_ndjfm[:, [0, 1, 2, 3, 8, 9], protoind, :, :, whichwk], 1), 2), 6)
+            #thisplottablemean = np.nanmean(np.nanmean(np.nanmean(pha_obs_ndjfm[:, [0, 1, 2, 3, 8, 9], :, :, whichwk], 1), 2), 6)
+            #thisplottablemean = thisplottablemean - np.nanmean(thisplottablemean, 1)
+    thisplottablemean = np.squeeze(np.nanmean(np.nanmean(fcst_anom[:,sday:sday+6, :, :], axis=1), axis=0))
+    thisplottablemean = thisplottablemean - np.nanmean(thisplottablemean, axis=0)
 
 # based on https://github.com/cristianastan2/MJO-Teleconnections/blob/develop/Utils/t2m_utils.py
   
-            h=axes2[whichwk].contourf(thisplottablemean,cmap=cmap,lw=1,ec='none',extend='both',levels= clevs)
+    h=axes2[wk].contourf(fcst_anom.longitude,fcst_anom.latitude,thisplottablemean,cmap=cmap,lw=1,ec='none',extend='both',levels= clevs)
 
-            if (p==0):
-                axes2[whichwk].format(title=weeks[p])
-            else:
-                axes2[whichwk].format(title=weeks[p],rtitle='{:.2f}'.format(rcorr))
+    #if (p==0):
+    #    axes2[wk].format(title=weeks[p])
+    #else:
+    #    axes2[wk].format(title=weeks[p],rtitle='{:.2f}'.format(rcorr))
 
-            axes2[whichwk].format(coast='True',boundinglat=lat_0,grid=False,suptitle=week+whichwk)
+    #axes2[wk].format(coast='True',boundinglat=lat_0,grid=False,suptitle=week)
 
-            fig.colorbar(h, loc='b', extend='both', label='Z* [stationary waves]',
+    fig.colorbar(h, loc='b', extend='both', label='Z* [stationary waves]',
                           width='2em', extendsize='3em', shrink=0.8,
                         )
-            if not os.path.exists('../output/Strat_Path/'): 
-                os.mkdir('../output/Strat_Path/')
-            fig.savefig('../output/Strat_Path/Zstat' + ds_obs_name + '.jpg',dpi=300)
+    if not os.path.exists('../output/Strat_Path/'): 
+        os.mkdir('../output/Strat_Path/')
+    fig.savefig('../output/Strat_Path/Zstat' + ds_obs_name + '.jpg',dpi=300)
 
 
 print(f'Stationary waves diagnostic completed')
