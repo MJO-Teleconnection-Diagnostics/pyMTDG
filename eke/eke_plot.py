@@ -53,17 +53,6 @@ Model_u850_files             = yml_input [ 'Path to zonal wind at 850 hPa data f
 Model_v850_files             = yml_input [ 'Path to meridional wind at 850 hPa data files for Extratropical Cyclone Activity' ]
 Model_z500_files             = yml_input [ 'Path to Extratropical Cyclone Activity Z500 model data files' ]
 
-###### Input from yml file (UFS)
-#ERAI = True
-#RMM  = True
-#Model_name = "UFS5"
-#Multiple_Ensemble_Members    = False
-#Ensemble_size                = 1
-#Daily_Mean_Data              = False
-#Forecast_time_step_interval  = 6
-#Model_data_initial_condition = True
-#Smooth_climatology           = False
-#ERAI                         = True
 if (yml_input['ERAI']==True):
     reanalysis_u850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/u850.19790101-20190831.nc'
     reanalysis_v850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/v850.19790101-20190831.nc'
@@ -75,75 +64,14 @@ if (yml_input['ERAI']==False):
     reanalysis_z500_file=yml_input['Extratropical Cyclone Activity Z500 observation data files']
     ds_obs_name='OBS'
 
-#if ERAI :
-#    Reanalysis_name = "ERA-I"
-#    reanalysis_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#    reanalysis_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#    reanalysis_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
-#    ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/u850.19790101-20190831.nc"
-#    ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/v850.19790101-20190831.nc"
-#    ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-I_0.75/z500.19790101-20190831.nc"
-
-#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.6hourly.nc" ]
-#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.6hourly.nc" ]
-#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/6hourly/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.6hourly.nc" ]
-#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/u.850-isobaricInhPa.*.f000-840.nc" ]
-#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/v.850-isobaricInhPa.*.f000-840.nc" ]
-#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/0.25/Prototype5/gh.500-isobaricInhPa.*.f000-840.nc" ]
-#Model_u850_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/u_850-isobaricInhPa/u.850-isobaricInhPa.*.nc" ]
-#Model_v850_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/v_850-isobaricInhPa/v.850-isobaricInhPa.*.nc" ]
-#Model_z500_files = [ "/data0/czheng/S2S-UFS/data/code/e00/Prototype5/gh_500-isobaricInhPa/gh.500-isobaricInhPa.*.nc" ]
-#Model_z500_varname = "z"
-#Model_z500_varname = "gh"
-
-if not RMM :
-    #RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
-    RMM_ERA_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
- 
+if RMM :
+    RMM_ERA_file = yml_input [ 'Path to RMM observation data file' ]
+else :
+    RMM_ERA_file = yml_input [ 'DIR_IN' ] +'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc' 
 
 plot_dir = "../output/ET_Cyclone/" + Model_name + "/"
 if not os.path.isdir ( plot_dir ) :
     os.mkdir ( plot_dir )
-
-###### Input from yml file (CFSv2)
-#Multiple_Ensemble_Members    = False
-#Ensemble_size                = 1
-#Daily_Mean_Data              = False
-#Forecast_time_step_interval  = 6
-#Model_data_initial_condition = False
-#Smooth_climatology           = False
-#ERAI                         = True
-#ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
-
-#Model_u850_files = "/data0/czheng/CFSv2/wnd850/wnd850.*.regrid.nc4"
-#Model_v850_files = "/data0/czheng/CFSv2/wnd850/wnd850.*.regrid.nc4"
-#Model_z500_files = "/data0/czheng/CFSv2/z500/z500.*.regrid.nc4"
-#Model_z500_varname = "gh"
-
-#RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
-
-#plot_dir = ""
-
-###### Input from yml file (ECMWF)
-#Multiple_Ensemble_Members    = True
-#Ensemble_size                = 11
-#Daily_Mean_Data              = False
-#Forecast_time_step_interval  = 24
-#Model_data_initial_condition = True
-#Smooth_climatology           = False
-#ERAI                         = True
-#ERA_u850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#ERA_v850_file = "/data0/czheng/S2S-UFS/ERA-Interim/uv_850_1979-2019_1.5.nc"
-#ERA_z500_file = "/data0/czheng/S2S-UFS/ERA-Interim/geopotential500_1979-2019_1.5.nc"
-
-#Model_u850_files = "/data0/czheng/ECMWF/ECMWF_u_*.nc"
-#Model_v850_files = "/data0/czheng/ECMWF/ECMWF_v_*.nc"
-#Model_z500_files = "/data0/czheng/ECMWF/ECMWF_z_*.nc"
-#Model_z500_varname = "gh"
-
-#RMM_ERA_file = "/data0/czheng/S2S-UFS/ERA-Interim/rmm/rmm_ERA-Interim.nc"
 
 ###### Pre-set parameters
 total_weeks = 4
@@ -342,9 +270,10 @@ for week_n in range ( total_weeks ) :
 ##### read rmm index
 rmm_file = xr.open_dataset ( RMM_ERA_file )
 rmm_time_in = rmm_file [ 'time' ]
-#tvalue = netCDF4.num2date ( rmm_time_in , rmm_time_in.units )
-tvalue = netCDF4.num2date ( rmm_time_in , rmm_time_in.units.replace ( "after" , "since" ) )
-#rmm_yyyymmdd = np.array ( rmm_time_in.dt.year * 10000 + rmm_time_in.dt.month * 100 + rmm_time_in.dt.day )
+if "after" in rmm_time_in.units :
+    tvalue = netCDF4.num2date ( rmm_time_in , rmm_time_in.units.replace ( "after" , "since" ) )
+else :
+    tvalue = netCDF4.num2date ( rmm_time_in , rmm_time_in.units )
 rmm_yyyymmdd = np.full ( len ( rmm_time_in ) , np.nan , dtype='int64' )
 for time_n in range ( len ( rmm_time_in ) ) : rmm_yyyymmdd [ time_n ] = tvalue [ time_n ].year * 10000 + tvalue [ time_n ].month * 100 + tvalue [ time_n ].day
 rmm_phase_in = np.full ( len ( rmm_time_in ) , np.nan , dtype='int64' )
