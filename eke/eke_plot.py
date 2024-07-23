@@ -3,6 +3,8 @@ import numpy as np
 import netCDF4
 import spharm
 
+import matplotlib
+matplotlib.use ( 'agg' )
 import matplotlib.pyplot as plt
 import proplot as plot
 from matplotlib.markers import MarkerStyle
