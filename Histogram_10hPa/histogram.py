@@ -22,9 +22,6 @@ sys.path.insert(0, '../Utils')
 from u10_utils import *
 
 
-# In[2]:
-
-
 # Read yaml file
 config_file=Path('../driver/config.yml').resolve()
 with open(config_file,'r') as file:
@@ -33,17 +30,10 @@ with open(config_file,'r') as file:
     except yaml.YAMLError as e:
         print(e)
 
-
-# In[3]:
-
-
 import matplotlib.pyplot as plt
 from matplotlib import rcParams #For changing text properties
 import matplotlib.path as mpath
 import matplotlib.colors as mcolors
-
-
-# In[4]:
 
 
 tBegin=dictionary['START_DATE']
@@ -64,8 +54,6 @@ tmp = os.listdir(fcst_dir)
 dummy = sorted(tmp)
 fileList = [model_fcst_dir+f for f in dummy]
 
-# In[5]:
-
 
 if (dictionary['ERAI']==True):
     #fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128sc.1979.2019.nc'
@@ -77,8 +65,9 @@ data_r = xr.open_mfdataset(fil_u_obs,combine='by_coords').compute()
 data_r = np.squeeze(data_r.sel(time=data_r.time.dt.year.isin(years)).u)
 
 
-# In[6]:
-
+if (dictionary['RMM']==True):
+    fil_rmm_obs=dictionary['Path to RMM observation data file']
+    rmm=xr.open_dataset(fil_rmm_obs,combine='by_coords').compute()
 
 if (dictionary['RMM']==False):
     # read RMM index
@@ -98,17 +87,11 @@ if (dictionary['RMM']==False):
     rmm = rmm.isel(time=rmm.time.dt.month.isin([11, 12, 1, 2, 3]))
 
 
-# In[7]:
-
-
 # initial_days=dictionary['Initial dates']
 INITMON = ['01','02','03','11','12']
 INITDAY = ['01','15']
 # for ii in range(len(initial_days)):
 #     INITDAY.append(str(initial_days[ii]).zfill(2))
-
-
-# In[8]:
 
 
 # MJO events
@@ -215,16 +198,10 @@ data_r_week5 = comb_list(data_r_week5_pha1, data_r_week5_pha2, data_r_week5_pha3
 print(np.shape(data_r_week1_pha1),np.shape(data_r_week1_pha2),np.shape(data_r_week1_pha3),np.shape(data_r_week1_pha4),np.shape(data_r_week1_pha5),np.shape(data_r_week1_pha6),np.shape(data_r_week1_pha7),np.shape(data_r_week1_pha8))
 
 
-# In[9]:
-
-
 fcst_dir=dictionary['Path to zonal wind at 10 hPa model data files']
 ds_fcst_name=dictionary['model name']
 #DIR = fcst_dir+ds_fcst_name
 DIR = fcst_dir
-
-# In[10]:
-
 
 VAR = 'u'
 lats = 60; levs = 10; lons = [0,360]
@@ -232,9 +209,6 @@ lats = 60; levs = 10; lons = [0,360]
 #                                                                                       mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5 = mjo_week_mo(fileList, SYY, EYY, lats, lons, 
                                                                                        mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
-
-
-# In[11]:
 
 
 data_r_week1_pha12, data_r_week2_pha12, data_r_week3_pha12, data_r_week4_pha12, data_r_week5_pha12 = data_week_pha_comb(data_r_week1, data_r_week2, data_r_week3, data_r_week4, data_r_week5, 2, [0,1])
@@ -245,9 +219,6 @@ data_r_week1_pha56, data_r_week2_pha56, data_r_week3_pha56, data_r_week4_pha56, 
 p5_data_week1_pha56, p5_data_week2_pha56, p5_data_week3_pha56, p5_data_week4_pha56, p5_data_week5_pha56 = data_week_pha_comb(p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5, 2, [4,5])
 
 
-# In[12]:
-
-
 xlabel = 'u1060 [m/s]'
 fig_name = 'u1060_hist'
 
@@ -255,10 +226,4 @@ histogram_mjo(ds_fcst_name,xlabel,fig_name,p5_data_week1_pha12,p5_data_week2_pha
               p5_data_week1_pha56,p5_data_week2_pha56,p5_data_week3_pha56,p5_data_week4_pha56,p5_data_week5_pha56,
               data_r_week1_pha12,data_r_week2_pha12,data_r_week3_pha12,data_r_week4_pha12,data_r_week5_pha12,
               data_r_week1_pha56,data_r_week2_pha56,data_r_week3_pha56,data_r_week4_pha56,data_r_week5_pha56)
-
-
-# In[ ]:
-
-
-
 
