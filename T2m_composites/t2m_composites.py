@@ -43,8 +43,6 @@ if (dictionary['RMM']==False):
         time.append(init_time+timedelta(i))
     ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
         
-print('rmm_file=',fil_rmm_obs)
-        
 # Get the forecast period from the provided Start_Date -- End_Date period
 yyyymmdd_Begin=dictionary['START_DATE']
 tBegin=yyyymmdd_Begin[0:4]+'-'+yyyymmdd_Begin[4:6]+'-'+yyyymmdd_Begin[6:8]
@@ -89,7 +87,7 @@ ds_names=[ds_obs_name,ds_fcst_name]
 
 
 fcst_files=np.sort(glob.glob(str(fcst_dir+'*.nc')))
-ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True,engine='h5netcdf')
+ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
 fcst=get_variable_from_dataset(ds_fcst)
     
 
