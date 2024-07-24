@@ -173,7 +173,10 @@ def regrid_scalar_spharm(data, lat_in, lon_in, lat_out, lon_out):
         data_regrid = xr.DataArray(data=data_regrid,
                                    coords={'latitude':lat_out,
                                            'longitude':lon_out})
-        
+       
+    # Copy units attribute
+    data_regrid.attrs['units']=data.units
+
     return data_regrid
 
 def regrid_vector_spharm ( u_input , v_input , grid_input , grid_output ) :   # This function is from the original code provided by Cheng
