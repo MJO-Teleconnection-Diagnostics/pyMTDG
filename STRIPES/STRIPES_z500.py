@@ -43,18 +43,12 @@ except FileNotFoundError:
             'model name':'UFS5',
             }
         
-# Load RMM data. 
-# !!! Note: This code does not handle the case where RMM data is computed
-
 dir_in = dictionary['DIR_IN']
 
 if (dictionary['RMM']==False):
-    # !!! Note: this will need to be updated with a correct final path for the RMM data
-    #     This is a pretty small data file (< 1 MB) maybe we shoud just include it in the package
-    # fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
-    #RMM_FILE = dir_in+'/erai/rmm_ERA-Interim.nc'
     RMM_FILE = dir_in+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
-
+else:
+    RMM_FILE = dictionary['Path to RMM observation data file']
     
 # where are the z500 data files located?
 Z500_DIR = dictionary['Path to Z500 model data files']

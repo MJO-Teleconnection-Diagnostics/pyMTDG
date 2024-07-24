@@ -47,11 +47,10 @@ except FileNotFoundError:
 dir_in = dictionary['DIR_IN']
 
 if (dictionary['RMM']==False):
-    # !!! Note: this will need to be updated with a correct final path for the RMM data
-    #     This is a pretty small data file (< 1 MB) maybe we shoud just include it in the package
-     RMM_FILE = dir_in+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
-    #RMM_FILE = dir_in+'/erai/rmm_ERA-Interim.nc'
-    
+    RMM_FILE = dir_in+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
+else:
+    RMM_FILE = dictionary['Path to RMM observation data file'] 
+
 # where are the data files located?
 fc_dir = dictionary['Path to precipitation model data files']
 
