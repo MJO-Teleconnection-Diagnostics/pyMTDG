@@ -11,7 +11,50 @@ import glob
 from fcst_utils import *
 from obs_utils import *
 import gc
+# ===============================================================================================
+def nice_contour_levels(max_val, num_levels, min_val=0, anoms=False):
+    '''
+    Computes "nice" contour levels for plotting. 
 
+        Parameters:
+            max_val: the maximum value to include in the plotting limits
+            num_levels: the desired number of contour levels. Output won't be exact
+            min_val: the minimum value to include in the plotting limits (default=0)
+            anoms: if True, the contour levels will range from -max_val to max_val 
+                   and be centered at 0 (default=False)
+
+        Returns:
+            contour_levels: Contour levels that have nice spacings. Note: will not be exactly the 
+                            same number of levels as specified num_levels (but will be close)
+    '''
+
+    if anoms:
+        min_val = -1 * np.abs(max_val)
+    
+    # Compute the range and the step size
+    range_val = max_val - min_val
+    step = range_val / num_levels
+
+    # Define possible nice step sizes
+    nice_steps = np.array([1, 2, 2.5, 5, 10])
+    
+    # Find the order of magnitude of the step. This will help define the contour levels
+    order_of_magnitude = np.floor(np.log10(step)).astype('int64')
+    
+    # Scale the nice steps by the order of magnitude
+    scaled_nice_steps = nice_steps * 10.0 ** order_of_magnitude
+    
+    # Find the closest nice step size
+    step_nice = scaled_nice_steps[np.searchsorted(scaled_nice_steps, step)]
+
+    # Adjust the minimum and maximum values to the nearest integers
+    min_val_nice = np.floor(min_val/step_nice)*step_nice
+    max_val_nice = np.ceil(max_val/step_nice)*step_nice
+
+    # Generate the contour levels
+    contour_levels = np.arange(min_val_nice, max_val_nice + step_nice, step_nice)
+    
+    return contour_levels
 # ===============================================================================================
 def calc_lagged_composite(data, amp, phase, maxlag, minlag=0, nphases=8, obs=False):
     '''
