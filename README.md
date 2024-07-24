@@ -150,9 +150,7 @@ The package also works with user specified validation data. These data must be o
 The `Histogram of zonal wind at 10mb` diagnostic requires the zonal mean zonal wind at 60 N.
 The RMM Index can also be specified. The file must contain the time series of:
 - [x] **RMM Index amplitude** [var_name(dimension): amplitude(time)]
-- [x] **MJO phase** [var_name(dimension): phase(time)]
-- [x] **RMM1** [var_name(dimension): RMM1(time)]
-- [x] **RMM2** [var_name(dimension): RMM2(time)] 	
+- [x] **MJO phase** [var_name(dimension): phase(time)]	
 
 ## 4. Variables <a name="vars"></a>
 The list of diagnostics and required meteorological fields:
