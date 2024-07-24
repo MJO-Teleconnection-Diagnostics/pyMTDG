@@ -59,6 +59,7 @@ if (dictionary['ERAI']==True):
     #fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128sc.1979.2019.nc'
     fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u1060-1979-2018.nc'
     ds_obs_name='ERAI'
+    
 if (dictionary['ERAI']==False):
     ds_obs_name='OBS'
 data_r = xr.open_mfdataset(fil_u_obs,combine='by_coords').compute()
@@ -67,7 +68,7 @@ data_r = np.squeeze(data_r.sel(time=data_r.time.dt.year.isin(years)).u)
 
 if (dictionary['RMM']==True):
     fil_rmm_obs=dictionary['Path to RMM observation data file']
-    rmm=xr.open_dataset(fil_rmm_obs,combine='by_coords').compute()
+    rmm=xr.open_mfdataset(fil_rmm_obs,combine='by_coords').compute()
 
 if (dictionary['RMM']==False):
     # read RMM index
