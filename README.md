@@ -69,8 +69,12 @@ c. Go to the `driver` directory to run the code (-h will display all the options
 ~~~
 cd driver
 python mjo_gui.py -h
+
+
 (command above will display a help screen showing the flags and the options pertaining to them.)
 (to run with the graphical interface simply type whats below)
+
+
 python3 mjo_gui.py -g yes
 ~~~
 d. when compiling without the graphical interface 
