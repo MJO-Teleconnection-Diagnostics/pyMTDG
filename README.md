@@ -65,12 +65,13 @@ cd MJO-Teleconnections
 conda env create -n mjo_telecon --file mjo_telecon.yml
 ~~~
 
-c. Go to the `driver` directory to run the code.
+c. Go to the `driver` directory to run the code (-h will display all the options).
 ~~~
 cd driver
 python mjo_gui.py -h
-
-(this will display a help screen showing the flags and the options pertaining to them.)
+(command above will display a help screen showing the flags and the options pertaining to them.)
+(to run with the graphical interface simply type whats below)
+python3 mjo_gui.py -g yes
 ~~~
 d. when compiling without the graphical interface 
 ~~~
@@ -81,9 +82,14 @@ along side an example of options to select the diagnostics.
 
 <img width="863" alt="Screenshot 2024-07-31 at 2 50 11 PM" src="https://github.com/user-attachments/assets/4cf236a3-a9b6-4171-af74-ddc1b59e1439">
 
+
+
 <img width="637" alt="Screenshot 2024-07-31 at 9 48 00 AM" src="https://github.com/user-attachments/assets/6ca7ff10-213e-4cf2-aebc-3fdfaddf7712">
 
+
 when the program has finished it will display a done! message. Below is an example.
+
+
 
 <img width="1421" alt="Screenshot 2024-07-31 at 9 49 17 AM" src="https://github.com/user-attachments/assets/2a21efa7-8a35-44e5-8aca-6be1935dd158">
 
