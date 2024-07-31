@@ -52,12 +52,16 @@ To see all branches:
 git branch -a
 ~~~
 
-  a.2 Clone the repository and fetch only a single branch
+a.2 Clone the repository and fetch only a single branch
+
+
 ~~~
 git clone --branch develop --single-branch  https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
 ~~~
 
+
 This will create a directory `MJO-Teleconnections/` in your current working directory.
+
 
 b. Go into the newly created MJO-Teleconnections repository to create the environment required to run the package from the `mjo_telecon.yml` file included in the pckage.
 ~~~
@@ -66,13 +70,14 @@ conda env create -n mjo_telecon --file mjo_telecon.yml
 ~~~
 
 c. Go to the `driver` directory to run the code (-h will display all the options).
+
 ~~~
 cd driver
 python mjo_gui.py -h
 
 
 (command above will display a help screen showing the flags and the options pertaining to them.)
-(to run with the graphical interface simply type whats below)
+(below is an example of how to run WITH the graphical interface.)
 
 
 python3 mjo_gui.py -g yes
@@ -81,10 +86,11 @@ d. when compiling without the graphical interface
 ~~~
 python3 mjo_gui.py -g no -c input_config.yml
 
-(there will be a list of options to choose which diagnostics to run specify using the numbers followed by commas)
+(there will be a list of options to choose from, specify with number followed by comma like below.)
 (example: 1,2,3)
 
 ~~~
+
 Below is an example of the input configuration file.
 
 <img width="863" alt="Screenshot 2024-07-31 at 2 50 11 PM" src="https://github.com/user-attachments/assets/4cf236a3-a9b6-4171-af74-ddc1b59e1439">
