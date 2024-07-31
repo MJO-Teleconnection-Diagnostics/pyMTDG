@@ -78,10 +78,10 @@ cd driver
 python mjo_gui.py -h
 
 (Example: Run WITH the graphical interface:)
-python3 mjo_gui.py -g yes
+python mjo_gui.py -g yes
 
 (Example: Run WITHOUT the graphical interface:)
-python3 mjo_gui.py -g no -c input_config.yml
+python mjo_gui.py -g no -c input_config.yml
 ~~~
 
 ## 3. Data format <a name="data"></a>
