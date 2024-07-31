@@ -1,0 +1,41 @@
+Compute the z500 anomalies: false
+DIR_IN: /ceoas/jenneylab/bridges2_transfer/ufs_data
+Daily Anomaly: true
+Extratropical Cyclone Activity meridional wind at 850 hPa model files: test
+END_DATE: '20180419'
+ERAI: true
+IMERG: true
+Number of ensembles: 1
+Path to OLR model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to OLR observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to T2m model data files for date: /ceoas/jenneylab/bridges2_transfer/ufs_data/Prototype5/t2m/
+Path to T2m observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to z500 model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/Prototype5/gh/
+Path to Z500 model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/Prototype5/gh/
+Path to z500 observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to meridional wind at 850 hPa model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to meridional wind at 850 hPa observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to precipitation model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/Prototype5/prate/
+Path to precipitation observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/Prototype5/
+Path to temperature at 500 hPa model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to temperature at 500 hPa observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to z100 date files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to z100 observation files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to zonal wind at 10 hPa model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to zonal wind at 10 hPa observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to zonal wind at 200 hPa model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to zonal wind at 200 hPa observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+Path to zonal wind at 850 hPa model data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/
+Path to zonal wind at 850 hPa observation data files: /ceoas/jenneylab/bridges2_transfer/ufs_data/OBS/
+RMM: false
+Extratropical Cyclone Activity zonal wind at 850 hPa model files: /ceoas/jenneylab/bridges2_transfer/ufs_data/test
+START_DATE: '20110401'
+forecast time step: 24
+length of forecasts: '35'
+model data daily-mean values: true
+model initial conditions: true
+model name: UFS5
+selected:
+- 1
+- 2
+smooth climatology: false
