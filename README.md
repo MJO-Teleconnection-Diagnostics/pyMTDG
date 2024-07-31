@@ -69,22 +69,19 @@ cd MJO-Teleconnections
 conda env create -n mjo_telecon --file mjo_telecon.yml
 ~~~
 
-c. Go to the `driver` directory to run the code (-h will display all the options).
+c. Go to the `driver` directory to run the code (-h will display all the options). When running without the graphical interface, the user will be prompted to select specific diagnostics to run using comma-separated integers. Text will appear indicating which number corresponds to which diagnostic.
 
 ~~~
 cd driver
 
-(Display help text for the driver, which shows the necessary flags/options:)
+(Example: Display help text for the driver, which shows the necessary flags/options:)
 python mjo_gui.py -h
 
-
-(Run WITH the graphical interface:)
+(Example: Run WITH the graphical interface:)
 python3 mjo_gui.py -g yes
 
-(Run WITHOUT the graphical interface:)
+(Example: Run WITHOUT the graphical interface:)
 python3 mjo_gui.py -g no -c input_config.yml
-
-(When running without the graphical interface, the user may select specific diagnostics to run using comma-separated integers. Text will appear indicating which number corresponds to which diagnostic.)
 ~~~
 
 Below is an example of the input configuration file.
