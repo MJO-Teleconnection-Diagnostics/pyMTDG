@@ -69,7 +69,7 @@ cd MJO-Teleconnections
 conda env create -n mjo_telecon --file mjo_telecon.yml
 ~~~
 
-c. Go to the `driver` directory to run the code (-h will display all the options). When running without the graphical interface, the user will be prompted to select specific diagnostics to run using comma-separated integers. Text will appear indicating which number corresponds to which diagnostic.
+c. Go to the `driver` directory to run the code (-h will display all the options). When running without the graphical interface, the user will be prompted to select specific diagnostics to run using comma-separated integers. Text will appear indicating which number corresponds to which diagnostic. The input configuration file needed to run the package without the graphical interfact specifies various user options as well as the paths to the forecast and verification data for each diagnostic. It should be formatted the same as the one that is generated automatically and saved to the driver folder when using the graphical interface. An example file has been included in the driver folder. 
 
 ~~~
 cd driver
@@ -83,11 +83,6 @@ python3 mjo_gui.py -g yes
 (Example: Run WITHOUT the graphical interface:)
 python3 mjo_gui.py -g no -c input_config.yml
 ~~~
-
-Below is an example of the input configuration file.
-
-<img width="863" alt="Screenshot 2024-07-31 at 2 50 11 PM" src="https://github.com/user-attachments/assets/4cf236a3-a9b6-4171-af74-ddc1b59e1439">
-
 
 ## 3. Data format <a name="data"></a>
 The package can only read data in the netcdf format. 
