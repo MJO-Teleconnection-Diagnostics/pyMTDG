@@ -73,22 +73,18 @@ c. Go to the `driver` directory to run the code (-h will display all the options
 
 ~~~
 cd driver
+
+(Display help text for the driver, which shows the necessary flags/options:)
 python mjo_gui.py -h
 
 
-(command above will display a help screen showing the flags and the options pertaining to them.)
-(below is an example of how to run WITH the graphical interface.)
-
-
+(Run WITH the graphical interface:)
 python3 mjo_gui.py -g yes
-~~~
-d. when compiling without the graphical interface 
-~~~
+
+(Run WITHOUT the graphical interface:)
 python3 mjo_gui.py -g no -c input_config.yml
 
-(there will be a list of options to choose from, specify with number followed by comma like below.)
-(example: 1,2,3)
-
+(When running without the graphical interface, the user may select specific diagnostics to run using comma-separated integers. Text will appear indicating which number corresponds to which diagnostic.)
 ~~~
 
 Below is an example of the input configuration file.
