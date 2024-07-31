@@ -1,3 +1,13 @@
+import time
+import glob
+import yaml
+import os
+import sys
+import getopt
+import re
+import subprocess
+import shutil
+from datetime import datetime
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QDialog, QSplitter, QSizePolicy
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
@@ -5,12 +15,92 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PyQt5.QtGui import QPixmap
-import yaml
 from PyQt5.QtCore import QObject, QThread, QRunnable
-import os
-import time, sys
-import subprocess
-import shutil
+from concurrent.futures import ThreadPoolExecutor
+import logging
+
+def nogui_close_yaml(filename):
+    slurm = False  # Set to True if running with Slurm
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+    # Write contents of input config file to config.yml
+    logging.info('Copying file to config.yml')
+    shutil.copyfile(filename, 'config.yml')
+    diagnostics_path = {
+        1: "../STRIPES/STRIPES_z500.py",
+        2: "../STRIPES/STRIPES_precip.py",
+        3: "../Pattern_CC_Amplitude/pna.py",
+        4: "../T2m_composites/t2m_composite.py",
+        5: "../Histogram_10hPa/histogram.py",
+        6: "../MJO/mjo.py",
+        7: "../Stratosphere/stratosphere.py",
+        8: "../Pattern_CC_Amplitude/atlantic.py",
+        9: "../eke/eke_plot.py"
+    }
+    user_input = input("Please decide which diagnostics you would like to run: "
+                       "press 0 to run ALL of them, "
+                       "1 for stripes_z500, "
+                       "2 for stripes_precip, "
+                       "3 for pna, "
+                       "4 for t2m_composite, "
+                       "5 for histogram, "
+                       "6 for mjo, "
+                       "7 for stratosphere, "
+                       "8 for atlantic, "
+                       "9 for eke_plot: ")
+    user_input = user_input.replace(',', ' ')
+    try:
+        user = [int(n) for n in user_input.split()]
+    except ValueError as e:
+        logging.error(f"Invalid input: {e}")
+        sys.exit(1)
+    diagnostics_to_run = [diagnostics_path[n] for n in user if n in diagnostics_path]
+    if not diagnostics_to_run:
+        logging.warning("No valid diagnostics selected. Exiting.")
+        sys.exit(1)
+    logging.info("Diagnostics to run:")
+    for script in diagnostics_to_run:
+        logging.info(script)
+    commands = [['python3', script] for script in diagnostics_to_run]
+    logging.info('Commands to execute:')
+    for cmd in commands:
+        logging.info(' '.join(cmd))
+    if slurm:
+        logging.info("Running commands using Slurm...")
+        slurm_command = f"salloc  -p normal  -n 6  --cpus-per-task=12 --mem=24GB -t 0-02:00:00 bash -c 'source ../../miniconda/bin/activate; conda activate mjo_telecon; {' & '.join(' '.join(cmd) for cmd in commands)}'"
+        logging.debug(f"Slurm command: {slurm_command}")
+        subprocess.run(slurm_command, shell=True)
+    else:
+        logging.info("Running commands using ThreadPoolExecutor...")
+        with ThreadPoolExecutor(max_workers=len(commands)) as executor:
+            futures = [executor.submit(run_command, cmd) for cmd in commands]
+            for future in futures:
+                result = future.result()
+                logging.debug(f"Command finished with return code {result.returncode}")
+    logging.info("Script execution completed.")
+    sys.exit("done!")
+
+
+
+
+def run_command(cmd):
+    """ Helper function to run a command and return the result """
+    try:
+        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        logging.info(f"Command finished with return code {result.returncode}")
+        logging.info(f"stdout:\n{result.stdout.decode('utf-8')}")
+        logging.info(f"stderr:\n{result.stderr.decode('utf-8')}")
+        return result
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Command failed with return code {e.returncode}")
+        logging.error(f"stderr:\n{e.stderr.decode('utf-8')}")
+        raise
+
+
+
+
+
+
 class StartWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -3454,8 +3544,44 @@ class OutputWindow(QMainWindow):
         self.close()
         self.parent.show()
 
+def main():
+    config_file = None
+    output_file = 'run_output.csv'
+    verbose = "No"
+    use_gui = 'yes'
+    opts, args = getopt.getopt(sys.argv[1:],"hvc:g:o:",["gui=","config_file=","output_file="])
+    for opt, arg in opts:
+        if opt == '-h':
+            print ("\n\tYou did not provide all the correct command line arguments\n")
+            print ("\tUsage:\n")
+            print ("\t" + str(sys.argv[0]) + " -g <gui> -c <config_file> -o <output_file> -h -v\n")
+            print ("\t-g Turn yes and no or input(experiment) the GUI")
+            print ("\t-c The input file (will change to a config file)")
+            #print ("\t-o The output csv delimited file (current: " + output_file + ")")
+            #print ("\t-v Verbose mode / Print dialog")
+            print ("\t-h Help message")
+            print ("\n")
+            sys.exit()
+        elif opt == '-v':
+            verbose = "Yes"
+        elif opt in ("-g", "--gui"):
+            use_gui = arg
+        elif opt in ("-c", "--config_file"):
+            config_file = arg
+        elif opt in ("-o", "--output_file"):
+            output_file = arg
+    if use_gui == "no":
+        nogui_close_yaml(config_file)
+    if use_gui == "input":
+        input_mode()
+    else:
+        config_file = 'config.yml'
+        print('config_file: ',config_file)
+        run_gui_mode()
 
-if __name__ == "__main__":
+    sys.exit()
+
+def run_gui_mode():
     app = QApplication(sys.argv)
     style = """
         QScrollBar:horizontal {              
@@ -3530,3 +3656,5 @@ if __name__ == "__main__":
     entry_window = StartWindow()
     entry_window.show()
     sys.exit(app.exec())
+if __name__ == "__main__":
+    main()
