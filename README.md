@@ -84,7 +84,7 @@ python mjo_gui.py -g yes
 ~~~
 Example: Run WITHOUT the graphical interface. The user will be prompted to select specific diagnostics to run using comma-separated integers. Text will appear indicating which number corresponds to which diagnostic. The input configuration file needed to run the package without the graphical interfact specifies various user options as well as the paths to the forecast and verification data for each diagnostic. It should be formatted the same as the one that is generated automatically and saved to the driver folder when using the graphical interface. An example file has been included in the driver folder. 
 ~~~
-python mjo_gui.py -g no -c input_config.yml
+python mjo_gui.py -g no -c config.yml
 ~~~
 
 ## 3. Data format <a name="data"></a>
