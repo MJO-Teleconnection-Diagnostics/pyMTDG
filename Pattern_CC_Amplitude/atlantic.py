@@ -182,11 +182,10 @@ P67_atlantic_low_amp,P67_atlantic_high_amp=test_significance_atlantic(bootstrap_
 import matplotlib.lines as mlines
 fig = plt.figure(figsize=(12,6))
 #x = np.linspace(0, 34, 35)
+x = np.linspace(0, dictionary['length of forecasts'] - 1, dictionary['length of forecasts'])
 if(dictionary['length of forecasts']>=35):
-    x = np.linspace(0, dictionary['length of forecasts'] - 1, dictionary['length of forecasts'])
     xend=35
 if(dictionary['length of forecasts']<35):
-    x = np.linspace(0, dictionary['length of forecasts'] - 1, dictionary['length of forecasts'])
     xend=dictionary['length of forecasts']
 plt.rcParams['font.size'] = '14'
 def addlegend(ax):
