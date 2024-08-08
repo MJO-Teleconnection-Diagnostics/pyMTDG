@@ -48,10 +48,37 @@ tBegin=yyyymmdd_Begin[0:4]+'-'+yyyymmdd_Begin[4:6]+'-'+yyyymmdd_Begin[6:8]
 yyyymmdd_End=dictionary['END_DATE']
 tEnd=yyyymmdd_End[0:4]+'-'+yyyymmdd_End[4:6]+'-'+yyyymmdd_End[6:8]
 
+fcst_dir=dictionary['Path to Z500 model data files']
+ds_fcst_name=dictionary['model name']
+ds_names=[ds_obs_name,ds_fcst_name]
+
+fcst_files=fcst_dir+'*.nc'
+print(fcst_files)
+ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
+z500_fcst=get_variable_from_dataset(ds_z500_fcst)
+
+# Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
+rgrd_z500_fcst,rgrd_z500_obs=regrid(z500_fcst,z500_obs,ds_z500_fcst.latitude,ds_z500_fcst.longitude,
+                                                        z500_obs.latitude,z500_obs.longitude,scalar=True)
+# Calculate forecast anomalies
+if (dictionary['Daily Anomaly'] == True):
+    z500_fcst_anom=calcAnom(rgrd_z500_fcst,'z500_anom')
+# Reshape the forecast data
+    z500_fcst_anom_reshape=reshape_forecast(z500_fcst_anom,nfc=dictionary['length of forecasts'])
+# Rename the coordinates
+    z500_fcst_anom_reshape=z500_fcst_anom_reshape.rename({'time': 'initial_date','forecast_day': 'time'})
+# Get model time
+    model_yyyymmdd=z500_fcst_anom_reshape['initial_date']
+if (dictionary['Daily Anomaly'] == False):
+    z500_fcst_anom=rgrd_z500_fcst
+    z500_fcst_anom_reshape=z500_fcst_anom_reshape.rename({'time': 'initial_date','forecast_day': 'time'})
+    model_yyyymmdd=z500_fcst_anom_reshape['initial_date']
+del rgrd_z500_fcst
+
 #calculate observed anomalies
 if (dictionary['Daily Anomaly'] == True):
     var_name='z'
-    erai_anomaly=calcAnomObs(z500_obs.sel(time=slice(tBegin,tEnd)),var_name)
+    erai_anomaly=calcAnomObs(rgrd_z500_obs.sel(time=slice(tBegin,tEnd)),var_name)
 if (dictionary['Daily Anomaly'] == False):
     erai_anomaly=z500_obs
     del z500_obs
@@ -64,32 +91,12 @@ era_lat_in=ds_z500_obs['latitude']
 era_lon_in=ds_z500_obs['longitude']
 
 
-fcst_dir=dictionary['Path to Z500 model data files']
-ds_fcst_name=dictionary['model name']
-ds_names=[ds_obs_name,ds_fcst_name]
-
-
-fcst_files=fcst_dir+'*.nc'
-print(fcst_files)
-ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
-z500_fcst=get_variable_from_dataset(ds_z500_fcst)
-
-# Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
-rgrd_z500_fcst=regrid_scalar_spharm(ds_z500_fcst['z500'],ds_z500_fcst.latitude,ds_z500_fcst.longitude,
-                                                        ds_z500_obs.latitude,ds_z500_obs.longitude)
-# Calculate forecast anomalies
-z500_fcst_anom=calcAnom(rgrd_z500_fcst,'z500_anom')
-# Reshape the forecast data
-z500_fcst_anom_reshape=reshape_forecast(z500_fcst_anom,nfc=dictionary['length of forecasts'])
-# Rename the coordinates
-z500_fcst_anom_reshape=z500_fcst_anom_reshape.rename({'time': 'initial_date','forecast_day': 'time'})
-# Get model time
-model_yyyymmdd=z500_fcst_anom_reshape['initial_date']
-
+if (dictionary['RMM']==True):
+    fil_rmm_obs=dictionary['Path to RMM observation data file']
+    ds_rmm=xr.open_dataset(fil_rmm_obs)
 if (dictionary['RMM']==False):
     fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
-
-ds_rmm=xr.open_dataset(fil_rmm_erai,decode_times=False)
+    ds_rmm=xr.open_dataset(fil_rmm_erai,decode_times=False)
 
 times=ds_rmm.time
 init_time=date(1960,1,1)+timedelta(int(times[0]))
@@ -99,20 +106,11 @@ for i in range(len(times)):
 
 ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
 
-#fil_rmm_erai='/expanse/nfs/cw3e/cwp137/_From_Comet/UFS/rmm_ERA-Interim.nc'
-#ds_rmm=xr.open_dataset(fil_rmm_erai,decode_times=False)
-#times=ds_rmm['amplitude'].time
-#init_time=date(1960,1,1)+timedelta(int(times[0]))
-#time=[]
-#for i in range(len(times)):
-#        time.append(init_time+timedelta(i))
-
 phase=np.array(ds_rmm['phase'])
 amplitude=np.array(ds_rmm['amplitude'])
 phase_int = np.array(list(map(np.int_, phase)))
 
 
-ds_rmm['time'] = pd.to_datetime(time,format="%Y/%m/%d")
 rmm_time_in = ds_rmm['time']
 rmm_yyyymmdd = np.array ( rmm_time_in.dt.year * 10000 + rmm_time_in.dt.month * 100 + rmm_time_in.dt.day )
 model_time_in = z500_fcst_anom_reshape['initial_date']
@@ -172,19 +170,21 @@ amp_ufs_p23=np.mean ( amp_ufs_p23,axis= 1   )
 amp_ufs_p67=np.mean ( amp_ufs_p67,axis= 1   )
 
 bootstrap_size = 1000
-P23_PNA_low=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[0]
-P23_PNA_high=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[1]
-P67_PNA_low=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[0]
-P67_PNA_high=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)[1]
-P23_PNA_low_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[0]
-P23_PNA_high_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[1]
-P67_PNA_low_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[0]
-P67_PNA_high_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)[1]
+P23_PNA_low,P23_PNA_high=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)
+P67_PNA_low,P67_PNA_high=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,PCC=True)
+P23_PNA_low_amp,P23_PNA_high_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_23,rmm_list_model_23,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)
+P67_PNA_low_amp,P67_PNA_high_amp=test_significance(bootstrap_size,timelag,rmm_list_ERA_67,rmm_list_model_67,z500_fcst_anom_reshape,erai_anomaly,lat_min,lat_max,lon_min,lon_max,amp=True)
 
 
 import matplotlib.lines as mlines
 fig = plt.figure(figsize=(12,6))
-x = np.linspace(0, 34, 35)
+#x = np.linspace(0, 34, 35)
+if(dictionary['length of forecasts']>=35):
+    x = np.linspace(0, dictionary['length of forecasts'] - 1, dictionary['length of forecasts'])
+    xend=35
+if(dictionary['length of forecasts']<35):
+    x = np.linspace(0, dictionary['length of forecasts'] - 1, dictionary['length of forecasts'])
+    xend=dictionary['length of forecasts']
 plt.rcParams['font.size'] = '14'
 def addlegend(ax):
     P23 = mlines.Line2D([],[], color='b', label='Phases 2&3')
@@ -197,16 +197,16 @@ for i in range(ncol):
     ax = fig.add_subplot(nrow,ncol,i+1)
     if i==0:
         ax.set_title('a. Pattern Correlation_PNA',loc='left')
-        ax.plot(pcc_ufs_p23,color='b',linewidth=2,label='Phases 2&3')
-        ax.fill_between(x, P23_PNA_low, P23_PNA_high, color='C0',alpha=0.2)
-        ax.plot(pcc_ufs_p67,color='r',linewidth=2,label='Phases 6&7')
-        ax.fill_between(x, P67_PNA_low, P67_PNA_high, color='C3',alpha=0.2)
+        ax.plot(pcc_ufs_p23[0:xend],color='b',linewidth=2,label='Phases 2&3')
+        ax.fill_between(x[0:xend], P23_PNA_low[0:xend], P23_PNA_high[0:xend], color='C0',alpha=0.2)
+        ax.plot(pcc_ufs_p67[0:xend],color='r',linewidth=2,label='Phases 6&7')
+        ax.fill_between(x[0:xend], P67_PNA_low[0:xend], P67_PNA_high[0:xend], color='C3',alpha=0.2)
     else:
         ax.set_title('b. Relative Amplitude_PNA',loc='left')
-        ax.plot(amp_ufs_p23,color='b',linewidth=2,label='Phases 2&3')
-        ax.fill_between(x, P23_PNA_low_amp, P23_PNA_high_amp, color='C0',alpha=0.2)
-        ax.plot(amp_ufs_p67,color='r',linewidth=2,label='Phases 6&7')
-        ax.fill_between(x, P67_PNA_low_amp, P67_PNA_high_amp, color='C3',alpha=0.2)
+        ax.plot(amp_ufs_p23[0:xend],color='b',linewidth=2,label='Phases 2&3')
+        ax.fill_between(x[0:xend], P23_PNA_low_amp[0:xend], P23_PNA_high_amp[0:xend], color='C0',alpha=0.2)
+        ax.plot(amp_ufs_p67[0:xend],color='r',linewidth=2,label='Phases 6&7')
+        ax.fill_between(x[0:xend], P67_PNA_low_amp[0:xend], P67_PNA_high_amp[0:xend], color='C3',alpha=0.2)
     if i==0: addlegend(ax)
     ax.grid(True)
 
