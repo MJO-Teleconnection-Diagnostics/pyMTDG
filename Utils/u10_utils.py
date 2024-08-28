@@ -125,7 +125,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
     for ifile in range(len(fileList)):
         datafn = fileList[ifile]
         data, init_year, init_month, init_day = read_data_mo(datafn,lats,levs,lons=lons)
-        date_init = datetime(year=init_year,month=init_month),day=init_day)
+        date_init = datetime(year=init_year,month=init_month,day=init_day)
         if date_init in mjo_pha1_dates:
             data_week1_pha1.append(data_week(data, date_init, 1, nt))
             data_week2_pha1.append(data_week(data, date_init, nt+1, nt*2))
