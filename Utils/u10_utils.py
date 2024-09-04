@@ -114,6 +114,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
     data_week1_pha6,data_week2_pha6,data_week3_pha6,data_week4_pha6,data_week5_pha6 = [],[],[],[],[]
     data_week1_pha7,data_week2_pha7,data_week3_pha7,data_week4_pha7,data_week5_pha7 = [],[],[],[],[]
     data_week1_pha8,data_week2_pha8,data_week3_pha8,data_week4_pha8,data_week5_pha8 = [],[],[],[],[]
+    date_init_all = []
     mjo_pha1_dates = pd.to_datetime(mjo_pha1.time,format="%Y/%m/%d")
     mjo_pha2_dates = pd.to_datetime(mjo_pha2.time,format="%Y/%m/%d")
     mjo_pha3_dates = pd.to_datetime(mjo_pha3.time,format="%Y/%m/%d")
@@ -133,6 +134,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha1.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha1.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 1',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha2_dates:
             data_week1_pha2.append(data_week(data, date_init, 1, nt))
             data_week2_pha2.append(data_week(data, date_init, nt+1, nt*2))
@@ -140,6 +142,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha2.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha2.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 2',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha3_dates:
             data_week1_pha3.append(data_week(data, date_init, 1, nt))
             data_week2_pha3.append(data_week(data, date_init, nt+1, nt*2))
@@ -147,6 +150,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha3.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha3.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 3',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha4_dates:
             data_week1_pha4.append(data_week(data, date_init, 1, nt))
             data_week2_pha4.append(data_week(data, date_init, nt+1, nt*2))
@@ -154,6 +158,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha4.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha4.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 4',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha5_dates:
             data_week1_pha5.append(data_week(data, date_init, 1, nt)) 
             data_week2_pha5.append(data_week(data, date_init, nt+1, nt*2))
@@ -161,6 +166,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha5.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha5.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 5',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha6_dates:
             data_week1_pha6.append(data_week(data, date_init, 1, nt))
             data_week2_pha6.append(data_week(data, date_init, nt+1, nt*2))
@@ -168,6 +174,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha6.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha6.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 6',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha7_dates:
             data_week1_pha7.append(data_week(data, date_init, 1, nt))
             data_week2_pha7.append(data_week(data, date_init, nt+1, nt*2))
@@ -175,6 +182,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha7.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha7.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 7',date_init)
+            date_init_all.append(date_init)
         if date_init in mjo_pha8_dates:
             data_week1_pha8.append(data_week(data, date_init, 1, nt))
             data_week2_pha8.append(data_week(data, date_init, nt+1, nt*2))
@@ -182,6 +190,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
             data_week4_pha8.append(data_week(data, date_init, nt*3+1, nt*4))
             data_week5_pha8.append(data_week(data, date_init, nt*4+1, nt*5))
             print('Phase 8',date_init)
+            date_init_all.append(date_init)
     
     data_week1 = comb_list(data_week1_pha1, data_week1_pha2, data_week1_pha3, data_week1_pha4, 
                             data_week1_pha5, data_week1_pha6, data_week1_pha7, data_week1_pha8)
@@ -193,7 +202,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_ph
                             data_week4_pha5, data_week4_pha6, data_week4_pha7, data_week4_pha8)
     data_week5 = comb_list(data_week5_pha1, data_week5_pha2, data_week5_pha3, data_week5_pha4, 
                             data_week5_pha5, data_week5_pha6, data_week5_pha7, data_week5_pha8)      
-    return data_week1, data_week2, data_week3, data_week4, data_week5
+    return data_week1, data_week2, data_week3, data_week4, data_week5, date_init_all
 
 def data_week_pha_comb(data_week1,data_week2,data_week3,data_week4,data_week5,npha,phase):
     data_week1_pha, data_week2_pha, data_week3_pha, data_week4_pha, data_week5_pha = [],[],[],[],[]
