@@ -101,7 +101,7 @@ def comb_list(data_pha1, data_pha2, data_pha3, data_pha4, data_pha5, data_pha6, 
     return data_out
 
 # MJO events
-def mjo_week_mo(fileList, SYY, EYY, lats, levs, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
+def mjo_week_mo(fileList, SYY, EYY, lats, lons, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8, **kwargs):
     INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
     INITDAY = kwargs.get('INITDAY', ['01','15'])
     nt = kwargs.get('nt', 7)
