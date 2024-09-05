@@ -35,7 +35,7 @@ def get_variable_from_dataset(ds):
     return da
     raise RuntimeError("Couldn't find a zonal wind variable name")
 
-def read_data_mo(datafn,lats,levs,**kwargs):
+def read_data_mo(datafn,lats,**kwargs):
     lons = kwargs.get('lons', [0,360])
     
     #files = np.sort(glob.glob(datafn+'*.nc*'))
@@ -46,7 +46,7 @@ def read_data_mo(datafn,lats,levs,**kwargs):
     init_day = pd.to_datetime(init_time).day
     if init_month in [1,2,3,11,12]:
         fcst = get_variable_from_dataset(data_tmp)
-        data = fcst.sel(latitude=lats, lev=levs).mean(dim=('longitude'),skipna=True)
+        data = fcst.sel(latitude=lats).mean(dim=('longitude'),skipna=True)
     else: 
         data = 0     
     return data, init_year, init_month, init_day
@@ -125,7 +125,7 @@ def mjo_week_mo(fileList, SYY, EYY, lats, lons, mjo_pha1, mjo_pha2, mjo_pha3, mj
     mjo_pha8_dates = pd.to_datetime(mjo_pha8.time,format="%Y/%m/%d")
     for ifile in range(len(fileList)):
         datafn = fileList[ifile]
-        data, init_year, init_month, init_day = read_data_mo(datafn,lats,levs,lons=lons)
+        data, init_year, init_month, init_day = read_data_mo(datafn,lats,lons=lons)
         date_init = datetime(year=init_year,month=init_month,day=init_day)
         if date_init in mjo_pha1_dates:
             data_week1_pha1.append(data_week(data, date_init, 1, nt))
