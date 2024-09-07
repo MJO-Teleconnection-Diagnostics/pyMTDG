@@ -20,7 +20,7 @@ import os
 import sys
 sys.path.insert(0, '../Utils')
 from u10_utils import *
-
+from obs_utils import *
 
 # Read yaml file
 config_file=Path('../driver/config.yml').resolve()
@@ -36,8 +36,14 @@ import matplotlib.path as mpath
 import matplotlib.colors as mcolors
 
 
-tBegin=dictionary['START_DATE']
-tEnd=dictionary['END_DATE']
+#tBegin=dictionary['START_DATE']
+#tEnd=dictionary['END_DATE']
+
+yyyymmdd_Begin=dictionary['START_DATE']
+tBegin=yyyymmdd_Begin[0:4]+'-'+yyyymmdd_Begin[4:6]+'-'+yyyymmdd_Begin[6:8]
+yyyymmdd_End=dictionary['END_DATE']
+tEnd=yyyymmdd_End[0:4]+'-'+yyyymmdd_End[4:6]+'-'+yyyymmdd_End[6:8]
+
 nyrs=date.fromisoformat(tEnd).year-date.fromisoformat(tBegin).year +1
 SYY=date.fromisoformat(tBegin).year
 SMM=date.fromisoformat(tBegin).month
@@ -218,7 +224,7 @@ p5_data_week1_pha56, p5_data_week2_pha56, p5_data_week3_pha56, p5_data_week4_pha
 xlabel = 'u1060 [m/s]'
 fig_name = 'u1060_hist'
 
-histogram_mjo(ds_fcst_name,xlabel,fig_name,p5_data_week1_pha12,p5_data_week2_pha12,p5_data_week3_pha12,p5_data_week4_pha12,p5_data_week5_pha12,
+histogram_mjo(ds_fcst_name,ds_obs_name,xlabel,fig_name,p5_data_week1_pha12,p5_data_week2_pha12,p5_data_week3_pha12,p5_data_week4_pha12,p5_data_week5_pha12,
               p5_data_week1_pha56,p5_data_week2_pha56,p5_data_week3_pha56,p5_data_week4_pha56,p5_data_week5_pha56,
               data_r_week1_pha12,data_r_week2_pha12,data_r_week3_pha12,data_r_week4_pha12,data_r_week5_pha12,
               data_r_week1_pha56,data_r_week2_pha56,data_r_week3_pha56,data_r_week4_pha56,data_r_week5_pha56)
