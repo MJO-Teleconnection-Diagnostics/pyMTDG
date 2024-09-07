@@ -2587,7 +2587,7 @@ class zonal_wind_histResult(QMainWindow):
         self.imagebuttons=[]
         #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
         self.helpTexts=[''' 
-Histograms of zonal-mean zonal wind at 10 hPa and 60°N (U1060) for November-March forecasts for week 1-2 following the MJO phases 1–2 (blue) and phases 5–6 (yellow). The solid blue and yellow lines indicate the mean values of U1060 during phases 1–2 and 5–6, respectively. The dashed blue and yellow lines indicate the 5th and 95th percentile of U1060 during phases 1-2 and 5-6, respectively
+Histograms of zonal-mean zonal wind at 10 hPa and 60°N (U1060) for November-March in observations (top) and forecasts (bottom) for week 1-2 following the MJO phases 1–2 (blue) and phases 5–6 (yellow). The solid blue and yellow lines indicate the mean values of U1060 during phases 1–2 and 5–6, respectively. The dashed blue and yellow lines indicate the 5th and 95th percentile of U1060 during phases 1-2 and 5-6, respectively
 '''
 ]
         
