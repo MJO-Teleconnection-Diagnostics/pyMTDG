@@ -6,6 +6,7 @@ from datetime import timedelta
 from datetime import date
 import matplotlib.pyplot as plt
 import glob
+import os
 
 def data_week(data, date_init, nday1, nday2):
     date_start = date_init + timedelta(days=nday1)
@@ -50,43 +51,6 @@ def read_data_mo(datafn,lats,**kwargs):
     else: 
         data = 0     
     return data, init_year, init_month, init_day
-
-def select_mjo_event(rmm_index,phase,phase_val):
-    
-    # Select MJO events with amplitude > 1 and in a given phase
-    # rmm_index: time series of the RMM index
-    # phase: time series of the phase
-    # phase_val: integer 1 ... 8
-    
-    mjo_events=rmm_index.where((rmm_index>1) & (phase==phase_val),drop=True)
-    return mjo_events
-
-def calcComposites(ds,mjo_events,week,name):
-    
-    if week == 'week1':
-        sday = 0
-    if week == 'week2':
-        sday = 7
-    if week == 'week3':
-        sday = 14
-    if week == 'week4':
-        sday = 21
-    if week == 'week5':
-        sday = 28
-    
-    tStrt=pd.to_datetime(mjo_events.time,format="%Y/%m/%d")+timedelta(days=sday)
-    tLast=pd.to_datetime(mjo_events.time,format="%Y/%m/%d")+timedelta(days=sday+7)
-    
-    ds_anoms = []
-    for i in range(len(mjo_events)):
-        
-        if tLast[i].month != 4:
-            anoms=ds.sel(time=slice(tStrt[i],tLast[i])).mean(dim='time')
-            #ds_anoms.append(anoms.to_dataset(name=name))
-            ds_anoms.append(anoms)
-    ds_comp_anoms=xr.combine_nested(ds_anoms,concat_dim='mjo_events')
-    
-    return ds_comp_anoms
 
 def comb_list(data_pha1, data_pha2, data_pha3, data_pha4, data_pha5, data_pha6, data_pha7, data_pha8):
     data_out = []
@@ -215,32 +179,49 @@ def data_week_pha_comb(data_week1,data_week2,data_week3,data_week4,data_week5,np
     return data_week1_pha, data_week2_pha, data_week3_pha, data_week4_pha, data_week5_pha
 
 # plotting histogram
-def histogram_mjo(EXP,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data_week3_pha12,data_week4_pha12,data_week5_pha12,
+def histogram_mjo(EXP,OBS,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data_week3_pha12,data_week4_pha12,data_week5_pha12,
                   data_week1_pha56,data_week2_pha56,data_week3_pha56,data_week4_pha56,data_week5_pha56,
                  data_r_week1_pha12,data_r_week2_pha12,data_r_week3_pha12,data_r_week4_pha12,data_r_week5_pha12,
                  data_r_week1_pha56,data_r_week2_pha56,data_r_week3_pha56,data_r_week4_pha56,data_r_week5_pha56):
-    fig = plt.figure(figsize=(20,2))
-    fig_title = [EXP+' Week1-2', EXP+' Week3-5', 'ERA-Interim Week1-2', 'ERA-Interim Week3-5']
+    #fig = plt.figure(figsize=(20,2))
+    fig = plt.figure(figsize=(8,6))
+    #fig_title = [EXP+' Week1-2', EXP+' Week3-5', 'ERA-Interim Week1-2', 'ERA-Interim Week3-5']
+    fig_title = [OBS+' Week1-2', OBS+' Week3-5', EXP+' Week1-2', EXP+' Week3-5']
     count = 1
     for ii in range(4):
         if ii == 0: 
-            tmp = np.hstack(data_week1_pha12+data_week2_pha12)
-            tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
-        if ii == 1:
-            tmp = np.hstack(data_week3_pha12+data_week4_pha12+data_week5_pha12)
-            tmp1 = np.hstack(data_week3_pha56+data_week4_pha56+data_week5_pha56)
-        if ii == 2: 
+            #tmp = np.hstack(data_week1_pha12+data_week2_pha12)
+            #tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
             tmp = np.hstack(data_r_week1_pha12+data_r_week2_pha12)
             tmp1 = np.hstack(data_r_week1_pha56+data_r_week2_pha56)
-        if ii == 3: 
+        if ii == 1:
+            #tmp = np.hstack(data_week3_pha12+data_week4_pha12+data_week5_pha12)
+            #tmp1 = np.hstack(data_week3_pha56+data_week4_pha56+data_week5_pha56)
             tmp = np.hstack(data_r_week3_pha12+data_r_week4_pha12+data_r_week5_pha12)
             tmp1 = np.hstack(data_r_week3_pha56+data_r_week4_pha56+data_r_week5_pha56)
+        if ii == 2: 
+            #tmp = np.hstack(data_r_week1_pha12+data_r_week2_pha12)
+            #tmp1 = np.hstack(data_r_week1_pha56+data_r_week2_pha56)
+            tmp = np.hstack(data_week1_pha12+data_week2_pha12)
+            tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
+        if ii == 3: 
+            #tmp = np.hstack(data_r_week3_pha12+data_r_week4_pha12+data_r_week5_pha12)
+            #tmp1 = np.hstack(data_r_week3_pha56+data_r_week4_pha56+data_r_week5_pha56)
+            tmp = np.hstack(data_week3_pha12+data_week4_pha12+data_week5_pha12)
+            tmp1 = np.hstack(data_week3_pha56+data_week4_pha56+data_week5_pha56)
         weights = np.ones_like(tmp) / float(len(tmp))
         weights_1 = np.ones_like(tmp1) / float(len(tmp1))
-        ax = fig.add_subplot(1,5,count) #-30,80,5   -10,300,10   -10,36,2   -5,30,1.5
+        #ax = fig.add_subplot(1,5,count) #-30,80,5   -10,300,10   -10,36,2   -5,30,1.5
+        ax = fig.add_subplot(2,2,count) #-30,80,5 -10,300,10 -10,36,2 -5,30,1.5
         cmin, cmax, cinterv = -30,80,5 
         plt.hist(tmp,bins=np.arange(cmin, cmax, cinterv), weights=weights, edgecolor="black", color="blue", alpha = 0.7)
         plt.hist(tmp1,bins=np.arange(cmin, cmax, cinterv), weights=weights_1, edgecolor="black", color="yellow", alpha = 0.5)
+        plt.subplots_adjust(left=0.1,
+                     bottom=0.1, 
+                     right=0.9, 
+                     top=0.9, 
+                     wspace=0.2, 
+                     hspace=0.4)
         ax.legend(labels=['MJO12', 'MJO56'])
         plt.vlines(np.nanmean(tmp), 0, 0.52, colors='b')
         plt.vlines(np.nanpercentile(tmp, 5), 0, 0.52, colors='b', linestyle='dashed')
@@ -255,6 +236,8 @@ def histogram_mjo(EXP,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data_wee
             ax.set_ylabel('Frequency')
         ax.grid(axis='y')
         count += 1
+    if not os.path.exists('../output/Zonal_Wind_Hist/'+EXP): 
+        os.mkdir('../output/Zonal_Wind_Hist/'+EXP)
     plt.savefig('../output/Zonal_Wind_Hist/'+EXP+'/'+fig_name+'.png',bbox_inches = 'tight')
     return
 
