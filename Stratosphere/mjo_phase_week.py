@@ -46,8 +46,8 @@ years = np.arange(SYY,EYY+1)
 # %%
 # Suppose the users have heat flux or geopotential height data computed already for the reanalysis
 if (dictionary['ERAI']==True):
-    fil_obs=dictionary['DIR_IN']+'/ERA-Interim/vt500w12-1979-2018.nc'
-    # fil_obs=dictionary['DIR_IN']+'/ERA-Interim/gph100-1979-2018.nc'
+    fil_obs=dictionary['DIR_IN']+'/ERA-Interim/vt500w12-2011-2018.nc'
+    # fil_obs=dictionary['DIR_IN']+'/ERA-Interim/gph100-2011-2018.nc'
     ds_obs_name='ERAI'
     
 if (dictionary['ERAI']==False):
@@ -55,7 +55,7 @@ if (dictionary['ERAI']==False):
     fil_obs=dictionary['Path to heat flux at 500 hPa observation data files']
     ds_obs_name='OBS'
 data_obs = xr.open_mfdataset(fil_obs,combine='by_coords').compute()
-data_obs = np.squeeze(data_obs.sel(time=data_obs.time.dt.year.isin(years)))
+data_obs = np.squeeze(data_obs.sel(time=data_obs.time.dt.year.isin(years)).vt)
 
 # %%
 # compute anomaly
@@ -90,6 +90,24 @@ mjo_pha5 = select_mjo_event(rmm.amplitude,rmm.phase,5)
 mjo_pha6 = select_mjo_event(rmm.amplitude,rmm.phase,6)
 mjo_pha7 = select_mjo_event(rmm.amplitude,rmm.phase,7)
 mjo_pha8 = select_mjo_event(rmm.amplitude,rmm.phase,8)
+
+
+def get_variable_from_dataset(ds):
+    '''
+        Extract the target variable from the dataset. Convert to target units
+        
+            Parameters
+                ds: xarray dataset
+            Returns
+                da: subsetted dataArray in
+    '''
+    for name in ['V', 'v', 'vwnd','T','t','temp','Z','z','gh']:
+        if name in list(ds.keys()):
+            break
+    da = ds[name]
+    return da
+    raise RuntimeError("Couldn't find a zonal wind variable name")
+
 
 # %%
 def heat_flux_amp(data_t, data_v, wavn):
@@ -129,18 +147,20 @@ def compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons, **kwargs):
     
     for ifile in range(len(fileList_v)):
         datafn = fileList_t[ifile]
-        data_t = xr.open_mfdataset(datafn,combine='by_coords').compute()
-        init_time = data_t.time[0].values
+        data_tmp = xr.open_mfdataset(datafn,combine='by_coords').compute()
+        init_time = data_tmp.time[0].values
         init_month = pd.to_datetime(init_time).month
         if init_month in [1,2,3,11,12]:
             init_year = pd.to_datetime(init_time).year
             init_day = pd.to_datetime(init_time).day
             date_init = datetime(year=init_year,month=init_month,day=init_day)
-            data_t = data_t.sel(latitude=slice(lats[0],lats[1]), lev=levs).t
+            data_tmp = data_tmp.sel(latitude=slice(lats[0],lats[1]), lev=levs)
+            data_t = get_variable_from_dataset(data_tmp)
             
             datafn = fileList_v[ifile]
-            data_v = xr.open_mfdataset(datafn,combine='by_coords').compute()
-            data_v = data_v.sel(latitude=slice(lats[0],lats[1]), lev=levs).v
+            data_tmp1 = xr.open_mfdataset(datafn,combine='by_coords').compute()
+            data_tmp1 = data_tmp1.sel(latitude=slice(lats[0],lats[1]), lev=levs)
+            data_v = get_variable_from_dataset(data_tmp1)
             date_init_all.append(date_init)
 
             wavn = 3 # wave1+2
@@ -163,7 +183,7 @@ def compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons, **kwargs):
     return anoms, date_init_all
 
 # %%
-# model heat flux with MJO events
+# model gph with MJO events
 def compute_gph_anom(fileList_z, lats, levs, lons, **kwargs):
     INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
     INITDAY = kwargs.get('INITDAY', ['01','15'])
@@ -189,16 +209,17 @@ def compute_gph_anom(fileList_z, lats, levs, lons, **kwargs):
             init_day = pd.to_datetime(init_time).day
             date_init = datetime(year=init_year,month=init_month,day=init_day)
 
-            data_t = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[0],lats[1]), lev=levs)
+            data_tmp = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[0],lats[1]), lev=levs)
+            data_t = get_variable_from_dataset(data_tmp)
             del data
             lon = data_t.coords['longitude'].values
             lat = data_t.coords['latitude'].values
             dlat = np.deg2rad(np.abs(lat[1]-lat[0]))
             dlon = np.deg2rad(np.abs(lon[1]-lon[0]))
             darea = dlat * dlon * np.cos(np.deg2rad(data_t.latitude))
-            weights = darea.where(data_t.gh[0])
+            weights = darea.where(data_t[0])
             weights_sum = weights.sum(dim=('longitude', 'latitude'))
-            data = (data_t.gh * weights).sum(dim=('longitude', 'latitude')) / weights_sum
+            data = (data_t * weights).sum(dim=('longitude', 'latitude')) / weights_sum
             
             nfct = len(data.time)
             if iyear == SYY:
@@ -355,55 +376,20 @@ fileList_v, fileList_t = extract_files(fcst_dir_v, fcst_dir_t, ds_fcst_name)
 
 p5_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons)
 
-ds_fcst_name='UFS6' 
-
-fileList_v, fileList_t = extract_files(fcst_dir_v, fcst_dir_t, ds_fcst_name)
-
-p6_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons)
-
-ds_fcst_name='UFS7' 
-
-fileList_v, fileList_t = extract_files(fcst_dir_v, fcst_dir_t, ds_fcst_name)
-
-p7_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons)
-
-ds_fcst_name='UFS8' 
-
-fileList_v, fileList_t = extract_files(fcst_dir_v, fcst_dir_t, ds_fcst_name)
-
-p8_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons)
-
 
 # %%
 # compute gph anomaly
-lats = [90,55]; levs = [500,300,100,10]; lons = [300,360]
+# lats = [90,55]; levs = [100]; lons = [300,360]
 
-fcst_dir_z = '/mjo/MJO-Teleconnections-develop/data/z/'
-fcst_dir_t = '/mjo/MJO-Teleconnections-develop/data/t/'
+# fcst_dir_z = '/mjo/MJO-Teleconnections-develop/data/z/'
+# fcst_dir_t = '/mjo/MJO-Teleconnections-develop/data/t/'
 
-ds_fcst_name='UFS5' 
+# ds_fcst_name='UFS5' 
 
-fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
+# fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
 
-p5_anoms, date_init_all = compute_gph_anom(fileList_z, fileList_t, lats, levs, lons)
+# p5_anoms, date_init_all = compute_gph_anom(fileList_z, fileList_t, lats, levs, lons)
 
-ds_fcst_name='UFS6' 
-
-fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
-
-p6_anoms, date_init_all = compute_heatflux_anom(fileList_z, fileList_t, lats, levs, lons)
-
-ds_fcst_name='UFS7' 
-
-fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
-
-p7_anoms, date_init_all = compute_heatflux_anom(fileList_z, fileList_t, lats, levs, lons)
-
-ds_fcst_name='UFS8' 
-
-fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
-
-p8_anoms, date_init_all = compute_heatflux_anom(fileList_z, fileList_t, lats, levs, lons)
 
 
 # %%
@@ -411,14 +397,6 @@ p8_anoms, date_init_all = compute_heatflux_anom(fileList_z, fileList_t, lats, le
 p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5 = mjo_anoms_week_mo(p5_anoms, date_init_all, 
                                                                                                  mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
-p6_data_week1, p6_data_week2, p6_data_week3, p6_data_week4, p6_data_week5 = mjo_anoms_week_mo(p6_anoms, date_init_all, 
-                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
-
-p7_data_week1, p7_data_week2, p7_data_week3, p7_data_week4, p7_data_week5 = mjo_anoms_week_mo(p7_anoms, date_init_all,
-                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
-
-p8_data_week1, p8_data_week2, p8_data_week3, p8_data_week4, p8_data_week5 = mjo_anoms_week_mo(p8_anoms, date_init_all, 
-                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 
 # %%
@@ -514,7 +492,7 @@ print(np.shape(data_r_week1_pha1),np.shape(data_r_week1_pha2),np.shape(data_r_we
 
 # %%
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,figt,fig_name):
+def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,figt):
     fig = plt.figure(figsize=(9,3))
     dat1 = np.ndarray((5,8)) # (week, mjo phase)
     dat2 = np.ndarray((5,8))
@@ -549,17 +527,9 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,fi
     plt.title(fig_title, fontsize=22)
     ax.set_xlabel('phase', fontsize=18)
     ax.set_ylabel('week', fontsize=18)
-    plt.savefig(fig_name)
 
 # %%
 figt = 'vtw1+2 500hPa [Km/s]'
-fig_name = 'ERAI_vtw12_500_ndjfm_mjo1-8_resub.png'
-mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,sigt_r,figt,fig_name)
-fig_name = 'UFSp5_vtw12_500_ndjfm_mjo1-8.png'
-mjo_phase_lag_plot(p5_data_week1,p5_data_week2,p5_data_week3,p5_data_week4,p5_data_week5,sigt_p5,figt,fig_name)
-fig_name = 'UFSp6_vtw12_500_ndjfm_mjo1-8.png'
-mjo_phase_lag_plot(p6_data_week1,p6_data_week2,p6_data_week3,p6_data_week4,p6_data_week5,sigt_p6,figt,fig_name)
-fig_name = 'UFSp7_vtw12_500_ndjfm_mjo1-8.png'
-mjo_phase_lag_plot(p7_data_week1,p7_data_week2,p7_data_week3,p7_data_week4,p7_data_week5,sigt_p7,figt,fig_name)
-fig_name = 'UFSp8_vtw12_500_ndjfm_mjo1-8.png'
-mjo_phase_lag_plot(p8_data_week1,p8_data_week2,p8_data_week3,p8_data_week4,p8_data_week5,sigt_p8,figt,fig_name)
+mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,sigt_r,figt)
+
+mjo_phase_lag_plot(p5_data_week1,p5_data_week2,p5_data_week3,p5_data_week4,p5_data_week5,sigt_p5,figt)
