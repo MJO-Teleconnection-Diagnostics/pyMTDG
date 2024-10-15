@@ -2,6 +2,7 @@
 import xarray as xr
 import numpy as np
 import pandas as pd
+import math
 import yaml
 from pathlib import Path
 from datetime import datetime 
@@ -46,21 +47,69 @@ years = np.arange(SYY,EYY+1)
 # %%
 # Suppose the users have heat flux or geopotential height data computed already for the reanalysis
 if (dictionary['ERAI']==True):
-    fil_obs=dictionary['DIR_IN']+'/ERA-Interim/vt500w12-2011-2018.nc'
-    # fil_obs=dictionary['DIR_IN']+'/ERA-Interim/gph100-2011-2018.nc'
+    filv_obs=dictionary['DIR_IN']+'/ERA-Interim/v500-1979-2018.nc'
+    filt_obs=dictionary['DIR_IN']+'/ERA-Interim/t500-1979-2018.nc'
+    filz_obs=dictionary['DIR_IN']+'/ERA-Interim/z100-1979-2018.nc'
     ds_obs_name='ERAI'
     
 if (dictionary['ERAI']==False):
     # need to add "Path to heat flux at 500 hPa observation data files" to config.yml
-    fil_obs=dictionary['Path to heat flux at 500 hPa observation data files']
+    filv_obs=dictionary['Path to meridional wind at 500 hPa observation data files']
+    filt_obs=dictionary['Path to temperature at 500 hPa observation data files']
+    filz_obs=dictionary['Path to z100 observation files']
     ds_obs_name='OBS'
-data_obs = xr.open_mfdataset(fil_obs,combine='by_coords').compute()
-data_obs = np.squeeze(data_obs.sel(time=data_obs.time.dt.year.isin(years)).vt)
+data_v_obs = xr.open_mfdataset(filv_obs,combine='by_coords').compute()
+data_v_obs = data_v_obs.sel(latitude=slice(80,40))
+data_v_obs = np.squeeze(data_v_obs.sel(time=data_v_obs.time.dt.year.isin(years)).v)
+
+data_t_obs = xr.open_mfdataset(filt_obs,combine='by_coords').compute()
+data_t_obs = data_t_obs.sel(latitude=slice(80,40))
+data_t_obs = np.squeeze(data_t_obs.sel(time=data_t_obs.time.dt.year.isin(years)).t)
+
+data_z_obs = xr.open_mfdataset(filz_obs,combine='by_coords').compute()
+data_z_obs = data_z_obs.sel(latitude=slice(90,55))
+data_z_obs = np.squeeze(data_z_obs.sel(time=data_z_obs.time.dt.year.isin(years)).z)
+
+lon = data_z_obs.coords['longitude'].values
+lat = data_z_obs.coords['latitude'].values
+dlat = np.deg2rad(np.abs(lat[1]-lat[0]))
+dlon = np.deg2rad(np.abs(lon[1]-lon[0]))
+darea = dlat * dlon * np.cos(np.deg2rad(data_z_obs.latitude))
+weights = darea.where(data_z_obs[0])
+weights_sum = weights.sum(dim=('longitude', 'latitude'))
+data_pcz_obs = (data_z_obs * weights).sum(dim=('longitude', 'latitude')) / weights_sum
+
+# %%
+def heat_flux_amp(data_t, data_v, wavn):
+    nlon = len(data_t.longitude.values)
+    data_t_fft = npft.fft(data_t,axis=2)
+    data_v_fft = npft.fft(data_v,axis=2)
+    data_t_fft_conj = np.conj(data_t_fft)
+    data_vt = np.multiply(data_v_fft[:,:,1:wavn],data_t_fft_conj[:,:,1:wavn])
+    vt_amp = np.sum(data_vt.real,axis=2)*2/nlon/nlon
+
+    time_dim = data_t.coords['time']
+    lat_dim = data_t.coords['latitude']
+    data_vt_amp = xr.DataArray(vt_amp, coords={'time': time_dim, 'latitude': lat_dim}, dims=["time","latitude"])
+
+    weights = np.cos(np.deg2rad(data_vt_amp.latitude))
+    weights.name = "weights"
+    data_vt_amp_weighted = data_vt_amp.weighted(weights)
+    data_amp = data_vt_amp_weighted.mean(dim=("latitude"))
+    return data_amp
+
+wavn = 3
+vt_obs = heat_flux_amp(data_t_obs, data_v_obs, wavn)
 
 # %%
 # compute anomaly
-data_r_clim = data_obs.groupby(data_obs.time.dt.dayofyear).mean(dim='time')
-data_r = data_obs.groupby(data_obs.time.dt.dayofyear) - data_r_clim
+def anom_re(data_obs):
+    data_r_clim = data_obs.groupby(data_obs.time.dt.dayofyear).mean(dim='time')
+    data_r = data_obs.groupby(data_obs.time.dt.dayofyear) - data_r_clim
+    return data_r
+
+data_r = anom_re(vt_obs)
+data_z_r = anom_re(data_pcz_obs)
 
 # %%
 if (dictionary['RMM']==False):
@@ -109,24 +158,6 @@ def get_variable_from_dataset(ds):
     raise RuntimeError("Couldn't find a zonal wind variable name")
 
 
-# %%
-def heat_flux_amp(data_t, data_v, wavn):
-    nlon = len(data_t.longitude.values)
-    data_t_fft = npft.fft(data_t,axis=2)
-    data_v_fft = npft.fft(data_v,axis=2)
-    data_t_fft_conj = np.conj(data_t_fft)
-    data_vt = np.multiply(data_v_fft[:,:,1:wavn],data_t_fft_conj[:,:,1:wavn])
-    vt_amp = np.sum(data_vt.real,axis=2)*2/nlon/nlon
-
-    time_dim = data_t.coords['time']
-    lat_dim = data_t.coords['latitude']
-    data_vt_amp = xr.DataArray(vt_amp, coords={'time': time_dim, 'latitude': lat_dim}, dims=["time","latitude"])
-
-    weights = np.cos(np.deg2rad(data_vt_amp.latitude))
-    weights.name = "weights"
-    data_vt_amp_weighted = data_vt_amp.weighted(weights)
-    data_amp = data_vt_amp_weighted.mean(dim=("latitude"))
-    return data_amp
 
 # %%
 # model heat flux with MJO events
@@ -379,16 +410,16 @@ p5_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, le
 
 # %%
 # compute gph anomaly
-# lats = [90,55]; levs = [100]; lons = [300,360]
+lats = [90,55]; levs = [100]; lons = [300,360]
 
-# fcst_dir_z = '/mjo/MJO-Teleconnections-develop/data/z/'
-# fcst_dir_t = '/mjo/MJO-Teleconnections-develop/data/t/'
+fcst_dir_z = '/mjo/MJO-Teleconnections-develop/data/z/'
+fcst_dir_t = '/mjo/MJO-Teleconnections-develop/data/t/'
 
-# ds_fcst_name='UFS5' 
+ds_fcst_name='UFS5' 
 
-# fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
+fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
 
-# p5_anoms, date_init_all = compute_gph_anom(fileList_z, fileList_t, lats, levs, lons)
+p5_z_anoms, date_init_all = compute_gph_anom(fileList_z, fileList_t, lats, levs, lons)
 
 
 
@@ -397,102 +428,112 @@ p5_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, le
 p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5 = mjo_anoms_week_mo(p5_anoms, date_init_all, 
                                                                                                  mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
-
+p5_z_data_week1, p5_z_data_week2, p5_z_data_week3, p5_z_data_week4, p5_z_data_week5 = mjo_anoms_week_mo(p5_z_anoms, date_init_all, 
+                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 # %%
 # MJO events reanalysis
-nt = 7
-data_r_week1_pha1,data_r_week2_pha1,data_r_week3_pha1,data_r_week4_pha1,data_r_week5_pha1 = [],[],[],[],[]
-data_r_week1_pha2,data_r_week2_pha2,data_r_week3_pha2,data_r_week4_pha2,data_r_week5_pha2 = [],[],[],[],[]
-data_r_week1_pha3,data_r_week2_pha3,data_r_week3_pha3,data_r_week4_pha3,data_r_week5_pha3 = [],[],[],[],[]
-data_r_week1_pha4,data_r_week2_pha4,data_r_week3_pha4,data_r_week4_pha4,data_r_week5_pha4 = [],[],[],[],[]
-data_r_week1_pha5,data_r_week2_pha5,data_r_week3_pha5,data_r_week4_pha5,data_r_week5_pha5 = [],[],[],[],[]
-data_r_week1_pha6,data_r_week2_pha6,data_r_week3_pha6,data_r_week4_pha6,data_r_week5_pha6 = [],[],[],[],[]
-data_r_week1_pha7,data_r_week2_pha7,data_r_week3_pha7,data_r_week4_pha7,data_r_week5_pha7 = [],[],[],[],[]
-data_r_week1_pha8,data_r_week2_pha8,data_r_week3_pha8,data_r_week4_pha8,data_r_week5_pha8 = [],[],[],[],[]
-mjo_pha1_dates = pd.to_datetime(mjo_pha1.time,format="%Y/%m/%d")
-mjo_pha2_dates = pd.to_datetime(mjo_pha2.time,format="%Y/%m/%d")
-mjo_pha3_dates = pd.to_datetime(mjo_pha3.time,format="%Y/%m/%d")
-mjo_pha4_dates = pd.to_datetime(mjo_pha4.time,format="%Y/%m/%d")
-mjo_pha5_dates = pd.to_datetime(mjo_pha5.time,format="%Y/%m/%d")
-mjo_pha6_dates = pd.to_datetime(mjo_pha6.time,format="%Y/%m/%d")
-mjo_pha7_dates = pd.to_datetime(mjo_pha7.time,format="%Y/%m/%d")
-mjo_pha8_dates = pd.to_datetime(mjo_pha8.time,format="%Y/%m/%d")
-for it in range(len(date_init_all)): 
-    date_init = date_init_all[it]        
-    if date_init in mjo_pha1_dates:
-        data_r_week1_pha1.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha1.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha1.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha1.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha1.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 1',date_init)
-    if date_init in mjo_pha2_dates:
-        data_r_week1_pha2.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha2.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha2.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha2.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha2.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 2',date_init)
-    if date_init in mjo_pha3_dates:
-        data_r_week1_pha3.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha3.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha3.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha3.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha3.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 3',date_init)
-    if date_init in mjo_pha4_dates:
-        data_r_week1_pha4.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha4.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha4.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha4.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha4.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 4',date_init)
-    if date_init in mjo_pha5_dates:
-        data_r_week1_pha5.append(data_week(data_r, date_init, 0, nt)) 
-        data_r_week2_pha5.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha5.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha5.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha5.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 5',date_init)
-    if date_init in mjo_pha6_dates:
-        data_r_week1_pha6.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha6.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha6.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha6.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha6.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 6',date_init)
-    if date_init in mjo_pha7_dates:
-        data_r_week1_pha7.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha7.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha7.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha7.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha7.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 7',date_init)
-    if date_init in mjo_pha8_dates:
-        data_r_week1_pha8.append(data_week(data_r, date_init, 0, nt))
-        data_r_week2_pha8.append(data_week(data_r, date_init, nt, nt*2))
-        data_r_week3_pha8.append(data_week(data_r, date_init, nt*2, nt*3))
-        data_r_week4_pha8.append(data_week(data_r, date_init, nt*3, nt*4))
-        data_r_week5_pha8.append(data_week(data_r, date_init, nt*4, nt*5))
-        print('Phase 8',date_init)
+def mjo_anoms_week_re(data_r, date_init_all, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8):
+    nt = 7
+    data_r_week1_pha1,data_r_week2_pha1,data_r_week3_pha1,data_r_week4_pha1,data_r_week5_pha1 = [],[],[],[],[]
+    data_r_week1_pha2,data_r_week2_pha2,data_r_week3_pha2,data_r_week4_pha2,data_r_week5_pha2 = [],[],[],[],[]
+    data_r_week1_pha3,data_r_week2_pha3,data_r_week3_pha3,data_r_week4_pha3,data_r_week5_pha3 = [],[],[],[],[]
+    data_r_week1_pha4,data_r_week2_pha4,data_r_week3_pha4,data_r_week4_pha4,data_r_week5_pha4 = [],[],[],[],[]
+    data_r_week1_pha5,data_r_week2_pha5,data_r_week3_pha5,data_r_week4_pha5,data_r_week5_pha5 = [],[],[],[],[]
+    data_r_week1_pha6,data_r_week2_pha6,data_r_week3_pha6,data_r_week4_pha6,data_r_week5_pha6 = [],[],[],[],[]
+    data_r_week1_pha7,data_r_week2_pha7,data_r_week3_pha7,data_r_week4_pha7,data_r_week5_pha7 = [],[],[],[],[]
+    data_r_week1_pha8,data_r_week2_pha8,data_r_week3_pha8,data_r_week4_pha8,data_r_week5_pha8 = [],[],[],[],[]
+    mjo_pha1_dates = pd.to_datetime(mjo_pha1.time,format="%Y/%m/%d")
+    mjo_pha2_dates = pd.to_datetime(mjo_pha2.time,format="%Y/%m/%d")
+    mjo_pha3_dates = pd.to_datetime(mjo_pha3.time,format="%Y/%m/%d")
+    mjo_pha4_dates = pd.to_datetime(mjo_pha4.time,format="%Y/%m/%d")
+    mjo_pha5_dates = pd.to_datetime(mjo_pha5.time,format="%Y/%m/%d")
+    mjo_pha6_dates = pd.to_datetime(mjo_pha6.time,format="%Y/%m/%d")
+    mjo_pha7_dates = pd.to_datetime(mjo_pha7.time,format="%Y/%m/%d")
+    mjo_pha8_dates = pd.to_datetime(mjo_pha8.time,format="%Y/%m/%d")
+    for it in range(len(date_init_all)): 
+        date_init = date_init_all[it]        
+        if date_init in mjo_pha1_dates:
+            data_r_week1_pha1.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha1.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha1.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha1.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha1.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 1',date_init)
+        if date_init in mjo_pha2_dates:
+            data_r_week1_pha2.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha2.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha2.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha2.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha2.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 2',date_init)
+        if date_init in mjo_pha3_dates:
+            data_r_week1_pha3.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha3.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha3.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha3.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha3.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 3',date_init)
+        if date_init in mjo_pha4_dates:
+            data_r_week1_pha4.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha4.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha4.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha4.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha4.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 4',date_init)
+        if date_init in mjo_pha5_dates:
+            data_r_week1_pha5.append(data_week(data_r, date_init, 0, nt)) 
+            data_r_week2_pha5.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha5.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha5.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha5.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 5',date_init)
+        if date_init in mjo_pha6_dates:
+            data_r_week1_pha6.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha6.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha6.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha6.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha6.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 6',date_init)
+        if date_init in mjo_pha7_dates:
+            data_r_week1_pha7.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha7.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha7.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha7.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha7.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 7',date_init)
+        if date_init in mjo_pha8_dates:
+            data_r_week1_pha8.append(data_week(data_r, date_init, 0, nt))
+            data_r_week2_pha8.append(data_week(data_r, date_init, nt, nt*2))
+            data_r_week3_pha8.append(data_week(data_r, date_init, nt*2, nt*3))
+            data_r_week4_pha8.append(data_week(data_r, date_init, nt*3, nt*4))
+            data_r_week5_pha8.append(data_week(data_r, date_init, nt*4, nt*5))
+            print('Phase 8',date_init)
         
-data_r_week1 = comb_list(data_r_week1_pha1, data_r_week1_pha2, data_r_week1_pha3, data_r_week1_pha4, 
-                        data_r_week1_pha5, data_r_week1_pha6, data_r_week1_pha7, data_r_week1_pha8)
-data_r_week2 = comb_list(data_r_week2_pha1, data_r_week2_pha2, data_r_week2_pha3, data_r_week2_pha4, 
-                        data_r_week2_pha5, data_r_week2_pha6, data_r_week2_pha7, data_r_week2_pha8)
-data_r_week3 = comb_list(data_r_week3_pha1, data_r_week3_pha2, data_r_week3_pha3, data_r_week3_pha4, 
-                        data_r_week3_pha5, data_r_week3_pha6, data_r_week3_pha7, data_r_week3_pha8)
-data_r_week4 = comb_list(data_r_week4_pha1, data_r_week4_pha2, data_r_week4_pha3, data_r_week4_pha4, 
-                        data_r_week4_pha5, data_r_week4_pha6, data_r_week4_pha7, data_r_week4_pha8)
-data_r_week5 = comb_list(data_r_week5_pha1, data_r_week5_pha2, data_r_week5_pha3, data_r_week5_pha4, 
-                        data_r_week5_pha5, data_r_week5_pha6, data_r_week5_pha7, data_r_week5_pha8)
-print(np.shape(data_r_week1_pha1),np.shape(data_r_week1_pha2),np.shape(data_r_week1_pha3),np.shape(data_r_week1_pha4),np.shape(data_r_week1_pha5),np.shape(data_r_week1_pha6),np.shape(data_r_week1_pha7),np.shape(data_r_week1_pha8))
+    data_r_week1 = comb_list(data_r_week1_pha1, data_r_week1_pha2, data_r_week1_pha3, data_r_week1_pha4, 
+                            data_r_week1_pha5, data_r_week1_pha6, data_r_week1_pha7, data_r_week1_pha8)
+    data_r_week2 = comb_list(data_r_week2_pha1, data_r_week2_pha2, data_r_week2_pha3, data_r_week2_pha4, 
+                            data_r_week2_pha5, data_r_week2_pha6, data_r_week2_pha7, data_r_week2_pha8)
+    data_r_week3 = comb_list(data_r_week3_pha1, data_r_week3_pha2, data_r_week3_pha3, data_r_week3_pha4, 
+                            data_r_week3_pha5, data_r_week3_pha6, data_r_week3_pha7, data_r_week3_pha8)
+    data_r_week4 = comb_list(data_r_week4_pha1, data_r_week4_pha2, data_r_week4_pha3, data_r_week4_pha4, 
+                            data_r_week4_pha5, data_r_week4_pha6, data_r_week4_pha7, data_r_week4_pha8)
+    data_r_week5 = comb_list(data_r_week5_pha1, data_r_week5_pha2, data_r_week5_pha3, data_r_week5_pha4, 
+                            data_r_week5_pha5, data_r_week5_pha6, data_r_week5_pha7, data_r_week5_pha8)
 
+    print(np.shape(data_r_week1_pha1),np.shape(data_r_week1_pha2),np.shape(data_r_week1_pha3),np.shape(data_r_week1_pha4),np.shape(data_r_week1_pha5),np.shape(data_r_week1_pha6),np.shape(data_r_week1_pha7),np.shape(data_r_week1_pha8))
+    return data_r_week1, data_r_week2, data_r_week3, data_r_week4, data_r_week5
+
+
+data_r_week1, data_r_week2, data_r_week3, data_r_week4, data_r_week5 = mjo_anoms_week_re(data_r, date_init_all, 
+                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
+
+data_z_r_week1, data_z_r_week2, data_z_r_week3, data_z_r_week4, data_z_r_week5 = mjo_anoms_week_mo(data_z_r, date_init_all, 
+                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 # %%
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,figt):
+def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,cmin,cmax,figt):
     fig = plt.figure(figsize=(9,3))
     dat1 = np.ndarray((5,8)) # (week, mjo phase)
     dat2 = np.ndarray((5,8))
@@ -516,7 +557,6 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,fi
     count = 1
     dat = dat1
     fig_title = figt
-    cmin,cmax = -15, 16  #500hPaw1:1,4.4  500hPaw1+2:2,10 u1060:2,26
     clevs = np.arange(cmin,cmax,1) # np.linspace(cmin,cmax,11)
     ax = fig.add_subplot(1,3,count)
     h = ax.contourf(datx, daty, dat, clevs, cmap='RdBu_r', extend='both')
@@ -529,7 +569,16 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,fi
     ax.set_ylabel('week', fontsize=18)
 
 # %%
-figt = 'vtw1+2 500hPa [Km/s]'
-mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,sigt_r,figt)
+figt = 'Reanalysis vtw1+2 500hPa [Km/s]'
+cmin = math.floor(np.amin(data_r_week1.values))
+cmax = math.ceil(np.amax(data_r_week1.values))
+mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,sigt_r,cmin,cmax,figt)
+figt = 'Model vtw1+2 500hPa [Km/s]'
+mjo_phase_lag_plot(p5_data_week1,p5_data_week2,p5_data_week3,p5_data_week4,p5_data_week5,sigt_p5,cmin,cmax,figt)
 
-mjo_phase_lag_plot(p5_data_week1,p5_data_week2,p5_data_week3,p5_data_week4,p5_data_week5,sigt_p5,figt)
+figt = 'Reanalysis polar cap 100hPa Z mean'
+cmin = math.floor(np.amin(data_z_r_week1.values))
+cmax = math.ceil(np.amax(data_z_r_week1.values))
+mjo_phase_lag_plot(data_z_r_week1,data_z_r_week2,data_z_r_week3,data_z_r_week4,data_z_r_week5,sigt_r,cmin,cmax,figt)
+figt = 'Model polar cap 100hPa Z mean'
+mjo_phase_lag_plot(p5_z_data_week1,p5_z_data_week2,p5_z_data_week3,p5_z_data_week4,p5_z_data_week5,sigt_p5,cmin,cmax,figt)
