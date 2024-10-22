@@ -174,7 +174,7 @@ The RMM Index can also be specified. The file must contain the time series of:
 The list of diagnostics and required meteorological fields:
 ~~~
 STRIPES Index for Geopotential:
-	* Geopotential at 500 hPa
+	* Geopotential height at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 	*** Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'	
 ~~~
@@ -186,37 +186,43 @@ STRIPES Index for precipitation:
 ~~~
 ~~~
 Pattern Correlation and Relative Amplitude of the MJO teleconnections over the PNA region:
-	* Geopotential at 500 hPa
+	* Geopotential height at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
-	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+	*** Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
 Pattern Correlation and Relative Amplitude of the MJO teleconnections over the Atlantic region:
 	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
-	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+	*** Unit: Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
 Extra-tropical Cyclone Activity:
 	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
-	* Zonal and meridional winds at 850mb
+	* Zonal and meridional winds at 850 hPa
 	*** Zonal wind can be named any of: 'U','u', 'uwnd', U850', 'u850', 'uwnd850'
 	*** Meridional wind can be named any of: 'V', 'v', 'vwnd', 'V850', 'v850', 'vwnd850'
 	*** Unit: m/s
 ~~~
 ~~~
-Histogram of zonal wind at 10mb:
-	* Zonal wind at 10mb
+Histogram of zonal wind at 10 hPa:
+	* Zonal wind at 10 hPa
 	*** Variable can be named any of: 'U', 'u', 'uwnd', 'U10', 'u10', 'uwnd10' 
 	*** Unit: m/s
 ~~~
 ~~~
 Stratosphere:
-	* Meridional wind at 500mb
-	*** Variable can be named any of:
-	*** Unit:
+	* Meridional wind at 500 hPa
+	*** Variable can be named any of: 'V', 'v', 'v500','vwnd'
+	*** Unit: m/s
+	* Air temperature at 500 hPa
+	*** Variable can be named any of: 'T','t','temp','t500'
+	*** Unit: K
+	* Geopotential height at 100 hPa
+	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+        * Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
 Madden-Julian Oscillation (MJO)
