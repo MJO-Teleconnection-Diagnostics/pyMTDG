@@ -162,8 +162,10 @@ variables:
 ### 3.2 Observations <a name="data"></a>
 The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from here. The data is provided on the native grid (`latitudes=256, longitudes=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, [Integrated Multi-satellitE Retrivers for GPM](https://gpm.nasa.gov/data/imerg), IMERG, is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitudes=241`,`longitudes=480`). The package will interpolate the forecast data to the the IMERG grid.
 
-The package also works with user specified validation data. These data must be on the same grid as the forecast data. 
+The package also works with user specified validation data. These data must be on the same grid as the forecast data.
+
 The `Histogram of zonal wind at 10mb` diagnostic requires the zonal mean zonal wind at 60 N.
+
 The RMM Index can also be specified. The file must contain the time series of:
 - [x] **RMM Index amplitude** [var_name(dimension): amplitude(time)]
 - [x] **MJO phase** [var_name(dimension): phase(time)]	
@@ -172,7 +174,7 @@ The RMM Index can also be specified. The file must contain the time series of:
 The list of diagnostics and required meteorological fields:
 ~~~
 STRIPES Index for Geopotential:
-	* Geopotential at 500 hPa
+	* Geopotential height at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 	*** Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'	
 ~~~
@@ -184,37 +186,43 @@ STRIPES Index for precipitation:
 ~~~
 ~~~
 Pattern Correlation and Relative Amplitude of the MJO teleconnections over the PNA region:
-	* Geopotential at 500 hPa
+	* Geopotential height at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
-	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+	*** Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
 Pattern Correlation and Relative Amplitude of the MJO teleconnections over the Atlantic region:
 	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
-	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
+	*** Unit: Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
 Extra-tropical Cyclone Activity:
 	* Geopotential at 500 hPa
  	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
 	*** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
-	* Zonal and meridional winds at 850mb
+	* Zonal and meridional winds at 850 hPa
 	*** Zonal wind can be named any of: 'U','u', 'uwnd', U850', 'u850', 'uwnd850'
 	*** Meridional wind can be named any of: 'V', 'v', 'vwnd', 'V850', 'v850', 'vwnd850'
 	*** Unit: m/s
 ~~~
 ~~~
-Histogram of zonal wind at 10mb:
-	* Zonal wind at 10mb
+Histogram of zonal wind at 10 hPa:
+	* Zonal wind at 10 hPa
 	*** Variable can be named any of: 'U', 'u', 'uwnd', 'U10', 'u10', 'uwnd10' 
 	*** Unit: m/s
 ~~~
 ~~~
 Stratosphere:
-	*
-	*** Variable can be named any of:
-	*** Unit:
+	* Meridional wind at 500 hPa
+	*** Variable can be named any of: 'V', 'v', 'v500','vwnd'
+	*** Unit: m/s
+	* Air temperature at 500 hPa
+	*** Variable can be named any of: 'T','t','temp','t500'
+	*** Unit: K
+	* Geopotential height at 100 hPa
+	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+        * Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
 Madden-Julian Oscillation (MJO)
