@@ -67,15 +67,15 @@ fileList = [model_fcst_dir+f for f in dummy]
 
 
 if (dictionary['ERAI']==True):
-    #fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128sc.1979.2019.nc'
-    fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u1060-1979-2018.nc'
+    fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
     
 if (dictionary['ERAI']==False):
     fil_u_obs=dictionary['Path to zonal wind at 10 hPa observation data files']
     ds_obs_name='OBS'
+    
 data_r = xr.open_mfdataset(fil_u_obs,combine='by_coords').compute()
-data_r = np.squeeze(data_r.sel(time=data_r.time.dt.year.isin(years)).u)
+data_r = np.squeeze(data_r.mean(dim=('longitude')).sel(time=data_r.time.dt.year.isin(years)).u10)
 
 
 if (dictionary['RMM']==True):
