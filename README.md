@@ -162,8 +162,10 @@ variables:
 ### 3.2 Observations <a name="data"></a>
 The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from here. The data is provided on the native grid (`latitudes=256, longitudes=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, [Integrated Multi-satellitE Retrivers for GPM](https://gpm.nasa.gov/data/imerg), IMERG, is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitudes=241`,`longitudes=480`). The package will interpolate the forecast data to the the IMERG grid.
 
-The package also works with user specified validation data. These data must be on the same grid as the forecast data. 
+The package also works with user specified validation data. These data must be on the same grid as the forecast data.
+
 The `Histogram of zonal wind at 10mb` diagnostic requires the zonal mean zonal wind at 60 N.
+
 The RMM Index can also be specified. The file must contain the time series of:
 - [x] **RMM Index amplitude** [var_name(dimension): amplitude(time)]
 - [x] **MJO phase** [var_name(dimension): phase(time)]	
@@ -212,7 +214,7 @@ Histogram of zonal wind at 10mb:
 ~~~
 ~~~
 Stratosphere:
-	*
+	* Meridional wind at 500mb
 	*** Variable can be named any of:
 	*** Unit:
 ~~~
