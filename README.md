@@ -160,7 +160,7 @@ variables:
 ~~~
 
 ### 3.2 Observations <a name="data"></a>
-The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from here. The data is provided on the native grid (`latitudes=256, longitudes=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, [Integrated Multi-satellitE Retrivers for GPM](https://gpm.nasa.gov/data/imerg), IMERG, is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitudes=241`,`longitudes=480`). The package will interpolate the forecast data to the the IMERG grid.
+The package includes ERA-Interim fields for validation. The ERA-Interim data can be downloaded from [here](https://drive.google.com/drive/folders/1wT51DRQhbXPAzVwvCWIkcojvWnCp7tgm?usp=share_link). The data is provided on the native grid (`latitudes=256, longitudes=512`), and the package will interpolate the forecast data to the ERA-Interim grid. For precipitation, [Integrated Multi-satellitE Retrivers for GPM](https://gpm.nasa.gov/data/imerg), IMERG, is the default validation dataset. IMERG covers 2000-2023 and is interpolated to (`latitudes=241`,`longitudes=480`). The package will interpolate the forecast data to the the IMERG grid.
 
 The package also works with user specified validation data. These data must be on the same grid as the forecast data.
 
