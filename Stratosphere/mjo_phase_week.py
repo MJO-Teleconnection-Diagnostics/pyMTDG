@@ -8,6 +8,7 @@ from pathlib import Path
 from datetime import datetime 
 from datetime import timedelta
 from datetime import date
+import numpy.fft as npft
 import matplotlib.pyplot as plt
 import glob
 import os
@@ -175,7 +176,8 @@ def compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons, **kwargs):
     data_week1_pha7,data_week2_pha7,data_week3_pha7,data_week4_pha7,data_week5_pha7 = [],[],[],[],[]
     data_week1_pha8,data_week2_pha8,data_week3_pha8,data_week4_pha8,data_week5_pha8 = [],[],[],[],[]
     date_init_all = []
-    
+
+    kk = 0
     for ifile in range(len(fileList_v)):
         datafn = fileList_t[ifile]
         data_tmp = xr.open_mfdataset(datafn,combine='by_coords').compute()
@@ -198,10 +200,11 @@ def compute_heatflux_anom(fileList_v, fileList_t, lats, levs, lons, **kwargs):
             # wavn = 2 # wave1
             data = heat_flux_amp(data_t,data_v,wavn)
             nfct = len(data.time)
-            if iyear == SYY:
+            if kk == 0:
                 data_all = data
             else:
                 data_all = xr.concat([data_all, data],"time") 
+            kk = kk+1
     data_clim = xr.concat([data_all[ii:nfct*7:nfct].mean(dim='time') for ii in range(nfct)],"time")
     times = data_all.time
     days=[]
@@ -229,7 +232,8 @@ def compute_gph_anom(fileList_z, lats, levs, lons, **kwargs):
     data_week1_pha7,data_week2_pha7,data_week3_pha7,data_week4_pha7,data_week5_pha7 = [],[],[],[],[]
     data_week1_pha8,data_week2_pha8,data_week3_pha8,data_week4_pha8,data_week5_pha8 = [],[],[],[],[]
     date_init_all = []
-    
+
+    kk = 0
     for ifile in range(len(fileList_z)):
         datafn = fileList_z[ifile]
         data = xr.open_mfdataset(datafn,combine='by_coords').compute()
@@ -253,10 +257,11 @@ def compute_gph_anom(fileList_z, lats, levs, lons, **kwargs):
             data = (data_t * weights).sum(dim=('longitude', 'latitude')) / weights_sum
             
             nfct = len(data.time)
-            if iyear == SYY:
+            if kk == 0:
                 data_all = data
             else:
                 data_all = xr.concat([data_all, data],"time") 
+            kk = kk+1
     data_clim = xr.concat([data_all[ii:nfct*7:nfct].mean(dim='time') for ii in range(nfct)],"time")
     times = data_all.time
     days=[]
