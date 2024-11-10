@@ -2607,50 +2607,32 @@ Histograms of zonal-mean zonal wind at 10 hPa and 60°N (U1060) for November-Mar
         
         #Create a layout for the left half (weather image)
         layout = QVBoxLayout()
-        ryt_layout = QVBoxLayout()
         
-        for i in range(len(self.all_files)//2):
+        
+        for i in range(len(self.all_files)):
             ##print(self.imagebuttons[i])
             #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
             layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
-        
-        for i in range(len(self.all_files)//2,len(self.all_files)):
-            ##print(self.imagebuttons[i])
-            #self.imagebuttons[i].clicked.connect(lambda: self.openweek1_2(self.all_files[i],i))
-            ryt_layout.addWidget(self.imagebuttons[i],alignment=Qt.AlignCenter)
-
-        
-    
 
         frame = QFrame()
         frame.setLayout(layout)
-        ryt_frame = QFrame()
-        ryt_frame.setLayout(ryt_layout)
         #Create a layout for the right half (text widgets and button)
         frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-        ryt_frame.setStyleSheet("QFrame { border-width: 2px; border-style: solid; border-color: black white black black; }")
-
-        lay = QHBoxLayout()
-        lay.addWidget(frame)
-        lay.addWidget(ryt_frame)
-        central_widget = QWidget()
-        central_widget.setLayout(lay)
-
-        fr = QFrame()
-        fr.setLayout(lay)
-        # Create a central widget to hold the splitter
-        main_widget = QWidget()
 
         
-        central_layout = QVBoxLayout()
-        central_layout.addWidget(fr)
+
+        
+        # Create a central widget to hold the splitter
+        main_widget = QWidget()
         back.setStyleSheet("""
         QPushButton:hover {
             background-color: gray;
         }
     """)
-        central_layout.addWidget(back,alignment=Qt.AlignCenter)
-        main_widget.setLayout(central_layout)
+        lay = QVBoxLayout()
+        lay.addWidget(frame)
+        lay.addWidget(back,alignment=Qt.AlignCenter)
+        main_widget.setLayout(lay)
         self.setCentralWidget(main_widget)
 
 
