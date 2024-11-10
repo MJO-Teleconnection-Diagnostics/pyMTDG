@@ -258,22 +258,24 @@ def compute_gph_anom(fileList_z, lats, levs, lons, nyrs, **kwargs):
     INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
     INITDAY = kwargs.get('INITDAY', ['01','15'])
     nt = kwargs.get('nt', 7)
+    months = kwargs.get('months', [1,2,3,11,12])
 
     date_init_all = []
 
-    kk = 0
+    kk1 = 0; kk2 = 0; kk3 = 0; kk4 = 0; kk5 = 0
     for ifile in range(len(fileList_z)):
         datafn = fileList_z[ifile]
         data = xr.open_mfdataset(datafn,combine='by_coords').compute()
         init_time = data.time[0].values
         init_month = pd.to_datetime(init_time).month
-        if init_month in [1,2,3,11,12]:
+        if init_month in months:
             init_year = pd.to_datetime(init_time).year
             init_day = pd.to_datetime(init_time).day
             date_init = datetime(year=init_year,month=init_month,day=init_day)
 
             data_tmp = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[0],lats[1]), lev=levs)
             data_t = get_variable_from_dataset(data_tmp)
+            date_init_all.append(date_init)
             del data
             lon = data_t.coords['longitude'].values
             lat = data_t.coords['latitude'].values
@@ -492,7 +494,7 @@ p5_anoms_new = xr.DataArray(dummy, coords=coords)
 
 # %%
 # compute gph anomaly
-lats = [90,55]; levs = [100]; lons = [300,360]
+lats = [90,55]; levs = [100]; lons = [0,360]
 
 fcst_dir_z = '/mjo/MJO-Teleconnections-develop/data/z/'
 fcst_dir_t = '/mjo/MJO-Teleconnections-develop/data/t/'
@@ -521,7 +523,7 @@ p5_z_anoms_new = xr.DataArray(dummy, coords=coords)
 p5_data_week1, p5_data_week2, p5_data_week3, p5_data_week4, p5_data_week5 = mjo_anoms_week_mo(p5_anoms_new, date_init_all, 
                                                                                                  mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
-p5_z_data_week1, p5_z_data_week2, p5_z_data_week3, p5_z_data_week4, p5_z_data_week5 = mjo_anoms_week_mo(p5_z_anoms, date_init_all, 
+p5_z_data_week1, p5_z_data_week2, p5_z_data_week3, p5_z_data_week4, p5_z_data_week5 = mjo_anoms_week_mo(p5_z_anoms_new, date_init_all, 
                                                                                                  mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 # %%
@@ -621,12 +623,12 @@ def mjo_anoms_week_re(data_r, date_init_all, mjo_pha1, mjo_pha2, mjo_pha3, mjo_p
 data_r_week1, data_r_week2, data_r_week3, data_r_week4, data_r_week5 = mjo_anoms_week_re(data_r, date_init_all, 
                                                                                                  mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
-data_z_r_week1, data_z_r_week2, data_z_r_week3, data_z_r_week4, data_z_r_week5 = mjo_anoms_week_mo(data_z_r, date_init_all, 
+data_z_r_week1, data_z_r_week2, data_z_r_week3, data_z_r_week4, data_z_r_week5 = mjo_anoms_week_re(data_z_r, date_init_all, 
                                                                                                  mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 # %%
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,cmin,cmax,figt):
+def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,cmin,cmax,cint,figt):
     fig = plt.figure(figsize=(9,3))
     dat1 = np.ndarray((5,8)) # (week, mjo phase)
     dat2 = np.ndarray((5,8))
@@ -650,8 +652,8 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,cm
     count = 1
     dat = dat1
     fig_title = figt
-    clevs = np.arange(cmin,cmax,1) # np.linspace(cmin,cmax,11)
-    ax = fig.add_subplot(1,3,count)
+    clevs = np.arange(cmin,cmax,cint) # np.linspace(cmin,cmax,11)
+    ax = fig.add_subplot(1,1,count)
     h = ax.contourf(datx, daty, dat, clevs, cmap='RdBu_r', extend='both')
     ax.set_xticks(ticks=datx)
     ax.set_yticks(ticks=daty)
@@ -661,17 +663,16 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,cm
     ax.set_xlabel('phase', fontsize=18)
     ax.set_ylabel('week', fontsize=18)
 
+
 # %%
 figt = 'Reanalysis vtw1+2 500hPa [Km/s]'
-cmin = math.floor(np.amin(data_r_week1.values))
-cmax = math.ceil(np.amax(data_r_week1.values))
-mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,sigt_r,cmin,cmax,figt)
+cmin,cmax,cint = -5, 5.5, 0.5
+mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,cmin,cmax,cint,figt)
 figt = 'Model vtw1+2 500hPa [Km/s]'
-mjo_phase_lag_plot(p5_data_week1,p5_data_week2,p5_data_week3,p5_data_week4,p5_data_week5,sigt_p5,cmin,cmax,figt)
+mjo_phase_lag_plot(p5_data_week1,p5_data_week2,p5_data_week3,p5_data_week4,p5_data_week5,cmin,cmax,cint,figt)
 
 figt = 'Reanalysis polar cap 100hPa Z mean'
-cmin = math.floor(np.amin(data_z_r_week1.values))
-cmax = math.ceil(np.amax(data_z_r_week1.values))
-mjo_phase_lag_plot(data_z_r_week1,data_z_r_week2,data_z_r_week3,data_z_r_week4,data_z_r_week5,sigt_r,cmin,cmax,figt)
+cmin,cmax,cint = -190, 200, 10
+mjo_phase_lag_plot(data_z_r_week1,data_z_r_week2,data_z_r_week3,data_z_r_week4,data_z_r_week5,cmin,cmax,cint,figt)
 figt = 'Model polar cap 100hPa Z mean'
-mjo_phase_lag_plot(p5_z_data_week1,p5_z_data_week2,p5_z_data_week3,p5_z_data_week4,p5_z_data_week5,sigt_p5,cmin,cmax,figt)
+mjo_phase_lag_plot(p5_z_data_week1,p5_z_data_week2,p5_z_data_week3,p5_z_data_week4,p5_z_data_week5,cmin,cmax,cint,figt)
