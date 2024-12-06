@@ -12,6 +12,7 @@ import cartopy
 import pandas as pd
 import yaml
 import os
+import glob
 
 
 import sys
@@ -35,11 +36,17 @@ if (dictionary['ERAI']==True):
     fil_z500_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
 if (dictionary['ERAI']==False):
-    fil_z500_obs=dictionary['Path to observational data files']
+    fil_z500_obs=dictionary['Path to Z500 observation data files']
     ds_obs_name='OBS'
-ds_z500_obs=xr.open_dataset(fil_z500_obs)
+    
+nf=len(glob.glob(fil_z500_obs))
+if nf==1:
+    ds_z500_obs = xr.open_dataset(fil_z500_obs,chunks='auto')
+else:
+    obs_files = np.sort(glob.glob(fil_z500_obs))
+    ds_z500_obs =xr.open_mfdataset(fil_z500_obs)
+        
 z500_obs=get_variable_from_dataset(ds_z500_obs)
-
 
 # Get the forecast period from the provided Start_Date -- End_Date period
 yyyymmdd_Begin=dictionary['START_DATE']
@@ -63,13 +70,13 @@ rgrd_z500_fcst,rgrd_z500_obs=regrid(z500_fcst,z500_obs,ds_z500_fcst.latitude,ds_
 
 # Calculate forecast anomalies
 if (dictionary['Daily Anomaly'] == True):
-   z500_fcst_anom=calcAnom(rgrd_z500_fcst,'z500_anom')
+    z500_fcst_anom=calcAnom(rgrd_z500_fcst,'z500_anom')
 # Reshape the forecast data
-   z500_fcst_anom_reshape=reshape_forecast(z500_fcst_anom,nfc=dictionary['length of forecasts'])
+    z500_fcst_anom_reshape=reshape_forecast(z500_fcst_anom,nfc=dictionary['length of forecasts'])
 # Rename the coordinates
-   z500_fcst_anom_reshape=z500_fcst_anom_reshape.rename({'time': 'initial_date','forecast_day': 'time'})
+    z500_fcst_anom_reshape=z500_fcst_anom_reshape.rename({'time': 'initial_date','forecast_day': 'time'})
 # Get model time
-   model_yyyymmdd=z500_fcst_anom_reshape['initial_date']
+    model_yyyymmdd=z500_fcst_anom_reshape['initial_date']
 if (dictionary['Daily Anomaly'] == False):
     z500_fcst_anom=rgrd_z500_fcst
     z500_fcst_anom_reshape=z500_fcst_anom_reshape.rename({'time': 'initial_date','forecast_day': 'time'})

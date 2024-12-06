@@ -12,6 +12,7 @@ import cartopy
 import pandas as pd
 import yaml
 import os
+import glob
 
 
 import sys
@@ -36,9 +37,16 @@ if (dictionary['ERAI']==True):
     fil_z500_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
 if (dictionary['ERAI']==False):
-    fil_z500_obs=dictionary['Path to observational data files']
+    fil_z500_obs=dictionary['Path to Z500 observation data files']
     ds_obs_name='OBS'
-ds_z500_obs=xr.open_dataset(fil_z500_obs)
+    
+nf=len(glob.glob(fil_z500_obs))
+if nf==1:
+    ds_z500_obs = xr.open_dataset(fil_z500_obs,chunks='auto')
+else:
+    obs_files = np.sort(glob.glob(fil_z500_obs))
+    ds_z500_obs =xr.open_mfdataset(fil_z500_obs)
+        
 z500_obs=get_variable_from_dataset(ds_z500_obs)
 
 
