@@ -367,11 +367,10 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
     fc = get_variable_from_dataset(ds, vartype)
 
     # read obs
-    nf=len(glob.glob(obs_dir))
-    if nf==1:
-    	ds = xr.open_dataset(obs_dir,chunks='auto')
+    obs_files = np.sort(glob.glob(obs_dir + '*.nc*'))
+    if len(obs_files)==1:
+    	ds = xr.open_dataset(obs_files[0],chunks='auto')
     else:
-    	obs_files = np.sort(glob.glob(obs_dir))
     	ds =xr.open_mfdataset(obs_files)
     obs = get_variable_from_dataset(ds, vartype)
 

@@ -6,6 +6,8 @@ import pandas as pd
 from scipy.stats import bootstrap
 from datetime import date, timedelta
 
+import glob
+
 def calcAnomObs(ds,anom_name):
     
     # Compute climatology
@@ -75,3 +77,13 @@ def test_sig(ds,confidence_level,n_resamples):
     del ci_l, ci_u
     
     return ci_l_return, ci_u_return
+
+def open_user_obs_fil(obs_dir):
+    obs_fil=(glob.glob(obs_dir+'*.nc*'))
+    
+    if len(obs_fil)==1:
+        ds = xr.open_dataset(obs_fil[0],chunks='auto')
+    else:
+        ds =xr.open_mfdataset(obs_fil)
+        
+    return len(obs_fil),ds

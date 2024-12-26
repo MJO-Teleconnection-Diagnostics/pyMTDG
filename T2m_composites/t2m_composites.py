@@ -68,10 +68,13 @@ mmStrt=date.fromisoformat(tBegin).month
 if (dictionary['ERAI']==True):
     fil_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t2m/t2m.ei.oper.an.sfc.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
+    ds_obs = xr.open_dataset(fil_obs,chunks='auto')
+    
 if (dictionary['ERAI']==False):
     fil_obs=dictionary['Path to T2m observation data files']
     ds_obs_name='OBS'
-ds_obs=xr.open_dataset(fil_obs)
+    nf,ds_obs=open_user_obs_fil(fil_obs)
+
 obs=get_variable_from_dataset(ds_obs)
 
 #subset time
@@ -87,16 +90,21 @@ ds_names=[ds_obs_name,ds_fcst_name]
 
 
 fcst_files=np.sort(glob.glob(str(fcst_dir+'*.nc')))
-ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
+ds_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True,engine='h5netcdf')
 fcst=get_variable_from_dataset(ds_fcst)
     
 
 # Regriding 
-
-rgrd_fcst,rgrd_obs=regrid(fcst,obs,ds_fcst.latitude,ds_fcst.longitude,
+if (dictionary['ERAI']==True):
+    rgrd_fcst,rgrd_obs=regrid(fcst,obs,ds_fcst.latitude,ds_fcst.longitude,
                                         ds_obs.latitude,ds_obs.longitude,scalar=True)
+    print('Done regriding')
+    del ds_fcst, ds_obs
+    
+else:
+    rgrd_fcst = copy.deepcopy(fcst)
+    rgrd_obs = copy.deepcopy(obs)
 
-del ds_fcst, ds_obs
 del fcst, obs
 gc.collect()
 

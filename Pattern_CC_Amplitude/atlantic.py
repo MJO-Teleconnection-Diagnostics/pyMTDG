@@ -13,6 +13,7 @@ import pandas as pd
 import yaml
 import os
 import glob
+import copy
 
 
 import sys
@@ -35,16 +36,12 @@ with open(config_file,'r') as file:
 if (dictionary['ERAI']==True):
     fil_z500_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
+    ds_z500_obs = xr.open_dataset(fil_z500_obs,chunks='auto')
+    
 if (dictionary['ERAI']==False):
     fil_z500_obs=dictionary['Path to Z500 observation data files']
     ds_obs_name='OBS'
-    
-nf=len(glob.glob(fil_z500_obs))
-if nf==1:
-    ds_z500_obs = xr.open_dataset(fil_z500_obs,chunks='auto')
-else:
-    obs_files = np.sort(glob.glob(fil_z500_obs))
-    ds_z500_obs =xr.open_mfdataset(fil_z500_obs)
+    nf,ds_z500_obs0=open_user_obs_fil(fil_z500_obs)
         
 z500_obs=get_variable_from_dataset(ds_z500_obs)
 
@@ -65,9 +62,13 @@ ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',par
 z500_fcst=get_variable_from_dataset(ds_z500_fcst)
 
 # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
-rgrd_z500_fcst,rgrd_z500_obs=regrid(z500_fcst,z500_obs,ds_z500_fcst.latitude,ds_z500_fcst.longitude,
-                                                        z500_obs.latitude,z500_obs.longitude,scalar=True)
-
+if (dictionary['ERAI']==True):
+    rgrd_z500_fcst,rgrd_z500_obs=regrid(z500_fcst,z500_obs,ds_z500_fcst.latitude,ds_z500_fcst.longitude,
+                                                       z500_obs.latitude,z500_obs.longitude,scalar=True)
+else:
+    rgrd_z500_fcst = copy.deepcopy(z500_fcst)
+    rgrd_z500_obs = copy.deepcopy(z500_obs)
+    
 # Calculate forecast anomalies
 if (dictionary['Daily Anomaly'] == True):
     z500_fcst_anom=calcAnom(rgrd_z500_fcst,'z500_anom')
