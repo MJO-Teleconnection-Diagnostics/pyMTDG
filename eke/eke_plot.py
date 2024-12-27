@@ -39,8 +39,15 @@ from eke_util import plotComposites
 from fcst_utils import write_output_text
 
 ###### Input from yml file ( UFS )
-with open ( '../driver/config.yml' , 'r' ) as file:
-    yml_input = yaml.safe_load ( file )
+config_file=Path('../driver/config.testing.yml').resolve()
+if not config_file.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_file}")
+with open ( config_file, 'r' ) as file:
+    try: 
+        yml_input = yaml.safe_load ( file )
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML configuration: {e}")
+        raise    
 
 Model_name                   = yml_input [ 'model name' ]
 Ensemble_size                = int ( yml_input [ 'Number of ensembles' ] )

@@ -26,12 +26,15 @@ import matplotlib.colors as mcolors
 # %%
 # Read yaml file
 config_file=Path('../driver/config.yml').resolve()
+if not config_file.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_file}")
+        
 with open(config_file,'r') as file:
     try:
         dictionary = yaml.safe_load(file)
     except yaml.YAMLError as e:
-        print(e)
-
+        print(f"Error parsing YAML configuration: {e}")
+        raise
 # %%
 
 yyyymmdd_Begin=dictionary['START_DATE']

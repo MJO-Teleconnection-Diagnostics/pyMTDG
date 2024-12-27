@@ -22,11 +22,14 @@ from t2m_utils import *
 print(f'Compute T2m diagnostic')
 
 config_file=Path('../driver/config.yml').resolve()
+if not config_file.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_file}")
 with open(config_file,'r') as file:
     try:
         dictionary = yaml.safe_load(file)
     except yaml.YAMLError as e:
-        print(e)
+        print(f"Error parsing YAML configuration: {e}")
+        raise
 
 if (dictionary['RMM']==True):
     fil_rmm_obs=dictionary['Path to RMM observation data file']
