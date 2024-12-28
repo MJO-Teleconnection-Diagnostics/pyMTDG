@@ -1370,7 +1370,7 @@ Example: /project/$user/model/var/, where var can be any name or a combination o
 
 Please include a trailing '/' in the directory where the 2-meter temperature data is located
 
-Example: /project/$user/model/var/, where var can be any name or a combinationof directories. 
+Example: /project/$user/model/var/, where var can be any name or a combination of directories. 
 '''
         diag_help_texts_obs = ['']*13
 
