@@ -314,7 +314,7 @@ The MJO-Diagnostics Package computes metrics that require the meteorological fie
  Meteorological parameters:
 ----------------------------------------------------
 * Geopotential at 500mb and 100mb:
-*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+*** Variable can be named any of: 'z', 'Z', 'gh', 'z500,'z100'
 *** Unit can be any of:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 *** Data must be 3d
 
@@ -327,17 +327,29 @@ The MJO-Diagnostics Package computes metrics that require the meteorological fie
 *** Meridional wind can be named any of: 'V', 'v', 'vwnd', 'V850', 'v850', 'vwnd850'
 *** Unit: m/s
 
+Zonal wind at 200mb
+***Variable can be any of: 'U', 'u','uwnd','U200', 'u200',uwnd200'
+*** Unit: m/s
+
 * Zonal wind at 10mb
 *** Variable can be named any of: 'U', 'u', 'U10', 'u10' 
 *** Unit: m/s
 
 * Meridional wind at 500mb
+*** Variable can be named any of 'V', 'v', 'v500','vwnd'
+*** Unit: m/s
 
-* Air temperature at 100mb 
+* Air temperature at 500mb
+*** Variable can be named any of'T','t','temp','t500'
+*** Unit: K
 
 * 2-metre Temperature:
 *** Variable can be named any of: 't2m', 'T2m', 'temp'
 *** Unit: K
+
+* Outgoing longwave radiation 
+*** Variable name can be any of 'olr', 'ulwf'
+*** Unit can be any of 'w/m^2','w/m**2
 
 To run the package, the user needs to specify: 
 * DIR_IN: the path of the directory (e.g., /project/$user) containing all input data including forecast and verification data. If the user downloads the ERA-Interim dataset made available with the Package the directory 'mjo_teleconnections_data/' must be located here. 
@@ -351,14 +363,25 @@ To run the package, the user needs to specify:
 * Number of ensembles: ensemble members  
 
 *Use ERA_I for validation: 
-                        - Select 'Yes' (default) if ERA-Interim dataset provided with the package is used for verification (dataset must be downloaded in placed in the 'DIR_IN/mjo_teleconnections_data/erai')
-                        - Select 'No' if user provided dataset will be used for verification(user verification dataset must be placed in the directory 'DIR_IN/OBS')
+                        - Select 'Yes' (default) if ERA-Interim dataset provided with the package is used for verification (dataset must be downloaded and placed in'DIR_IN/mjo_teleconnections_data/erai/var/', where var is one of {z500, z100, etc}). For the MJO diagnostic, NOAA OLR is used for verification (dataset must be downloaded and placed in 'DIR_IN/mjo_teleconnections_data/noaa/olr/'). 
+                        - Select 'No' if user provided dataset will be used for verification(user verification dataset must be placed in the directory 'DIR_IN/OBS/')
 
 *Use IMERG for validation: 
-                        - Select 'Yes' (default) if IMERG dataset provided with the package is used for verification (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg')
-                        - Select 'No' if user provided dataset will be used for verification (user verification dataset must be placed in the directory 'DIR_IN/OBS')
+                        - Select 'Yes' (default) if IMERG dataset provided with the package is used for verification (datset must be downloaded in placed in the directory 'DIR_IN/mjo_teleconnections_data/imerg/')
+                        - Select 'No' if user provided dataset will be used for verification (user verification dataset must be placed in the directory 'DIR_IN/OBS/')
+                        
 
 
+
+
+
+
+
+
+
+
+
+                        
 ''')
         help_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
@@ -693,7 +716,7 @@ class stripesprecipWindow(QMainWindow):
                     - Select 'Yes' if forecast data is provided as daily mean values
                     - Select 'No' if forecast data is provided as daily anomaly values
 
-* User input RMM index: The selction of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 2004). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1981-08/31/2019. 
+* User input RMM index: The selection of MJO events is based on the amplitude and phases of the MJO RMM index (Wheeler and Hendon, 2004). The package includes the amplitude and phases of the RMM index computed using the ERA-Interim and NOAA OLR data for the period 01/01/1981-08/31/2019. 
     - Select 'No' to use the RMM index included in the package
     - Select 'Yes' otherwise; the user is required to provide the path and name of the RMM index file (must be located in the'DIR_IN/OBS')
                             ''')
@@ -940,12 +963,6 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         self.patterncc_atlantic = QCheckBox("Pattern CC and Relative Amplitude over the Euro-Atlantic sector")
         self.patterncc_atlantic.setChecked(False) #4
 
-        #self.fourth = QCheckBox("Fraction of the observed STRIPES index for geopotential height")
-        #self.fourth.setChecked(False)
-
-        #self.fifth = QCheckBox("Relative amplitude over PNA?")
-        #self.fifth.setChecked(False)
-
         self.strat_path = QCheckBox("Stratospheric pathway")
         self.strat_path.setChecked(False)
 
@@ -954,9 +971,6 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
 
         self.et_cyclone = QCheckBox("Extratropical cyclone activity")
         self.et_cyclone.setChecked(False)
-
-        #self.nine = QCheckBox("EKE850-Z500 correlation")
-        #self.nine.setChecked(False)
 
         self.mjo = QCheckBox("MJO")
         self.mjo.setChecked(False) #8
@@ -1043,18 +1057,12 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
                 selected.append(3)
             if self.patterncc_atlantic.isChecked():
                 selected.append(4)
-            #if self.fourth.isChecked():
-             #   selected.append(4)
-            #if self.fifth.isChecked():
-             #   selected.append(5)
             if self.strat_path.isChecked():
                 selected.append(5)
             if self.zonal_wind_hist.isChecked():
                 selected.append(6)
             if self.et_cyclone.isChecked():
                 selected.append(7)
-            #if self.nine.isChecked():
-             #   selected.append(9)
             if self.mjo.isChecked():
                 selected.append(8)
             if self.t2m.isChecked():
@@ -1069,8 +1077,6 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
         self.ThirdSubWindow = ThirdSubWindow(self,selected,self.dirin,self.era,self.dict_file)
         self.ThirdSubWindow.showMaximized()
         self.hide()
-        
-        #self.close()
     
     
 
@@ -1082,12 +1088,9 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.stripesprecip.setChecked(True)
             self.patterncc_pna.setChecked(True)
             self.patterncc_atlantic.setChecked(True)
-            #self.fourth.setChecked(True)
-            #self.fifth.setChecked(True)
             self.strat_path.setChecked(True)
             self.zonal_wind_hist.setChecked(True)
             self.et_cyclone.setChecked(True)
-            #self.nine.setChecked(True)
             self.mjo.setChecked(True)
             self.t2m.setChecked(True)
         else:
@@ -1096,11 +1099,9 @@ On this page, the user can select all diagnostics, one diagnostic or multiple di
             self.stripesprecip.setChecked(False)
             self.patterncc_pna.setChecked(False)
             self.patterncc_atlantic.setChecked(False)
-            #self.fourth.setChecked(False)
             self.strat_path.setChecked(False)
             self.zonal_wind_hist.setChecked(False)
             self.et_cyclone.setChecked(False)
-            #self.nine.setChecked(False)
             self.mjo.setChecked(False)
             self.t2m.setChecked(False)
     
@@ -1119,7 +1120,6 @@ class ThirdSubWindow(QMainWindow):
         self.pref = self.dirin+"/"
         self.prefix = self.dirin+"/OBS/"
         self.dict_file = dict_file
-        #self.num_dates = dict_file['Number of initial dates:']
         
         
         #set window title and position and size
@@ -1207,15 +1207,12 @@ class ThirdSubWindow(QMainWindow):
         self.z100Tobs.setText(self.prefix)
         self.z100Tobs.setCursorPosition(len(self.prefix))
 
-
-
         # Path to zonal wind at 850 hPa data files:
         zonalwind850 = QLabel(f'Path to zonal wind at 850 hPa model data files:', self)
         self.zonalwind850T = QLineEdit(self)
         self.zonalwind850T.setText(self.pref)
         self.zonalwind850T.setCursorPosition(len(self.pref))
-        
-            
+           
         zonalwind850obs = QLabel(f'Path to zonal wind at 850 hPa observation data files:', self)
         self.zonalwind850Tobs = QLineEdit(self)
         self.zonalwind850Tobs.setText(self.prefix)
@@ -1227,14 +1224,11 @@ class ThirdSubWindow(QMainWindow):
         self.zonalwind200T = QLineEdit(self)
         self.zonalwind200T.setText(self.pref)
         self.zonalwind200T.setCursorPosition(len(self.pref))
-
             
         zonalwind200obs = QLabel(f'Path to zonal wind at 200 hPa observation data files:', self)
         self.zonalwind200Tobs = QLineEdit(self)
         self.zonalwind200Tobs.setText(self.prefix)
         self.zonalwind200Tobs.setCursorPosition(len(self.prefix))
-
-
 
         # Path to zonal wind at 10 hPa data files:
         zonalwind10 = QLabel(f'Path to zonal wind at 10 hPa model data files:', self)
@@ -1252,8 +1246,7 @@ class ThirdSubWindow(QMainWindow):
         self.meridionalwind850T = QLineEdit(self)
         self.meridionalwind850T.setText(self.pref)
         self.meridionalwind850T.setCursorPosition(len(self.pref))
-
-                 
+       
         meridionalwind850obs = QLabel(f'Path to meridional wind at 850 hPa observation data files:', self)
         self.meridionalwind850Tobs = QLineEdit(self)
         self.meridionalwind850Tobs.setText(self.prefix)
@@ -1312,31 +1305,45 @@ class ThirdSubWindow(QMainWindow):
         diag_help_texts[1] = '''
 ** STRIPES Index for geopotential height**        
 
-Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/model/var/, where var can be any name or a combinationof directories. 
         '''
         diag_help_texts[2] = '''
 ** STRIPES Index for precipitation**
 
-Please include a trailing '/' in the directory where the precipitatio  data is located.
+Please include a trailing '/' in the directory where the precipitation  data is located.
+
+Example: /project/$user/model/var/, where var can be any name or a combination of directories. 
 '''
         diag_help_texts[3] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Pacific North American (PNA) region (20N - 80N, 120E - 60W)**
 
-Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/model/var, where var can be any name or a combination of directories.
 '''
         diag_help_texts[4] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Euro-Atlantic sector (20N - 80N, 60W - 0)**
 
-Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height. 
+Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/model/var, where var can be any name or a combination of directories.
 '''
 
         diag_help_texts[5] = '''
-        Help text for Stratospheric pathway
+**Stratospheric pathway**
+
+Please include a trailing '/' in the directory where data is located. Z100 data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/model/var/, where var can be any name or a combinationof directories.
 '''
         diag_help_texts[6] = '''
 **Histogram of 10 hPa zonal wind
 
-Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located. 
+Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located.
+
+Example: /project/$user/model/var/, where var can be any name or a combinationof directories.
 '''
         diag_help_texts[7] = '''
 ** Extratropical Cyclone Activity**
@@ -1352,15 +1359,65 @@ Please include a trailing '/' in the directory where the 10 hPa zonal wind data 
 * Path to Extratropical Cyclone Activity V850  model data files: Enter the name of V850 files in the format <file_name*.nc> where * must contain ONLY 'YYYYMMDDHH_exx' with 'exx' denoting the ensemble members.
 '''
         diag_help_texts[8] = '''
-        Help text for MJO
-   
-    
+**MJO**
+
+Please include a trailing '/' in the directory where data is located.
+
+Example: /project/$user/model/var/, where var can be any name or a combination of directories.  
 '''
         diag_help_texts[9] = '''
 ** Surface Air Temperature**
 
 Please include a trailing '/' in the directory where the 2-meter temperature data is located
 
+Example: /project/$user/model/var/, where var can be any name or a combinationof directories. 
+'''
+        diag_help_texts_obs = ['']*13
+
+        diag_help_texts_obs[1] = '''
+Observation geopotential data can be in one file or in multiple files. Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
+        '''
+        diag_help_texts_obs[2] = '''
+Observation precipitation data can be in one file or in multiple files. Please include a trailing '/' in the directory where the precipitation  data is located.
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
+'''
+        diag_help_texts_obs[3] = '''
+Observation geopotential data can be in one file or in multiple files. Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+'''
+        diag_help_texts_obs[4] = '''
+Observation geopotential data can be in one file or in multiple files. Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+'''
+
+        diag_help_texts_obs[5] = '''
+Observation geopotential data must be in one file. Please include a trailing '/' in the directory where data is located. Z100 data can be geopotential (units m^2/s^2) or geopotential height (m).
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+'''
+        diag_help_texts_obs[6] = '''
+Observation zonal wind data must be in one file. Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located.
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+'''
+        diag_help_texts_obs[7] = '''
+Help text for EKE observation files
+
+'''
+        diag_help_texts_obs[8] = '''
+Winds and OLR observation data can each be in one file or in multiple files. Please include a trailing '/' in the directory where data is located.
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.  
+'''
+        diag_help_texts_obs[9] = '''
+2-meter temperature bbservation data can be in one file or in multiple files. Please include a trailing '/' in the directory where the 2-meter temperature data is located
+
+Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
 '''
        
         # Path to T2m data files:
@@ -1374,7 +1431,7 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
         self.t2mTobs.setText(self.prefix)
         self.t2mTobs.setCursorPosition(len(self.prefix))
 
-        # Path to precipitational data files:
+        # Path to precipitation data files:
         precData = QLabel(f'Path to precipitation model data files:', self)
         self.precDataT = QLineEdit(self)
         self.precDataT.setText(self.pref)
@@ -1416,6 +1473,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(z500)
                     right_layout.addWidget(self.z500T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[1]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
                 separator = QFrame()
@@ -1434,6 +1495,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(precData)
                     right_layout.addWidget(self.precDataT)
                     if era == False:
+                        text_obs = diag_help_texts_obs[2]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(precDataobs)
                         right_layout.addWidget(self.precDataTobs)
                 separator = QFrame()
@@ -1466,6 +1531,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(z500)
                     right_layout.addWidget(self.z500T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[3]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
                 right_layout.addWidget(self.z500anomalies)
@@ -1489,6 +1558,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(z500)
                     right_layout.addWidget(self.z500T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[4]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(z500obs)
                         right_layout.addWidget(self.z500Tobs)
                 if 'z500anomalies' not in rendered:
@@ -1506,18 +1579,22 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                 lab=QLabel(text)
                 lab.setWordWrap(True)
                 left_layout.addWidget(lab)
-                if 'z500T' not in rendered:
-                    rendered.append('z500T')
-                    right_layout.addWidget(z500)
-                    right_layout.addWidget(self.z500T)
-                    if era == False:
-                        right_layout.addWidget(z500obs)
-                        right_layout.addWidget(self.z500Tobs)
+                # if 'z500T' not in rendered:
+                #     rendered.append('z500T')
+                #     right_layout.addWidget(z500)
+                #     right_layout.addWidget(self.z500T)
+                #     if era == False:
+                #         right_layout.addWidget(z500obs)
+                #         right_layout.addWidget(self.z500Tobs)
                 if 'z100T' not in rendered:
                     rendered.append('z100T')
                     right_layout.addWidget(z100)
                     right_layout.addWidget(self.z100T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[5]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(z100obs)
                         right_layout.addWidget(self.z100Tobs)
 
@@ -1534,16 +1611,20 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(temperature500)
                     right_layout.addWidget(self.temperature500T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[5]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(temperature500obs)
                         right_layout.addWidget(self.temperature500Tobs)
                 
-                if 'zonalwind10T' not in rendered:
-                    rendered.append('zonalwind10T')
-                    right_layout.addWidget(zonalwind10)
-                    right_layout.addWidget(self.zonalwind10T)
-                    if era == False:
-                        right_layout.addWidget(zonalwind10obs)
-                        right_layout.addWidget(self.zonalwind10Tobs)
+                # if 'zonalwind10T' not in rendered:
+                #     rendered.append('zonalwind10T')
+                #     right_layout.addWidget(zonalwind10)
+                #     right_layout.addWidget(self.zonalwind10T)
+                #     if era == False:
+                #         right_layout.addWidget(zonalwind10obs)
+                #         right_layout.addWidget(self.zonalwind10Tobs)
                 separator = QFrame()
                 separator.setFrameShape(QFrame.HLine)
                 separator.setFrameShadow(QFrame.Raised)
@@ -1561,6 +1642,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(zonalwind10)
                     right_layout.addWidget(self.zonalwind10T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[6]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(zonalwind10obs)
                         right_layout.addWidget(self.zonalwind10Tobs)
                     separator = QFrame()
@@ -1585,6 +1670,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(Ez500)
                     right_layout.addWidget(self.Ez500T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[7]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(Ez500obs)
                         right_layout.addWidget(self.Ez500Tobs)
                 if 'Emeridional850T' not in rendered:
@@ -1600,6 +1689,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                     right_layout.addWidget(Ezonal850)
                     right_layout.addWidget(self.Ezonal850T)
                     if era == False:
+                        text_obs = diag_help_texts_obs[7]+'\n\n'
+                        lab_obs=QLabel(text_obs)
+                        lab_obs.setWordWrap(True)
+                        left_layout.addWidget(lab_obs)
                         right_layout.addWidget(Ezonal850obs)
                         right_layout.addWidget(self.Ezonal850Tobs)
                 separator = QFrame()
@@ -1618,6 +1711,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                 right_layout.addWidget(dir_OLR_label)
                 right_layout.addWidget(self.olrDataFiles)
                 if dict_file['RMM'] == False and era == False:
+                    text_obs = diag_help_texts_obs[8]+'\n\n'
+                    lab_obs=QLabel(text_obs)
+                    lab_obs.setWordWrap(True)
+                    left_layout.addWidget(lab_obs)
                     right_layout.addWidget(dir_OLR_label_obs)
                     right_layout.addWidget(self.olrobsDataFiles)
                 if 'zonalwind850T' not in rendered:
@@ -1649,6 +1746,10 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
                 right_layout.addWidget(t2m)
                 right_layout.addWidget(self.t2mT)
                 if era == False:
+                    text_obs = diag_help_texts_obs[9]+'\n\n'
+                    lab_obs=QLabel(text_obs)
+                    lab_obs.setWordWrap(True)
+                    left_layout.addWidget(lab_obs)
                     right_layout.addWidget(t2mobs)
                     right_layout.addWidget(self.t2mTobs)
             
@@ -1749,8 +1850,8 @@ Please include a trailing '/' in the directory where the 2-meter temperature dat
         dict_file['Path to Z500 observation data files'] = self.z500Tobs.text()
         
         #z100 model and its obs
-        dict_file['Path to z100 date files']= self.z100T.text()
-        dict_file['Path to z100 observation files'] = self.z100Tobs.text()
+        dict_file['Path to Z100 model data files']= self.z100T.text()
+        dict_file['Path to Z100 observation data files'] = self.z100Tobs.text()
 
         #zonalwind850 hpa model and obs
         dict_file['Path to zonal wind at 850 hPa model data files'] = self.zonalwind850T.text()
@@ -2749,7 +2850,12 @@ class strat_pathResult(QMainWindow):
         self.all_files=sorted(get_all_files_in_directory(f'../output/Strat_Path/{self.model_name}'))
         #print(len(self.all_files))
         self.imagebuttons=[]
-        self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        #self.helpTexts=['Helptext for image1','Helptext for image2','Helptext for image3','Helptext for image4']
+        self.helpTexts=['''Wavenumber-1 and wavenumber-2 components of meridional heat flux anomalies averaged over 40N-80N in weeks 1–5 (y-axis)following MJO phases 1–8 (x-axis) at 500 hPa for observations''',
+                       '''Wavenumber-1 and wavenumber-2 components of meridional heat flux anomalies averaged over 40N-80N in weeks 1–5 (y-axis)following MJO phases 1–8 (x-axis) at 500 hPa for forecast''',
+                        '''Geopotential height anomalies in weeks 1-5 (y-axis) following MJO phases 1-8 (x-axis) over the polar cap (55N-90N) at 100 hPa for observations''',
+                       '''Geopotential height anomalies in weeks 1-5 (y-axis) following MJO phases 1-8 (x-axis) over the polar cap (55N-90N) at 100 hPa for forecast'''
+                       ]
         for i in range(len(self.all_files)):
             self.csv_files=[]
             #Add code for csv files
