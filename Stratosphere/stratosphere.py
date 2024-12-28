@@ -1,4 +1,3 @@
-# %%
 import xarray as xr
 import numpy as np
 import pandas as pd
@@ -23,7 +22,6 @@ from matplotlib import rcParams #For changing text properties
 import matplotlib.path as mpath
 import matplotlib.colors as mcolors
 
-# %%
 # Read yaml file
 config_file=Path('../driver/config.yml').resolve()
 if not config_file.exists():
@@ -35,7 +33,6 @@ with open(config_file,'r') as file:
     except yaml.YAMLError as e:
         print(f"Error parsing YAML configuration: {e}")
         raise
-# %%
 
 yyyymmdd_Begin=dictionary['START_DATE']
 tBegin=yyyymmdd_Begin[0:4]+'-'+yyyymmdd_Begin[4:6]+'-'+yyyymmdd_Begin[6:8]
@@ -52,19 +49,17 @@ EDD=date.fromisoformat(tEnd).day
 NYRS = EYY-SYY
 years = np.arange(SYY,EYY+1)
 
-# %%
-# Suppose the users have heat flux or geopotential height data computed already for the reanalysis
-if (dictionary['ERAI']==True):
+if dictionary.get('Daily Anomaly', False):
     filv_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/v500/v500.ei.oper.an.pl.regn128uv.1979.2019.nc'
     filt_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t500/t500.ei.oper.an.pl.regn128sc.1979.2019.nc'
     filz_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/z100/z100.ei.oper.an.pl.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
     
-if (dictionary['ERAI']==False):
+else:
     # need to add "Path to heat flux at 500 hPa observation data files" to config.yml
     filv_obs=dictionary['Path to meridional wind at 500 hPa observation data files']
     filt_obs=dictionary['Path to temperature at 500 hPa observation data files']
-    filz_obs=dictionary['Path to z100 observation files']
+    filz_obs=dictionary['Path to Z100 observation data files']
     ds_obs_name='OBS'
     
 data_v_obs = get_variable_from_dataset(xr.open_mfdataset(filv_obs,combine='by_coords').compute())
@@ -89,115 +84,10 @@ weights_sum = weights.sum(dim=('longitude', 'latitude'))
 data_pcz_obs = (data_z_obs * weights).sum(dim=('longitude', 'latitude')) / weights_sum
 
 # %%
-# model heat flux with MJO events
-def compute_heatflux_anom(fileList_v, fileList_t, lats, lons, **kwargs):
-    INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
-    INITDAY = kwargs.get('INITDAY', ['01','15'])
-    nt = kwargs.get('nt', 7)
 
-    data_week1_pha1,data_week2_pha1,data_week3_pha1,data_week4_pha1,data_week5_pha1 = [],[],[],[],[]
-    data_week1_pha2,data_week2_pha2,data_week3_pha2,data_week4_pha2,data_week5_pha2 = [],[],[],[],[]
-    data_week1_pha3,data_week2_pha3,data_week3_pha3,data_week4_pha3,data_week5_pha3 = [],[],[],[],[]
-    data_week1_pha4,data_week2_pha4,data_week3_pha4,data_week4_pha4,data_week5_pha4 = [],[],[],[],[]
-    data_week1_pha5,data_week2_pha5,data_week3_pha5,data_week4_pha5,data_week5_pha5 = [],[],[],[],[]
-    data_week1_pha6,data_week2_pha6,data_week3_pha6,data_week4_pha6,data_week5_pha6 = [],[],[],[],[]
-    data_week1_pha7,data_week2_pha7,data_week3_pha7,data_week4_pha7,data_week5_pha7 = [],[],[],[],[]
-    data_week1_pha8,data_week2_pha8,data_week3_pha8,data_week4_pha8,data_week5_pha8 = [],[],[],[],[]
-    date_init_all = []
 
-    kk = 0
-    for ifile in range(len(fileList_v)):
-        datafn = fileList_t[ifile]
-        data_tmp = xr.open_mfdataset(datafn,combine='by_coords').compute()
-        init_time = data_tmp.time[0].values
-        init_month = pd.to_datetime(init_time).month
-        if init_month in [1,2,3,11,12]:
-            init_year = pd.to_datetime(init_time).year
-            init_day = pd.to_datetime(init_time).day
-            date_init = datetime(year=init_year,month=init_month,day=init_day)
-            data_tmp = data_tmp.sel(latitude=slice(lats[0],lats[1]))
-            data_t = get_variable_from_dataset(data_tmp)
-            
-            datafn = fileList_v[ifile]
-            data_tmp1 = xr.open_mfdataset(datafn,combine='by_coords').compute()
-            data_tmp1 = data_tmp1.sel(latitude=slice(lats[0],lats[1]))
-            data_v = get_variable_from_dataset(data_tmp1)
-            date_init_all.append(date_init)
+# In[2]:
 
-            wavn = 3 # wave1+2
-            # wavn = 2 # wave1
-            data = heat_flux_amp(data_t,data_v,wavn)
-            nfct = len(data.time)
-            if kk == 0:
-                data_all = data
-            else:
-                data_all = xr.concat([data_all, data],"time") 
-            kk = kk+1
-    data_clim = xr.concat([data_all[ii:nfct*7:nfct].mean(dim='time') for ii in range(nfct)],"time")
-    times = data_all.time
-    days=[]
-    for i in range(nyrs):
-        days.append(np.arange(nfct))
-    days=np.reshape(days,nyrs*nfct)
-    data_all['time']=days
-    anoms=data_all.groupby(data_all.time)-data_clim
-    anoms['time']=times
-    return anoms, date_init_all
-
-# %%
-# model gph with MJO events
-def compute_gph_anom(fileList_z, lats, lons, **kwargs):
-    INITMON = kwargs.get('INITMON', ['01','02','03','11','12'])
-    INITDAY = kwargs.get('INITDAY', ['01','15'])
-    nt = kwargs.get('nt', 7)
-
-    data_week1_pha1,data_week2_pha1,data_week3_pha1,data_week4_pha1,data_week5_pha1 = [],[],[],[],[]
-    data_week1_pha2,data_week2_pha2,data_week3_pha2,data_week4_pha2,data_week5_pha2 = [],[],[],[],[]
-    data_week1_pha3,data_week2_pha3,data_week3_pha3,data_week4_pha3,data_week5_pha3 = [],[],[],[],[]
-    data_week1_pha4,data_week2_pha4,data_week3_pha4,data_week4_pha4,data_week5_pha4 = [],[],[],[],[]
-    data_week1_pha5,data_week2_pha5,data_week3_pha5,data_week4_pha5,data_week5_pha5 = [],[],[],[],[]
-    data_week1_pha6,data_week2_pha6,data_week3_pha6,data_week4_pha6,data_week5_pha6 = [],[],[],[],[]
-    data_week1_pha7,data_week2_pha7,data_week3_pha7,data_week4_pha7,data_week5_pha7 = [],[],[],[],[]
-    data_week1_pha8,data_week2_pha8,data_week3_pha8,data_week4_pha8,data_week5_pha8 = [],[],[],[],[]
-    date_init_all = []
-    
-    for ifile in range(len(fileList_z)):
-        datafn = fileList_z[ifile]
-        data = xr.open_mfdataset(datafn,combine='by_coords').compute()
-        init_time = data.time[0].values
-        init_month = pd.to_datetime(init_time).month
-        if init_month in [1,2,3,11,12]:
-            init_year = pd.to_datetime(init_time).year
-            init_day = pd.to_datetime(init_time).day
-            date_init = datetime(year=init_year,month=init_month,day=init_day)
-
-            data_tmp = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[0],lats[1]))
-            data_t = get_variable_from_dataset(data_tmp)
-            del data
-            lon = data_t.coords['longitude'].values
-            lat = data_t.coords['latitude'].values
-            dlat = np.deg2rad(np.abs(lat[1]-lat[0]))
-            dlon = np.deg2rad(np.abs(lon[1]-lon[0]))
-            darea = dlat * dlon * np.cos(np.deg2rad(data_t.latitude))
-            weights = darea.where(data_t[0])
-            weights_sum = weights.sum(dim=('longitude', 'latitude'))
-            data = (data_t * weights).sum(dim=('longitude', 'latitude')) / weights_sum
-            
-            nfct = len(data.time)
-            if iyear == SYY:
-                data_all = data
-            else:
-                data_all = xr.concat([data_all, data],"time") 
-    data_clim = xr.concat([data_all[ii:nfct*7:nfct].mean(dim='time') for ii in range(nfct)],"time")
-    times = data_all.time
-    days=[]
-    for i in range(nyrs):
-        days.append(np.arange(nfct))
-    days=np.reshape(days,nyrs*nfct)
-    data_all['time']=days
-    anoms=data_all.groupby(data_all.time)-data_clim
-    anoms['time']=times
-    return anoms, date_init_all
 
 wavn = 3
 vt_obs = heat_flux_amp(data_t_obs, data_v_obs, wavn)
@@ -254,8 +144,20 @@ fcst_dir_z = dictionary['Path to Z100 model data files']
 ds_fcst_name=dictionary['model name'] 
 
 fileList_v, fileList_t = extract_files(fcst_dir_v, fcst_dir_t, ds_fcst_name)
+fcst_anoms, date_init_all, nfct = compute_heatflux_anom(fileList_v, fileList_t, lats, lons, NYRS)
 
-fcst_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, lons)
+date_init = []
+for ii in range(int(len(fcst_anoms)/nfct)):
+    date_init.append(fcst_anoms.time[ii*nfct].values)
+dummy = fcst_anoms.values
+dummy = dummy.reshape(int(len(fcst_anoms)/nfct),nfct)
+dates_mo = np.arange(nfct)
+coords= {
+    'date_init':date_init,
+    'time':dates_mo
+}
+fcst_anoms_new = xr.DataArray(dummy, coords=coords)
+del fcst_anoms
 
 
 # %%
@@ -263,134 +165,63 @@ fcst_anoms, date_init_all = compute_heatflux_anom(fileList_v, fileList_t, lats, 
 lats = [90,55]; levs = [100]; lons = [300,360]
 
 fileList_z, fileList_t = extract_files(fcst_dir_z, fcst_dir_t, ds_fcst_name)
+fcst_z_anoms, date_init_all, nfct = compute_gph_anom(fileList_z, lats, lons, NYRS)
 
-fcst_z_anoms, date_init_all = compute_gph_anom(fileList_z, fileList_t, lats, lons)
-
+date_init = []
+for ii in range(int(len(fcst_z_anoms)/nfct)):
+    date_init.append(fcst_z_anoms.time[ii*nfct].values)
+dummy = fcst_z_anoms.values
+dummy = dummy.reshape(int(len(fcst_z_anoms)/nfct),nfct)
+dates_mo = np.arange(nfct)
+coords= {
+    'date_init':date_init,
+    'time':dates_mo
+}
+fcst_z_anoms_new = xr.DataArray(dummy, coords=coords)
+del fcst_z_anoms
 
 
 # %%
 # MJO events models
-fcst_data_week1, fcst_data_week2, fcst_data_week3, fcst_data_week4, fcst_data_week5 = mjo_anoms_week_mo(fcst_anoms, date_init_all, 
+fcst_data_week1, fcst_data_week2, fcst_data_week3, fcst_data_week4, fcst_data_week5 = mjo_anoms_week_mo(fcst_anoms_new, date_init_all, 
                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
-fcst_z_data_week1, fcst_z_data_week2, fcst_z_data_week3, fcst_z_data_week4, fcst_z_data_week5 = mjo_anoms_week_mo(fcst_z_anoms, date_init_all, 
+fcst_z_data_week1, fcst_z_data_week2, fcst_z_data_week3, fcst_z_data_week4, fcst_z_data_week5 = mjo_anoms_week_mo(fcst_z_anoms_new, date_init_all, 
                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 # %%
 # MJO events reanalysis
-def mjo_anoms_week_re(data_r, date_init_all, mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8):
-    nt = 7
-    data_r_week1_pha1,data_r_week2_pha1,data_r_week3_pha1,data_r_week4_pha1,data_r_week5_pha1 = [],[],[],[],[]
-    data_r_week1_pha2,data_r_week2_pha2,data_r_week3_pha2,data_r_week4_pha2,data_r_week5_pha2 = [],[],[],[],[]
-    data_r_week1_pha3,data_r_week2_pha3,data_r_week3_pha3,data_r_week4_pha3,data_r_week5_pha3 = [],[],[],[],[]
-    data_r_week1_pha4,data_r_week2_pha4,data_r_week3_pha4,data_r_week4_pha4,data_r_week5_pha4 = [],[],[],[],[]
-    data_r_week1_pha5,data_r_week2_pha5,data_r_week3_pha5,data_r_week4_pha5,data_r_week5_pha5 = [],[],[],[],[]
-    data_r_week1_pha6,data_r_week2_pha6,data_r_week3_pha6,data_r_week4_pha6,data_r_week5_pha6 = [],[],[],[],[]
-    data_r_week1_pha7,data_r_week2_pha7,data_r_week3_pha7,data_r_week4_pha7,data_r_week5_pha7 = [],[],[],[],[]
-    data_r_week1_pha8,data_r_week2_pha8,data_r_week3_pha8,data_r_week4_pha8,data_r_week5_pha8 = [],[],[],[],[]
-    mjo_pha1_dates = pd.to_datetime(mjo_pha1.time,format="%Y/%m/%d")
-    mjo_pha2_dates = pd.to_datetime(mjo_pha2.time,format="%Y/%m/%d")
-    mjo_pha3_dates = pd.to_datetime(mjo_pha3.time,format="%Y/%m/%d")
-    mjo_pha4_dates = pd.to_datetime(mjo_pha4.time,format="%Y/%m/%d")
-    mjo_pha5_dates = pd.to_datetime(mjo_pha5.time,format="%Y/%m/%d")
-    mjo_pha6_dates = pd.to_datetime(mjo_pha6.time,format="%Y/%m/%d")
-    mjo_pha7_dates = pd.to_datetime(mjo_pha7.time,format="%Y/%m/%d")
-    mjo_pha8_dates = pd.to_datetime(mjo_pha8.time,format="%Y/%m/%d")
-    for it in range(len(date_init_all)): 
-        date_init = date_init_all[it]        
-        if date_init in mjo_pha1_dates:
-            data_r_week1_pha1.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha1.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha1.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha1.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha1.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 1',date_init)
-        if date_init in mjo_pha2_dates:
-            data_r_week1_pha2.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha2.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha2.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha2.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha2.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 2',date_init)
-        if date_init in mjo_pha3_dates:
-            data_r_week1_pha3.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha3.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha3.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha3.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha3.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 3',date_init)
-        if date_init in mjo_pha4_dates:
-            data_r_week1_pha4.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha4.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha4.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha4.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha4.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 4',date_init)
-        if date_init in mjo_pha5_dates:
-            data_r_week1_pha5.append(data_week(data_r, date_init, 0, nt)) 
-            data_r_week2_pha5.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha5.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha5.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha5.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 5',date_init)
-        if date_init in mjo_pha6_dates:
-            data_r_week1_pha6.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha6.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha6.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha6.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha6.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 6',date_init)
-        if date_init in mjo_pha7_dates:
-            data_r_week1_pha7.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha7.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha7.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha7.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha7.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 7',date_init)
-        if date_init in mjo_pha8_dates:
-            data_r_week1_pha8.append(data_week(data_r, date_init, 0, nt))
-            data_r_week2_pha8.append(data_week(data_r, date_init, nt, nt*2))
-            data_r_week3_pha8.append(data_week(data_r, date_init, nt*2, nt*3))
-            data_r_week4_pha8.append(data_week(data_r, date_init, nt*3, nt*4))
-            data_r_week5_pha8.append(data_week(data_r, date_init, nt*4, nt*5))
-            print('Phase 8',date_init)
-        
-    data_r_week1 = comb_list(data_r_week1_pha1, data_r_week1_pha2, data_r_week1_pha3, data_r_week1_pha4, 
-                            data_r_week1_pha5, data_r_week1_pha6, data_r_week1_pha7, data_r_week1_pha8)
-    data_r_week2 = comb_list(data_r_week2_pha1, data_r_week2_pha2, data_r_week2_pha3, data_r_week2_pha4, 
-                            data_r_week2_pha5, data_r_week2_pha6, data_r_week2_pha7, data_r_week2_pha8)
-    data_r_week3 = comb_list(data_r_week3_pha1, data_r_week3_pha2, data_r_week3_pha3, data_r_week3_pha4, 
-                            data_r_week3_pha5, data_r_week3_pha6, data_r_week3_pha7, data_r_week3_pha8)
-    data_r_week4 = comb_list(data_r_week4_pha1, data_r_week4_pha2, data_r_week4_pha3, data_r_week4_pha4, 
-                            data_r_week4_pha5, data_r_week4_pha6, data_r_week4_pha7, data_r_week4_pha8)
-    data_r_week5 = comb_list(data_r_week5_pha1, data_r_week5_pha2, data_r_week5_pha3, data_r_week5_pha4, 
-                            data_r_week5_pha5, data_r_week5_pha6, data_r_week5_pha7, data_r_week5_pha8)
-
-    print(np.shape(data_r_week1_pha1),np.shape(data_r_week1_pha2),np.shape(data_r_week1_pha3),
-          np.shape(data_r_week1_pha4),np.shape(data_r_week1_pha5),np.shape(data_r_week1_pha6),
-          np.shape(data_r_week1_pha7),np.shape(data_r_week1_pha8))
-    return data_r_week1, data_r_week2, data_r_week3, data_r_week4, data_r_week5
-
 
 data_r_week1, data_r_week2, data_r_week3, data_r_week4, data_r_week5 = mjo_anoms_week_re(data_r, date_init_all, 
-                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
+                                                mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
-data_z_r_week1, data_z_r_week2, data_z_r_week3, data_z_r_week4, data_z_r_week5 = mjo_anoms_week_mo(data_z_r, date_init_all, 
-                                                                                                 mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
-
-# %%
+data_z_r_week1, data_z_r_week2, data_z_r_week3, data_z_r_week4, data_z_r_week5 = mjo_anoms_week_re(data_z_r, date_init_all, 
+                                                mjo_pha1, mjo_pha2, mjo_pha3, mjo_pha4, mjo_pha5, mjo_pha6, mjo_pha7, mjo_pha8)
 
 # %%
 figt = ds_obs_name+' vtw1+2 500hPa [Km/s]'
-cmin = math.floor(np.amin(data_r_week1.values))
-cmax = math.ceil(np.amax(data_r_week1.values))
-mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,sigt_r,cmin,cmax,figt)
+fig_name = '1_'+ds_obs_name+'_vtw1+2_500hPa'
+cmin,cmax,cint = -5, 5.5, 0.5
+mjo_phase_lag_plot(data_r_week1,data_r_week2,data_r_week3,data_r_week4,data_r_week5,
+                   ds_fcst_name,cmin,cmax,cint,figt,fig_name)
 figt = ds_fcst_name+' vtw1+2 500hPa [Km/s]'
-mjo_phase_lag_plot(fcst_data_week1,fcst_data_week2,fcst_data_week3,fcst_data_week4,fcst_data_week5,sigt_p5,cmin,cmax,figt)
+fig_name = '2_'+ds_fcst_name+'_vtw1+2_500hPa'
+mjo_phase_lag_plot(fcst_data_week1,fcst_data_week2,fcst_data_week3,fcst_data_week4,fcst_data_week5,
+                   ds_fcst_name,cmin,cmax,cint,figt,fig_name)
 
 figt = ds_obs_name+' polar cap 100hPa Z mean'
-cmin = math.floor(np.amin(data_z_r_week1.values))
-cmax = math.ceil(np.amax(data_z_r_week1.values))
-mjo_phase_lag_plot(data_z_r_week1,data_z_r_week2,data_z_r_week3,data_z_r_week4,data_z_r_week5,sigt_r,cmin,cmax,figt)
+fig_name = '3_'+ds_obs_name+'_polar_cap_Z100'
+cmin,cmax,cint = -190, 200, 10
+mjo_phase_lag_plot(data_z_r_week1,data_z_r_week2,data_z_r_week3,data_z_r_week4,data_z_r_week5,
+                   ds_fcst_name,cmin,cmax,cint,figt,fig_name)
 figt = ds_fcst_name+' polar cap 100hPa Z mean'
-mjo_phase_lag_plot(fcst_z_data_week1,fcst_z_data_week2,fcst_z_data_week3,fcst_z_data_week4,fcst_z_data_week5,sigt_p5,cmin,cmax,figt)
+fig_name = '4_'+ds_fcst_name+'_polar_cap_Z100'
+mjo_phase_lag_plot(fcst_z_data_week1,fcst_z_data_week2,fcst_z_data_week3,fcst_z_data_week4,fcst_z_data_week5,
+                   ds_fcst_name,cmin,cmax,cint,figt,fig_name)
+
+
+# In[ ]:
+
+
+
+
