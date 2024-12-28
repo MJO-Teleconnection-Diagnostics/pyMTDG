@@ -1415,7 +1415,7 @@ Winds and OLR observation data can each be in one file or in multiple files. Ple
 Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.  
 '''
         diag_help_texts_obs[9] = '''
-2-meter temperature bbservation data can be in one file or in multiple files. Please include a trailing '/' in the directory where the 2-meter temperature data is located
+2-meter temperature observation data can be in one file or in multiple files. Please include a trailing '/' in the directory where the 2-meter temperature data is located
 
 Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
 '''
