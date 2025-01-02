@@ -18,6 +18,8 @@ from datetime import date
 import os
 
 import sys
+import glob
+
 sys.path.insert(0, '../Utils')
 from u10_utils import *
 from obs_utils import *
@@ -40,9 +42,6 @@ import matplotlib.path as mpath
 import matplotlib.colors as mcolors
 
 
-#tBegin=dictionary['START_DATE']
-#tEnd=dictionary['END_DATE']
-
 yyyymmdd_Begin=dictionary['START_DATE']
 tBegin=yyyymmdd_Begin[0:4]+'-'+yyyymmdd_Begin[4:6]+'-'+yyyymmdd_Begin[6:8]
 yyyymmdd_End=dictionary['END_DATE']
@@ -60,35 +59,31 @@ years = np.arange(SYY,EYY+1)
 
 fcst_dir=dictionary['Path to zonal wind at 10 hPa model data files']
 ds_fcst_name=dictionary['model name']
-#model_fcst_dir = fcst_dir+str(ds_fcst_name)+'/'
-#tmp = os.listdir(fcst_dir+str(ds_fcst_name))
 
 model_fcst_dir = fcst_dir
-tmp = os.listdir(fcst_dir)
 
-dummy = sorted(tmp)
-fileList = [model_fcst_dir+f for f in dummy]
+fileList=np.sort(glob.glob(str(fcst_dir+'*.nc')))
 
-
-if (dictionary['ERAI']==True):
-    fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128sc.1979.2019.nc'
+if dictionary.get('ERAI', False):
+    fil_u_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/u10/u10.ei.oper.an.pl.regn128uv.1979.2019.nc'
     ds_obs_name='ERAI'
+    data_r = xr.open_mfdataset(fil_u_obs,combine='by_coords').compute()
     
-if (dictionary['ERAI']==False):
+else:
     fil_u_obs=dictionary['Path to zonal wind at 10 hPa observation data files']
     ds_obs_name='OBS'
-    
-data_r = xr.open_mfdataset(fil_u_obs,combine='by_coords').compute()
-data_r = np.squeeze(data_r.mean(dim=('longitude')).sel(time=data_r.time.dt.year.isin(years)).u10)
+    nf,data_r=open_user_obs_fil(fil_u_obs)
 
 
+obs=get_variable_from_dataset(data_r)
+data_r = np.squeeze(obs.sel(latitude=60,method='nearest').mean(dim=('longitude')).sel(time=obs.time.dt.year.isin(years)))
+
+# read RMM index
 if (dictionary['RMM']==True):
     fil_rmm_obs=dictionary['Path to RMM observation data file']
     rmm=xr.open_mfdataset(fil_rmm_obs,combine='by_coords').compute()
 
 if (dictionary['RMM']==False):
-    # read RMM index
-    # data is from Cheng Zhang, ERA-interim daily data from 1981.1.1-2019.8.31 
     fil_rmm_erai=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/rmm/rmm_ERA-Interim.nc'
     rmm = xr.open_mfdataset(fil_rmm_erai,combine='by_coords').compute()
     
@@ -117,7 +112,7 @@ mjo_pha8 = select_mjo_event(rmm.amplitude,rmm.phase,8)
 
 fcst_dir=dictionary['Path to zonal wind at 10 hPa model data files']
 ds_fcst_name=dictionary['model name']
-#DIR = fcst_dir+ds_fcst_name
+
 DIR = fcst_dir
 
 VAR = 'u'

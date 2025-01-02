@@ -1307,28 +1307,28 @@ class ThirdSubWindow(QMainWindow):
 
 Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/model/var/, where var can be any name or a combinationof directories. 
+Example: /project/$user/model/var/, where 'var' can be any name or a combinationof directories. 
         '''
         diag_help_texts[2] = '''
 ** STRIPES Index for precipitation**
 
 Please include a trailing '/' in the directory where the precipitation  data is located.
 
-Example: /project/$user/model/var/, where var can be any name or a combination of directories. 
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories. 
 '''
         diag_help_texts[3] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Pacific North American (PNA) region (20N - 80N, 120E - 60W)**
 
 Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/model/var, where var can be any name or a combination of directories.
+Example: /project/$user/model/var, where 'var' can be any name or a combination of directories.
 '''
         diag_help_texts[4] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Euro-Atlantic sector (20N - 80N, 60W - 0)**
 
 Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/model/var, where var can be any name or a combination of directories.
+Example: /project/$user/model/var, where 'var' can be any name or a combination of directories.
 '''
 
         diag_help_texts[5] = '''
@@ -1336,14 +1336,14 @@ Example: /project/$user/model/var, where var can be any name or a combination of
 
 Please include a trailing '/' in the directory where data is located. Z100 data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/model/var/, where var can be any name or a combinationof directories.
+Example: /project/$user/model/var/, where 'var' can be any name or a combinationof directories.
 '''
         diag_help_texts[6] = '''
 **Histogram of 10 hPa zonal wind
 
 Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located.
 
-Example: /project/$user/model/var/, where var can be any name or a combinationof directories.
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories.
 '''
         diag_help_texts[7] = '''
 ** Extratropical Cyclone Activity**
@@ -1363,47 +1363,47 @@ Example: /project/$user/model/var/, where var can be any name or a combinationof
 
 Please include a trailing '/' in the directory where data is located.
 
-Example: /project/$user/model/var/, where var can be any name or a combination of directories.  
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories.  
 '''
         diag_help_texts[9] = '''
 ** Surface Air Temperature**
 
 Please include a trailing '/' in the directory where the 2-meter temperature data is located
 
-Example: /project/$user/model/var/, where var can be any name or a combination of directories. 
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories. 
 '''
         diag_help_texts_obs = ['']*13
 
         diag_help_texts_obs[1] = '''
 Observation geopotential data can be in one file or in multiple files. Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories. 
         '''
         diag_help_texts_obs[2] = '''
 Observation precipitation data can be in one file or in multiple files. Please include a trailing '/' in the directory where the precipitation  data is located.
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories. 
 '''
         diag_help_texts_obs[3] = '''
 Observation geopotential data can be in one file or in multiple files. Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories.
 '''
         diag_help_texts_obs[4] = '''
 Observation geopotential data can be in one file or in multiple files. Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories.
 '''
 
         diag_help_texts_obs[5] = '''
 Observation geopotential data must be in one file. Please include a trailing '/' in the directory where data is located. Z100 data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories.
 '''
-        diag_help_texts_obs[6] = '''
-Observation zonal wind data must be in one file. Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located.
+        diag_help_texts_obs[6] = ''' 
+Observation zonal wind at 10 hPa data can be in one file or in multiple files. Please include a trailing '/' in the directory where the 10 hPa zonal wind data is located. 
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories.
 '''
         diag_help_texts_obs[7] = '''
 Help text for EKE observation files
@@ -1412,12 +1412,12 @@ Help text for EKE observation files
         diag_help_texts_obs[8] = '''
 Winds and OLR observation data can each be in one file or in multiple files. Please include a trailing '/' in the directory where data is located.
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories.  
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories.  
 '''
         diag_help_texts_obs[9] = '''
 2-meter temperature observation data can be in one file or in multiple files. Please include a trailing '/' in the directory where the 2-meter temperature data is located
 
-Example: /project/$user/OBS/var/, where var can be any name or a combination of directories. 
+Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories. 
 '''
        
         # Path to T2m data files:
