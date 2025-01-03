@@ -88,7 +88,7 @@ python mjo_gui.py -g no -c config.yml
 ~~~
 
 ## 3. Data format <a name="data"></a>
-The package can only read data in the netcdf format. 
+The package can only read data in the netcdf format using the [CF Metadata Conventions](https://cfconventions.org/cf-conventions/cf-conventions.html#time-axis-ex).
 
 ### 3.1 Forecast <a name="data"></a>
 Most diagnostics work with daily mean and ensemble mean forecast data. Each forecast experiment must be aggregated into one file with the forecast leads (days) as the record dimension. In the example below, the forecast initial condition is 2018-03-15. 
@@ -167,6 +167,51 @@ The package also works with user specified validation data. These data must be o
 The RMM Index can also be specified. The file must contain the time series of:
 - [x] **RMM Index amplitude** [var_name(dimension): amplitude(time)]
 - [x] **MJO phase** [var_name(dimension): phase(time)]	
+
+For the MJO diagnostic, the first two EOF patterns of OLR, zonal wind at 850 and 200 hPa along with their normalization factors must be specified in a file called 'ceof.nc placed' in the directory MJO-Teleconnections/MJO/. The structure of the 'ceof.nc' file included in the package is:
+
+netcdf ceof {
+dimensions:
+        mode = 25 ;
+        longitude = 144 ;
+variables:
+        int mode(mode) ;
+                mode:long_name = "number of EOFs" ;
+        float longitude(longitude) ;
+                longitude:units = "degrees_east" ;
+        float olr(mode, longitude) ;
+        float u850(mode, longitude) ;
+        float u200(mode, longitude) ;
+        double norm_olr ;
+                norm_olr:_FillValue = NaN ;
+                norm_olr:long_name = "normalization factor for OLR" ;
+        double norm_u850 ;
+                norm_u850:_FillValue = NaN ;
+                norm_u850:long_name = "normalization factor for U850" ;
+        double norm_u200 ;
+                norm_u200:_FillValue = NaN ;
+                norm_u200:long_name = "normalization factor for U200" ;
+data:
+
+ mode = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+    20, 21, 22, 23, 24 ;
+
+ longitude = 0, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 27.5, 30, 
+    32.5, 35, 37.5, 40, 42.5, 45, 47.5, 50, 52.5, 55, 57.5, 60, 62.5, 65, 
+    67.5, 70, 72.5, 75, 77.5, 80, 82.5, 85, 87.5, 90, 92.5, 95, 97.5, 100, 
+    102.5, 105, 107.5, 110, 112.5, 115, 117.5, 120, 122.5, 125, 127.5, 130, 
+    132.5, 135, 137.5, 140, 142.5, 145, 147.5, 150, 152.5, 155, 157.5, 160, 
+    162.5, 165, 167.5, 170, 172.5, 175, 177.5, 180, 182.5, 185, 187.5, 190, 
+    192.5, 195, 197.5, 200, 202.5, 205, 207.5, 210, 212.5, 215, 217.5, 220, 
+    222.5, 225, 227.5, 230, 232.5, 235, 237.5, 240, 242.5, 245, 247.5, 250, 
+    252.5, 255, 257.5, 260, 262.5, 265, 267.5, 270, 272.5, 275, 277.5, 280, 
+    282.5, 285, 287.5, 290, 292.5, 295, 297.5, 300, 302.5, 305, 307.5, 310, 
+    312.5, 315, 317.5, 320, 322.5, 325, 327.5, 330, 332.5, 335, 337.5, 340, 
+    342.5, 345, 347.5, 350, 352.5, 355, 357.5 ;
+}
+The OLR data is the [NOAA Interpolated Outgoing Longwave Radiation](https://psl.noaa.gov/data/gridded/data.olrcdr.interp.html). The zonal wind at 850 and 200 hPa are from ERAI and interpolated to (`latitudes=72`,`longitudes=144`). The package will interpolate forecast data to this grid.
+
+Note: Regridding is done using spherical harmonic decomposition, a computational intensive method. Diagnostics involving interpolation of multiple fields take longer time than diagnostics applied to one field. Providing the data on the same grid as verification data can reduce the computation time.  
 
 ## 4. Variables <a name="vars"></a>
 The list of diagnostics and required meteorological fields:
