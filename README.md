@@ -168,7 +168,7 @@ The RMM Index can also be specified. The file must contain the time series of:
 - [x] **RMM Index amplitude** [var_name(dimension): amplitude(time)]
 - [x] **MJO phase** [var_name(dimension): phase(time)]	
 
-For the MJO diagnostic, the first two EOF patterns of OLR, zonal wind at 850 and 200 hPa along with their normalization factors must be specified in a file called 'ceof.nc placed' in the directory MJO-Teleconnections/MJO/. The structure of the 'ceof.nc' file included in the package is:
+For the MJO diagnostic, the first two EOF patterns of OLR, zonal wind at 850 and 200 hPa along with their normalization factors must be specified in a file called 'ceof.nc' placed in the directory MJO-Teleconnections/MJO/. The structure of the 'ceof.nc' must be the same as the file included in the package and shown below. The number of EOF modes (mode) can be limited to the first two only. 
 ~~~
 netcdf ceof {
 dimensions:
