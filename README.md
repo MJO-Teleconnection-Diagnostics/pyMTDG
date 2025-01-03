@@ -169,7 +169,7 @@ The RMM Index can also be specified. The file must contain the time series of:
 - [x] **MJO phase** [var_name(dimension): phase(time)]	
 
 For the MJO diagnostic, the first two EOF patterns of OLR, zonal wind at 850 and 200 hPa along with their normalization factors must be specified in a file called 'ceof.nc placed' in the directory MJO-Teleconnections/MJO/. The structure of the 'ceof.nc' file included in the package is:
-
+~~~
 netcdf ceof {
 dimensions:
         mode = 25 ;
@@ -209,6 +209,8 @@ data:
     312.5, 315, 317.5, 320, 322.5, 325, 327.5, 330, 332.5, 335, 337.5, 340, 
     342.5, 345, 347.5, 350, 352.5, 355, 357.5 ;
 }
+~~~
+
 The OLR data is the [NOAA Interpolated Outgoing Longwave Radiation](https://psl.noaa.gov/data/gridded/data.olrcdr.interp.html). The zonal wind at 850 and 200 hPa are from ERAI and interpolated to (`latitudes=72`,`longitudes=144`). The package will interpolate forecast data to this grid.
 
 Note: Regridding is done using spherical harmonic decomposition, a computational intensive method. Diagnostics involving interpolation of multiple fields take longer time than diagnostics applied to one field. Providing the data on the same grid as verification data can reduce the computation time.  
