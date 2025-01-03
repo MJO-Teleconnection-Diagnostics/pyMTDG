@@ -2477,13 +2477,27 @@ class mjoResult(QMainWindow):
         self.imagebuttons=[]
         
         self.helpTexts=['''
-MJO index forecast skill: MJO prediction skill for forecasts initialized with active MJO events during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, solid lines) and root-mean squared error (RMSE, dashed lines) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
+MJO prediction skill for forecasts initialized with active MJO events (RMM > 1) during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, blue) and root-mean squared error (RMSE, red) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
         ''','''
-Longitude-time composite: Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15S-15N for active MJO events. The vertical lines indicate 120E (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
+MJO prediction skill for forecasts initialized with active MJO events (RMM > 1) during boreal winter (NDJFM). The prediction skill is evaluated based on the phase error (degrees, blue) and amplitude error (red).
+        ''','''
+Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15S-15N for active MJO events (RMM > 1) in pahses 2 and 3 for observations and initilized in phases 2 and 3 for forecasts. The vertical lines indicate 120E (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
         ''']
         for i in range(len(self.all_files)):
             self.csv_files=[]
             ##Add code to check for csv files
+            file_name = self.all_files[i]
+            if 'amp_pha_err.jpg' in file_name:
+                idx=file_name.index('amp_pha_err.jpg')
+                csv_file1=file_name[:idx]+'amp_pha_err.csv'
+                print('csv_file1=',csv_file1)
+                self.csv_files.append(csv_file1)
+            if 'acc_rmse.jpg' in file_name:
+                idx=file_name.index('acc_rmse.jpg')
+                csv_file2=file_name[:idx]+'acc_rmse.csv'
+                print('csv_file2=',csv_file2)
+                self.csv_files.append(csv_file2)
+
             buttonn=QPushButton(f'MJO Fig.{i+1}', self)
             buttonn.clicked.connect(self.openweek1_2(self.all_files[i],i,self.helpTexts[i],self.csv_files))
             
