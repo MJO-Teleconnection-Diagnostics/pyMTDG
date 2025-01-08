@@ -28,7 +28,7 @@ try:
             dictionary = yaml.safe_load(file)
         except yaml.YAMLError as e:
             print(f"Error parsing YAML configuration: {e}")
-        raise
+            raise
 except FileNotFoundError:
     print('no config file found, using OSU HPC data paths')
     datadir = '/ceoas/jenneylab/bridges2_transfer/ufs_data'
