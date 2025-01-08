@@ -1406,8 +1406,9 @@ Observation zonal wind at 10 hPa data can be in one file or in multiple files. P
 Example: /project/$user/OBS/var/, where 'var' can be any name or a combination of directories.
 '''
         diag_help_texts_obs[7] = '''
-Help text for EKE observation files
+Each observation variable (500 hPa Geopotential height, 850 hPa zonal and meridional wind) data must be in one file. Z500 data can be geopotential (units m^2/s^2) or geopotential height (m).
 
+Example: /project/$user/OBS/var, where 'var' is the name of the file.
 '''
         diag_help_texts_obs[8] = '''
 Winds and OLR observation data can each be in one file or in multiple files. Please include a trailing '/' in the directory where data is located.
