@@ -27,7 +27,8 @@ try:
         try:
             dictionary = yaml.safe_load(file)
         except yaml.YAMLError as e:
-            print(e)
+            print(f"Error parsing YAML configuration: {e}")
+        raise
 except FileNotFoundError:
     print('no config file found, using OSU HPC data paths')
     datadir = '/ceoas/jenneylab/bridges2_transfer/ufs_data'
@@ -56,8 +57,7 @@ fc_dir = dictionary['Path to precipitation model data files']
 
 if (dictionary['IMERG']==True):
     obs_name = 'IMERG'
-    #obs_dir = dir_in+'/IMERG/*.nc4'
-    obs_dir = dir_in+'/mjo_teleconnections_data/imerg/*.nc4'
+    obs_dir = dir_in+'/mjo_teleconnections_data/imerg/'
 else:
     obs_dir = dictionary['Path to precipitation observation data files']    
     obs_name = 'OBS.'

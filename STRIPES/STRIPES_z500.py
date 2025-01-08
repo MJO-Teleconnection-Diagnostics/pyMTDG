@@ -27,7 +27,8 @@ try:
         try:
             dictionary = yaml.safe_load(file)
         except yaml.YAMLError as e:
-            print(e)
+            print(f"Error parsing YAML configuration: {e}")
+        raise
 except FileNotFoundError:
     print('no config file found, using OSU HPC data paths')
     datadir = '/ceoas/jenneylab/bridges2_transfer/ufs_data'
@@ -54,12 +55,12 @@ else:
 Z500_DIR = dictionary['Path to Z500 model data files']
 
 if (dictionary['ERAI']==True):
-    Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc'
+    Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/'
     obs_name = 'ERAI'
 else:
     Z500_DIR_OBS = dictionary['Path to Z500 observation data files']
     obs_name = 'OBS.'
-
+    
 # read start and end date
 START_DATE = dictionary['START_DATE']
 END_DATE = dictionary['END_DATE']
