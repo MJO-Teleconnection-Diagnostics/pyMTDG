@@ -258,28 +258,27 @@ def select_mjo_event_phases(amplitude, phase, selected_phases, amplitude_thresho
 # Plots
 def plot_acc_rmse(ds_corr,ds_rmse,ds_names,nfcst_days,fig_name):
     
+    c1, c2 = plot.scale_luminance('cerulean', 0.5), plot.scale_luminance('red', 0.5)
+    
     fcst_days=np.arange(nfcst_days)+1
     
-    fig,ax1=plt.subplots(figsize=(8,4))
+    fig,ax1=plot.subplots(figsize=(8,4))
     ax2=ax1.twinx()
 
-    ax1.plot(fcst_days,ds_corr,'b-')
-    ax1.set(ylim=(0,1),ylabel='ACC',color='b')
-    ax1.set_ylabel('ACC',color='b')
+    ax1.plot(fcst_days,ds_corr,color=c1)
     ax1.axhline(y=0.5, color='k', linestyle='-',linewidth=0.5)
+    ax1.format(ylim=(0,1),ylabel='ACC',ycolor=c1)
     ax1.grid(False)
 
-    ax2.plot(fcst_days,ds_rmse,'r-')
-    ax2.set(ylim=(0,np.ceil(max(ds_rmse))+0.5))
-    ax2.set_ylabel('RMSE',color='r')
+    ax2.plot(fcst_days,ds_rmse,color=c2)
+    ax2.format(ylim=(0,np.ceil(max(ds_rmse))+0.5),ylabel='RMSE',ycolor=c2)
     ax2.grid(False)
+    
     ax2.set_title('MJO prediction skill: ACC and RMSE')
 
 
     ax1.set(xlabel='Forecast lead day')
     ax1.set(xlim=(0,len(fcst_days)))
-
-    fig.tight_layout()
 
     if not os.path.exists('../output/MJO/'+ds_names[1]): 
         os.mkdir('../output/MJO/'+ds_names[1])
@@ -288,29 +287,26 @@ def plot_acc_rmse(ds_corr,ds_rmse,ds_names,nfcst_days,fig_name):
     return
             
 def plot_amp_phase_err(ds_amp_err,ds_phase_err,ds_names,nfcst_days,fig_name):
+    c1, c2 = plot.scale_luminance('cerulean', 0.5), plot.scale_luminance('red', 0.5)
     
     fcst_days=np.arange(nfcst_days)+1
             
-    fig,ax1=plt.subplots(figsize=(8,4))
+    fig,ax1=plot.subplots(figsize=(8,4))
     ax2=ax1.twinx()
 
-    ax1.plot(fcst_days,ds_phase_err,'b-')
-    ax1.set(ylim=(-25,25))
-    ax1.set_ylabel('Phase error, deg',color='b')
+    ax1.plot(fcst_days,ds_phase_err,color=c1)
     ax1.axhline(y=0., color='k', linestyle='-',linewidth=0.5)
+    ax1.format(ylim=(-25,25),ylabel='Phase error, deg',ycolor=c1)
     ax1.grid(False)
 
-    ax2.plot(fcst_days,ds_amp_err,'r-')
-    ax2.set(ylim=(-0.05,0.05))
-    ax2.set_ylabel('Amplitude error',color='r')
-    #ax2.axhline(y=0., color='r', linestyle='--',linewidth=0.5)
+    ax2.plot(fcst_days,ds_amp_err,color=c2)
+    ax2.format(ylim=(-0.05,0.05),ylabel='Amplitude error',ycolor=c2)
     ax2.grid(False)
+    
     ax2.set_title('MJO prediction skill: Phase and Amplitude')
 
     ax1.set(xlabel='Forecast lead day')
     ax1.set(xlim=(0,len(fcst_days)))
-
-    fig.tight_layout()
 
     if not os.path.exists('../output/MJO/'+ds_names[1]): 
         os.mkdir('../output/MJO/'+ds_names[1])
