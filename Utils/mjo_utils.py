@@ -264,7 +264,7 @@ def plot_acc_rmse(ds_corr,ds_rmse,ds_names,nfcst_days,fig_name):
     ax2=ax1.twinx()
 
     ax1.plot(fcst_days,ds_corr,'b-')
-    ax1.set(ylim=(0,1),ylabel='ACC')
+    ax1.set(ylim=(0,1),ylabel='ACC',color='b')
     ax1.axhline(y=0.5, color='k', linestyle='-',linewidth=0.5)
     ax1.grid(False)
 
