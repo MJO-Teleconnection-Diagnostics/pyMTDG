@@ -480,6 +480,7 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,ds
     count = 1
     dat = dat1
     fig_title = figt
+    fig_name = fig_name
     clevs = np.arange(cmin,cmax,cint) # np.linspace(cmin,cmax,11)
     ax = fig.add_subplot(1,1,count)
     h = ax.contourf(datx, daty, dat, clevs, cmap='RdBu_r', extend='both')
@@ -490,6 +491,7 @@ def mjo_phase_lag_plot(data_week1,data_week2,data_week3,data_week4,data_week5,ds
     plt.title(fig_title, fontsize=22)
     ax.set_xlabel('MJO phase', fontsize=18)
     ax.set_ylabel('week', fontsize=18)
+    ax.grid(color='grey', alpha=0.3, linestyle='--',lw=0.5)
     divider = make_axes_locatable(ax)
     cax = divider.new_vertical(size='10%', pad=0.7, pack_start = True)
     fig.add_axes(cax)
