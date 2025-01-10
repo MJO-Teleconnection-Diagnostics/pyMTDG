@@ -21,7 +21,7 @@ import sys
 import glob
 
 sys.path.insert(0, '../Utils')
-from u10_utils import *
+from histogram_utils import *
 from obs_utils import *
 
 # Read yaml file

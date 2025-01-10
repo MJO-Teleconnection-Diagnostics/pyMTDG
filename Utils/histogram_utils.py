@@ -186,7 +186,7 @@ def histogram_mjo(EXP,OBS,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data
     #fig = plt.figure(figsize=(20,2))
     fig = plt.figure(figsize=(8,6))
     #fig_title = [EXP+' Week1-2', EXP+' Week3-5', 'ERA-Interim Week1-2', 'ERA-Interim Week3-5']
-    fig_title = [OBS+' Week1-2', OBS+' Week3-5', EXP+' Week1-2', EXP+' Week3-5']
+    fig_title = [OBS+' Week1-2', EXP+' Week1-2', OBS+' Week3-5', EXP+' Week3-5']
     count = 1
     for ii in range(4):
         if ii == 0: 
@@ -197,13 +197,13 @@ def histogram_mjo(EXP,OBS,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data
         if ii == 1:
             #tmp = np.hstack(data_week3_pha12+data_week4_pha12+data_week5_pha12)
             #tmp1 = np.hstack(data_week3_pha56+data_week4_pha56+data_week5_pha56)
-            tmp = np.hstack(data_r_week3_pha12+data_r_week4_pha12+data_r_week5_pha12)
-            tmp1 = np.hstack(data_r_week3_pha56+data_r_week4_pha56+data_r_week5_pha56)
+            tmp = np.hstack(data_week1_pha12+data_week2_pha12)
+            tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
         if ii == 2: 
             #tmp = np.hstack(data_r_week1_pha12+data_r_week2_pha12)
             #tmp1 = np.hstack(data_r_week1_pha56+data_r_week2_pha56)
-            tmp = np.hstack(data_week1_pha12+data_week2_pha12)
-            tmp1 = np.hstack(data_week1_pha56+data_week2_pha56)
+            tmp = np.hstack(data_r_week3_pha12+data_r_week4_pha12+data_r_week5_pha12)
+            tmp1 = np.hstack(data_r_week3_pha56+data_r_week4_pha56+data_r_week5_pha56)
         if ii == 3: 
             #tmp = np.hstack(data_r_week3_pha12+data_r_week4_pha12+data_r_week5_pha12)
             #tmp1 = np.hstack(data_r_week3_pha56+data_r_week4_pha56+data_r_week5_pha56)
@@ -232,7 +232,7 @@ def histogram_mjo(EXP,OBS,xlabel,fig_name,data_week1_pha12,data_week2_pha12,data
         plt.ylim([0, 0.4])
         plt.title(fig_title[ii])
         ax.set_xlabel(xlabel)
-        if count == 1:
+        if count == 1 or count == 3:
             ax.set_ylabel('Frequency')
         ax.grid(axis='y')
         count += 1
