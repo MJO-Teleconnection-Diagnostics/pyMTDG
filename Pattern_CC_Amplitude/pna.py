@@ -46,7 +46,7 @@ if (dictionary['ERAI']==True):
 if (dictionary['ERAI']==False):
     fil_z500_obs=dictionary['Path to Z500 observation data files']
     ds_obs_name='OBS'
-    nf,ds_z500_obs0=open_user_obs_fil(fil_z500_obs)
+    nf,ds_z500_obs=open_user_obs_fil(fil_z500_obs)
         
 z500_obs=get_variable_from_dataset(ds_z500_obs)
 
@@ -61,9 +61,9 @@ fcst_dir=dictionary['Path to Z500 model data files']
 ds_fcst_name=dictionary['model name']
 ds_names=[ds_obs_name,ds_fcst_name]
 
-fcst_files=fcst_dir+'*.nc'
-print(fcst_files)
-ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
+fcst_files=np.sort(glob.glob(str(fcst_dir+'*.nc')))
+
+ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True,engine='h5netcdf')
 z500_fcst=get_variable_from_dataset(ds_z500_fcst)
 
 # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
@@ -73,6 +73,8 @@ if (dictionary['ERAI']==True):
 else:
     rgrd_z500_fcst = copy.deepcopy(z500_fcst)
     rgrd_z500_obs = copy.deepcopy(z500_obs)
+    
+print('Done with regridding')
 
 # Calculate forecast anomalies
 if (dictionary['Daily Anomaly'] == True):
@@ -166,6 +168,7 @@ for time_step in range ( len ( erai_yyyymmdd ) ) :
 
 
 #########PNA region Pattern CC & Relative amplitude line plots#############
+print('PNA region Pattern CC & Relative amplitude line plots')
 lat_min=20
 lat_max=80
 lon_min=120
@@ -245,90 +248,86 @@ write_output_text('../output/PatternCC_PNA/'+dictionary['model name']+'/'+fignam
          amp_ufs_p67,P67_PNA_low_amp, P67_PNA_high_amp])
 
 if (dictionary['Compute composites']==True):
-
-   model_z500_composite_p23=composites_model(rmm_list_model_23,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
-   model_z500_composite_p67=composites_model(rmm_list_model_67,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
-
-
-
-   ERA5_z500_composite_p23=composites_era(rmm_list_ERA_23,erai_anomaly,era_lat_in,era_lon_in)
-   ERA5_z500_composite_p67=composites_era(rmm_list_ERA_67,erai_anomaly,era_lat_in,era_lon_in)
+    print('Compute composites')
+    model_z500_composite_p23=composites_model(rmm_list_model_23,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
+    model_z500_composite_p67=composites_model(rmm_list_model_67,z500_fcst_anom_reshape,era_lat_in,era_lon_in)
+    
+    ERA5_z500_composite_p23=composites_era(rmm_list_ERA_23,erai_anomaly,era_lat_in,era_lon_in)
+    ERA5_z500_composite_p67=composites_era(rmm_list_ERA_67,erai_anomaly,era_lat_in,era_lon_in)
 
 
 
-   coords= {
+    coords= {
        'phase':[1,2,3,4],
        'latitude':era_lat_in,
        'longitude':era_lon_in
    }
 
-
-
-   xr_ERA5_z500_composite_p23= xr.DataArray(ERA5_z500_composite_p23,coords)
-   xr_ERA5_z500_composite_p67= xr.DataArray(ERA5_z500_composite_p67,coords)
-   xr_model_z500_composite_p23= xr.DataArray(model_z500_composite_p23,coords)
-   xr_model_z500_composite_p67= xr.DataArray(model_z500_composite_p67,coords)
+    xr_ERA5_z500_composite_p23= xr.DataArray(ERA5_z500_composite_p23,coords)
+    xr_ERA5_z500_composite_p67= xr.DataArray(ERA5_z500_composite_p67,coords)
+    xr_model_z500_composite_p23= xr.DataArray(model_z500_composite_p23,coords)
+    xr_model_z500_composite_p67= xr.DataArray(model_z500_composite_p67,coords)
 
 
 #########PNA region#############
-   lat_min=20
-   lat_max=80
-   lon_min=120
-   lon_max=300
-   PCC_PNA_composite_p23_round=np.empty( ( 4) ,dtype=float)
-   PCC_PNA_composite_p67_round=np.empty( ( 4) ,dtype=float)
-   PCC_PNA_composite_p23=np.empty( ( 4) ,dtype=float)
-   PCC_PNA_composite_p67=np.empty( ( 4) ,dtype=float)
-   for i in range ( 4 ) :
-     res_temp_p23=correlate(xr_ERA5_z500_composite_p23[i,:,:], xr_model_z500_composite_p23[i,:,:],lat_min,lat_max,lon_min,lon_max)
-     res_temp_p67=correlate(xr_ERA5_z500_composite_p67[i,:,:], xr_model_z500_composite_p67[i,:,:],lat_min,lat_max,lon_min,lon_max)
-     PCC_PNA_composite_p23[i]=res_temp_p23[0,1]
-     PCC_PNA_composite_p67[i]=res_temp_p67[0,1]
-     PCC_PNA_composite_p23_round[i] = round(PCC_PNA_composite_p23[i], 2)
-     PCC_PNA_composite_p67_round[i] = round(PCC_PNA_composite_p67[i], 2)
+    lat_min=20
+    lat_max=80
+    lon_min=120
+    lon_max=300
+    PCC_PNA_composite_p23_round=np.empty( ( 4) ,dtype=float)
+    PCC_PNA_composite_p67_round=np.empty( ( 4) ,dtype=float)
+    PCC_PNA_composite_p23=np.empty( ( 4) ,dtype=float)
+    PCC_PNA_composite_p67=np.empty( ( 4) ,dtype=float)
+    for i in range ( 4 ) :
+        res_temp_p23=correlate(xr_ERA5_z500_composite_p23[i,:,:],
+                               xr_model_z500_composite_p23[i,:,:],lat_min,lat_max,lon_min,lon_max)
+        res_temp_p67=correlate(xr_ERA5_z500_composite_p67[i,:,:],
+                               xr_model_z500_composite_p67[i,:,:],lat_min,lat_max,lon_min,lon_max)
+        PCC_PNA_composite_p23[i]=res_temp_p23[0,1]
+        PCC_PNA_composite_p67[i]=res_temp_p67[0,1]
+        PCC_PNA_composite_p23_round[i] = round(PCC_PNA_composite_p23[i], 2)
+        PCC_PNA_composite_p67_round[i] = round(PCC_PNA_composite_p67[i], 2)
 
 
 # Plot PNA region Z500 composites
 
-   lags = ['1','2','3','4'] # in weeks
-   lon = era_lon_in
-   lat = era_lat_in
-   levs_anom = np.arange(-60,60,10)
-   fig=plot.figure(refwidth=5)
-   axes=fig.subplots(nrows=4,ncols=4,proj='cyl',proj_kw={'lon_0': 180})
-   axes.format(coast=True, latlines=20, lonlines=40,
+    lags = ['1','2','3','4'] # in weeks
+    lon = era_lon_in
+    lat = era_lat_in
+    levs_anom = np.arange(-60,60,10)
+    fig=plot.figure(refwidth=5)
+    axes=fig.subplots(nrows=4,ncols=4,proj='cyl',proj_kw={'lon_0': 180})
+    axes.format(coast=True, latlines=20, lonlines=40,
                   lonlim=(120,300),latlim=(20,80),
                   lonlabels=(True,False),
                   latlabels=(True,False),abc=True)
 
-   for ilag, lag in enumerate(lags):
-
-
-       # Observations
-       h1=axes[ilag,0].contourf(lon,lat,xr_ERA5_z500_composite_p23[ilag],extend='both',
+    for ilag, lag in enumerate(lags):
+        # Observations
+        h1=axes[ilag,0].contourf(lon,lat,xr_ERA5_z500_composite_p23[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-       axes[ilag,0].format(title='Obs. Phases 2&3_Week ' + lag)
+        axes[ilag,0].format(title='Obs. Phases 2&3_Week ' + lag)
+        
+        # Forecast
+        h2=axes[ilag,1].contourf(lon,lat,xr_model_z500_composite_p23[ilag],extend='both',
+                       cmap='RdBu_r', levels=levs_anom)
+        axes[ilag,1].format(title=dictionary['model name']+' Phases 2&3_Week ' + lag)
+        axes[ilag,1].set_title(PCC_PNA_composite_p23_round[ilag], loc = "right")
     
-       # Forecast
-       h2=axes[ilag,1].contourf(lon,lat,xr_model_z500_composite_p23[ilag],extend='both',
+        h3=axes[ilag,2].contourf(lon,lat,xr_ERA5_z500_composite_p67[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-       axes[ilag,1].format(title=dictionary['model name']+' Phases 2&3_Week ' + lag)
-       axes[ilag,1].set_title(PCC_PNA_composite_p23_round[ilag], loc = "right")
+        axes[ilag,2].format(title='Obs. Phases 6&7_Week ' + lag)
     
-       h3=axes[ilag,2].contourf(lon,lat,xr_ERA5_z500_composite_p67[ilag],extend='both',
+        h4=axes[ilag,3].contourf(lon,lat,xr_model_z500_composite_p67[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-       axes[ilag,2].format(title='Obs. Phases 6&7_Week ' + lag)
-    
-       h4=axes[ilag,3].contourf(lon,lat,xr_model_z500_composite_p67[ilag],extend='both',
-                       cmap='RdBu_r', levels=levs_anom)
-       axes[ilag,3].format(title=dictionary['model name']+' Phases 6&7_Week ' + lag)
-       axes[ilag,3].set_title(PCC_PNA_composite_p67_round[ilag], loc = "right")
+        axes[ilag,3].format(title=dictionary['model name']+' Phases 6&7_Week ' + lag)
+        axes[ilag,3].set_title(PCC_PNA_composite_p67_round[ilag], loc = "right")
 
-   fig.colorbar(h1, loc='b', extend='both', label='Z500 anomaly',
+    fig.colorbar(h1, loc='b', extend='both', label='Z500 anomaly',
                      width='1.5em', extendsize='2em', shrink=0.3,)
 
    # save
-   if not os.path.exists('../output/PatternCC_PNA/'+dictionary['model name']): 
-       os.mkdir('../output/PatternCC_PNA/'+dictionary['model name'])
-   figname='z500_composites_PNA' 
-   fig.savefig('../output/PatternCC_PNA/'+dictionary['model name']+'/'+figname+'.jpg',dpi=300)
+    if not os.path.exists('../output/PatternCC_PNA/'+dictionary['model name']): 
+        os.mkdir('../output/PatternCC_PNA/'+dictionary['model name'])
+    figname='z500_composites_PNA' 
+    fig.savefig('../output/PatternCC_PNA/'+dictionary['model name']+'/'+figname+'.jpg',dpi=300)
