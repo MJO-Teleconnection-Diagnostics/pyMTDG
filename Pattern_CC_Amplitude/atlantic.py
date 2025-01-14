@@ -60,9 +60,9 @@ fcst_dir=dictionary['Path to Z500 model data files']
 ds_fcst_name=dictionary['model name']
 ds_names=[ds_obs_name,ds_fcst_name]
 
-fcst_files=fcst_dir+'*.nc'
+fcst_files=np.sort(glob.glob(str(fcst_dir+'*.nc')))
 print(fcst_files)
-ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True)
+ds_z500_fcst=xr.open_mfdataset(fcst_files,combine='nested',concat_dim='time',parallel=True,engine='h5netcdf')
 z500_fcst=get_variable_from_dataset(ds_z500_fcst)
 
 # Interpolate reforecast data to ERAI grid (regular 0.75 x 0.75)
