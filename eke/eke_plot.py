@@ -14,6 +14,7 @@ import os
 
 import yaml
 
+from pathlib import Path
 import sys
 sys.path.insert ( 0 , '../Utils' )
 
@@ -39,7 +40,7 @@ from eke_util import plotComposites
 from fcst_utils import write_output_text
 
 ###### Input from yml file ( UFS )
-config_file=Path('../driver/config.testing.yml').resolve()
+config_file=Path('../driver/config.yml').resolve()
 if not config_file.exists():
         raise FileNotFoundError(f"Configuration file not found: {config_file}")
 with open ( config_file, 'r' ) as file:
