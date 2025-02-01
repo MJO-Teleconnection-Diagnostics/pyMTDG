@@ -87,3 +87,44 @@ def open_user_obs_fil(obs_dir):
         ds =xr.open_mfdataset(obs_fil)
         
     return len(obs_fil),ds
+
+
+def reshape_obs(obs,init_day,nfc=35):
+    ''' Reshape observation data to match forecast data
+    is 2D with dimensions initialization day & forecast day. 
+    ---
+    Inputs
+    ---
+    obs: xarray data array of observation data with time dimension named "time"
+    init_days: initial days of the forecast
+    nfc: number of forecast days, default=35. Must be integer
+    
+    ---
+    Returns
+    ---
+    obs_reshape: reshaped xarray of observation data with 2D time
+    '''
+    
+    # Check to make sure nfc is an integer
+    if not isinstance(nfc, int):
+        print('warning: nfc is not an integer. forcing integer type')
+        nfc = int(nfc)
+    
+    # Forecast lead time
+    fc_day = np.arange(1,nfc+1)
+    
+    # Reshape
+    obs_reshape=[]
+    for iinit in range(len(init_day)):
+        # Subset and rename the forecast dimension
+        subset = obs.sel(time=slice(init_day.time[iinit],init_day.time[iinit]+pd.Timedelta(days=nfc-1)))
+        subset = subset.rename(time='forecast_day')
+        subset['forecast_day']=fc_day
+        obs_reshape.append(subset)
+        
+    # Convert to single xarray data array from list of multiple data arrays
+    obs_reshape=xr.concat(obs_reshape,dim='time')
+    obs_reshape['time']=init_day
+    obs_reshape.time.attrs['long_name']='initial time'
+    
+    return obs_reshape

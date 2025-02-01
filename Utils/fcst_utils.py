@@ -7,7 +7,7 @@ import _spherepack
 import csv 
 
 def calcAnom(ds,anom_name):
-    # Save the original dates 
+    # Save the original dates
     time=ds.time
     
     # Get the time dimensions; ntimes=# of samples; nyrs=# of calendar years; nlead=# of foreecast leads
@@ -21,8 +21,6 @@ def calcAnom(ds,anom_name):
     # Compute climatology for each forecast lead 
     climo=[]
     for i in range(nlead):
-        #AMJ 12/22/22 fixed indexing bug
-        #da=ds[i:ntimes-1:nlead,:,:].mean(dim='time')
         da=ds[i:ntimes:nlead,:,:].mean(dim='time')
         climo.append(da.to_dataset(name='clim'))
     ds_clim=xr.combine_nested(climo,concat_dim='time')
@@ -313,5 +311,5 @@ def write_output_text(file_name,headers,fields):
                 xx=[]
                 for j in range(len(fields)):
                     xx.append(fields[j][i])
-                print(xx)
+                #print(xx)
                 writer.writerow(xx)

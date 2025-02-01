@@ -13,31 +13,6 @@ from multiprocessing import Pool
 from functools import partial
 from fcst_utils import *
 
-def parallel_regrid(inputs):
-    """
-    Wrapper function to unpack inputs and call regrid function
-    """
-    fcst, obs, fcst_lat, fcst_lon, obs_lat, obs_lon = inputs
-    return regrid(fcst, obs, fcst_lat, fcst_lon, obs_lat, obs_lon, scalar=True)
-
-def run_parallel_regrid(data_pairs):
-    """
-    Run regridding operations in parallel
-    
-    Parameters:
-    data_pairs: List of tuples, each containing:
-        (fcst, obs, fcst_lat, fcst_lon, obs_lat, obs_lon)
-    
-    Returns:
-    List of tuples, each containing (rgrd_fcst, rgrd_obs)
-    """
-    # Create a pool of workers
-    with Pool() as pool:
-        # Execute regridding in parallel
-        results = pool.map(parallel_regrid, data_pairs)
-    
-    return results
-
 def get_netcdf_files(directories: List[str]) -> Dict[str, List[str]]:
     """Get sorted lists of NetCDF files from specified directories.
     

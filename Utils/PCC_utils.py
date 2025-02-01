@@ -207,7 +207,7 @@ def composites_model(rmm_list_model,modeldata,data_lat_in,data_lon_in):
     model_z500_composite[3,:,:]=np.nanmean(modeldata [ rmm_list_model, 21:27, : , : ],axis=(0,1))
     return model_z500_composite
 
-def composites_era(rmm_list_ERA,eraidata,data_lat_in,data_lon_in):
+def composites_obs(rmm_list_ERA,eraidata,data_lat_in,data_lon_in):
     ERA5_z500_composite=np.empty(  ( 4, len ( data_lat_in ) , len ( data_lon_in ) ) ,dtype=float)
     rmm_list_ERA_new = rmm_list_ERA.flatten()
     week1_start=0

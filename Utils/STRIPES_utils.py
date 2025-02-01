@@ -363,7 +363,7 @@ def calcSTRIPES_forecast_obs(fc_dir, obs_dir, frmm, vartype, t0, t1, testing=Fal
     files = np.sort(glob.glob(fc_dir+'*.nc*'))
     
     ds = xr.open_mfdataset(files, combine='nested',
-                           concat_dim='time',parallel='true')
+                           concat_dim='time',parallel='true',engine='h5netcdf')
     fc = get_variable_from_dataset(ds, vartype)
 
     # read obs

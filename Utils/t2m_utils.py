@@ -52,4 +52,4 @@ def get_variable_from_dataset(ds):
         
     
     return da
-    raise RuntimeError("Couldn't find a geopotential variable name")
+    raise RuntimeError("Couldn't find a 2-meter temperature variable name")
