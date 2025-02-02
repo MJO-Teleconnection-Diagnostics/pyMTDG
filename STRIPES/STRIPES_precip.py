@@ -21,29 +21,16 @@ import os
 
 # -------------------------------------------------------
 # Read yaml file
-try:
-    config_file=Path('../driver/config.yml').resolve()
-    with open(config_file,'r') as file:
-        try:
-            dictionary = yaml.safe_load(file)
-        except yaml.YAMLError as e:
-            print(f"Error parsing YAML configuration: {e}")
-            raise
-except FileNotFoundError:
-    print('no config file found, using OSU HPC data paths')
-    datadir = '/ceoas/jenneylab/bridges2_transfer/ufs_data'
-    dictionary={
-            'DIR_IN':datadir,
-            'Path to precipitation model data files':datadir+'/Prototype5/prate/',
-            'IMERG':True,
-            'RMM':False,
-            'START_DATE':'20110401',
-            'END_DATE':'20180419',
-            'model name':'UFS5',
-            }
-
-# Load RMM data. 
-# !!! Note: This code does not handle the case where RMM data is computed
+config_file=Path('../driver/config.yml').resolve()
+if not config_file.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_file}")
+        
+with open(config_file,'r') as file:
+    try:
+        dictionary = yaml.safe_load(file)
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML configuration: {e}")
+        raise
 
 dir_in = dictionary['DIR_IN']
 

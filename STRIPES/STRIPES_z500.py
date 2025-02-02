@@ -21,28 +21,16 @@ import os
 
 # -------------------------------------------------------
 # Read yaml file
-try:
-    config_file=Path('../driver/config.yml').resolve()
-    with open(config_file,'r') as file:
-        try:
-            dictionary = yaml.safe_load(file)
-        except yaml.YAMLError as e:
-            print(f"Error parsing YAML configuration: {e}")
-            raise
-except FileNotFoundError:
-    print('no config file found, using OSU HPC data paths')
-    datadir = '/ceoas/jenneylab/bridges2_transfer/ufs_data'
-    dictionary={
-            'DIR_IN':datadir,
-            'Path to Z500 model data files':datadir+'/Prototype5/gh/',
-            'ERAI':True,
-            #'ERAI':False,
-            'Path to Z500 observation data files':datadir+'/mjo_teleconnections_data/erai/z500/z500.ei.oper.an.pl.regn128sc.1979.2019.nc',
-            'RMM':False,
-            'START_DATE':'20110401',
-            'END_DATE':'20180419',
-            'model name':'UFS5',
-            }
+config_file=Path('../driver/config.yml').resolve()
+if not config_file.exists():
+        raise FileNotFoundError(f"Configuration file not found: {config_file}")
+        
+with open(config_file,'r') as file:
+    try:
+        dictionary = yaml.safe_load(file)
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML configuration: {e}")
+        raise
         
 dir_in = dictionary['DIR_IN']
 
@@ -55,7 +43,7 @@ else:
 Z500_DIR = dictionary['Path to Z500 model data files']
 
 if (dictionary['ERAI']==True):
-    Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/'
+    Z500_DIR_OBS = dir_in+'/mjo_teleconnections_data/erai/z500/daily/'
     obs_name = 'ERAI'
 else:
     Z500_DIR_OBS = dictionary['Path to Z500 observation data files']

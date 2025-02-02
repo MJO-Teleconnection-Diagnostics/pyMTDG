@@ -24,6 +24,7 @@ print(f'Compute T2m diagnostic')
 config_file=Path('../driver/config.yml').resolve()
 if not config_file.exists():
         raise FileNotFoundError(f"Configuration file not found: {config_file}")
+        
 with open(config_file,'r') as file:
     try:
         dictionary = yaml.safe_load(file)
@@ -68,12 +69,12 @@ mmStrt=date.fromisoformat(tBegin).month
 # Read in observations
 # ERA-Interim data covers 01/01/1979-08/31/2019, 7 years and 8 months, 14853 days
 
-if (dictionary['ERAI']==True):
+if dictionary.get('ERAI', False):
     fil_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t2m/t2m.ei.oper.an.sfc.regn128sc.1979.2019.nc'
     ds_obs_name='ERAI'
     ds_obs = xr.open_dataset(fil_obs,chunks='auto')
     
-if (dictionary['ERAI']==False):
+else:
     fil_obs=dictionary['Path to T2m observation data files']
     ds_obs_name='OBS'
     nf,ds_obs=open_user_obs_fil(fil_obs)

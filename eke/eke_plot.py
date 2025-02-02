@@ -66,7 +66,7 @@ Model_z500_files             = yml_input [ 'Path to Extratropical Cyclone Activi
 if (yml_input['ERAI']==True):
     reanalysis_u850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/u850.19790101-20190831.nc'
     reanalysis_v850_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/uv850/v850.19790101-20190831.nc'
-    reanalysis_z500_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/z500/z500.19790101-20190831.nc'
+    reanalysis_z500_file=yml_input['DIR_IN']+'/mjo_teleconnections_data/erai/z500/6hourly/z500.19790101-20190831.nc'
     ds_obs_name='ERAI'
 if (yml_input['ERAI']==False):
     reanalysis_u850_file=yml_input['Extratropical Cyclone Activity zonal wind at 850 hPa observation data files']
@@ -355,7 +355,7 @@ for region_n in range ( len ( pattern_corr_regions ) ):
                      )           
 
 plot_levels = 8
-fig_title_names = [ "Reanalysis" , Model_name ]
+fig_title_names = [ ds_obs_name , Model_name ]
 cmap='bwr'
 
 cnLevelSpacingF = get_plot_level_spacing ( reanalysis_eke850_composite , plot_levels , pattern_corr_south , pattern_corr_north , np.array ( data_lat_in ) )

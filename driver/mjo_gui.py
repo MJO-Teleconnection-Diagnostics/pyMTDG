@@ -930,7 +930,9 @@ class SelectDiagWindow(QMainWindow):
 On this page, the user can select all diagnostics, one diagnostic or multiple diagnostics. On the next page, the user will be prompted to provide additional information about the forecast data files required for each of the diagnostics.
 
 * The Extratropical Cyclone Activity
-    - Provides composites of 24-h difference filtered eddy kinetic energy at 850-hPa (computed using U850 and V850) and the spatial correlation coefficient between forecast and reanalysis composites. 
+    - Provides composites of 24-h difference filtered eddy kinetic energy at 850-hPa (computed using U850 and V850) and the spatial correlation coefficient between forecast and reanalysis composites.
+    
+* The STRIPES index is sensitive to the number of MJO events used in the calculation. To compare multiple models, they must be evaluated over the same period or number of MJO events.
 
                             ''')
         help_label.setWordWrap(True)
@@ -1307,14 +1309,14 @@ class ThirdSubWindow(QMainWindow):
 
 Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/model/var/, where 'var' can be any name or a combinationof directories. 
+Example: /project/$user/model/var/, where 'var' can be any name or a combinationof directories.
         '''
         diag_help_texts[2] = '''
 ** STRIPES Index for precipitation**
 
 Please include a trailing '/' in the directory where the precipitation  data is located.
 
-Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories. 
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories.
 '''
         diag_help_texts[3] = '''
 ** Pattern Correlation (CC) and Relative Amplitude for the Pacific North American (PNA) region (20N - 80N, 120E - 60W)**
@@ -1363,7 +1365,9 @@ Example: /project/$user/model/var/, where 'var' can be any name or a combination
 
 Please include a trailing '/' in the directory where data is located.
 
-Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories.  
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories.
+
+Note: A positive value 
 '''
         diag_help_texts[9] = '''
 ** Surface Air Temperature**
@@ -2478,9 +2482,9 @@ class mjoResult(QMainWindow):
         self.imagebuttons=[]
         
         self.helpTexts=['''
-MJO prediction skill for forecasts initialized with active MJO events (RMM > 1) during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, blue) and root-mean squared error (RMSE, red) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 and RMSE of 1.5.
+MJO prediction skill for forecasts initialized with active MJO events (RMM > 1) during boreal winter (NDJFM). The prediction skill is evaluated based on the anomaly correlation coefficient (ACC, blue) and root-mean squared error (RMSE, red) between the model and observed RMM indices. The gray solid horizontal line indicates ACC of 0.5 (an indication of the limit of skillful forecast) and RMSE of 1.5. Forecasts are deemed skillful for RMSE < sqrt(2), i.e. they have a lower RMSE than a climatological forecast. 
         ''','''
-MJO prediction skill for forecasts initialized with active MJO events (RMM > 1) during boreal winter (NDJFM). The prediction skill is evaluated based on the phase error (degrees, blue) and amplitude error (red).
+MJO prediction skill for forecasts initialized with active MJO events (RMM > 1) during boreal winter (NDJFM). The prediction skill is evaluated based on the phase error (degrees, blue) and amplitude error (red). The phase error represents the phase angle difference between the forecasts and observations with a positive angle indicating the forecast leads the observations.
         ''','''
 Longitude-time composites of OLR (W/m2; shading) and U850 (contour; interval 0.3 m/s) anomalies averaged over 15S-15N for active MJO events (RMM > 1) in pahses 2 and 3 for observations and initilized in phases 2 and 3 for forecasts. The vertical lines indicate 120E (approximately the center of the Maritime Continent), respectively. A 5-day moving average is applied.
         ''']
