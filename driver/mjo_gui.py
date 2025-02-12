@@ -30,24 +30,23 @@ def nogui_close_yaml(filename):
         1: "../STRIPES/STRIPES_z500.py",
         2: "../STRIPES/STRIPES_precip.py",
         3: "../Pattern_CC_Amplitude/pna.py",
-        4: "../T2m_composites/t2m_composite.py",
-        5: "../Histogram_10hPa/histogram.py",
-        6: "../MJO/mjo.py",
-        7: "../Stratosphere/stratosphere.py",
-        8: "../Pattern_CC_Amplitude/atlantic.py",
-        9: "../eke/eke_plot.py"
+        4: "../Pattern_CC_Amplitude/atlantic.py",
+        5: "../Stratosphere/stratosphere.py",
+        6: "../Histogram_10hPa/histogram.py", 
+        7: "../eke/eke_plot.py",
+        8: "../MJO/mjo.py",
+        9: "../T2m_composites/t2m_composites.py"
     }
-    user_input = input("Please decide which diagnostics you would like to run: "
-                       "press 0 to run ALL of them, "
-                       "1 for stripes_z500, "
-                       "2 for stripes_precip, "
-                       "3 for pna, "
-                       "4 for t2m_composite, "
-                       "5 for histogram, "
-                       "6 for mjo, "
-                       "7 for stratosphere, "
-                       "8 for atlantic, "
-                       "9 for eke_plot: ")
+    user_input = input("Please decide which diagnostics you would like to run (comma separated): "
+                       "1 for STRIPES index for geopotential height, "
+                       "2 for STRIPES index for precipitation, "
+                       "3 for Pattern CC and relative amplitude over the PNA region, "
+                       "4 for Pattern CC and Relative Amplitude over the Euro-Atlantic sector, "
+                       "5 for Stratospheric pathway, "
+                       "6 for Histogram of 10 hPa zonal wind, "
+                       "7 for Extratropical cyclone activity, "
+                       "8 for MJO, "
+                       "9 for Surface air temperature: ")
     user_input = user_input.replace(',', ' ')
     try:
         user = [int(n) for n in user_input.split()]
@@ -1309,7 +1308,7 @@ class ThirdSubWindow(QMainWindow):
 
 Please include a trailing '/' in the directory where the geopotential data is located. Data can be geopotential (units m^2/s^2) or geopotential height (m).
 
-Example: /project/$user/model/var/, where 'var' can be any name or a combinationof directories.
+Example: /project/$user/model/var/, where 'var' can be any name or a combination of directories.
         '''
         diag_help_texts[2] = '''
 ** STRIPES Index for precipitation**
