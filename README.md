@@ -76,7 +76,7 @@ cd driver
 ~~~
 Example: Display help text for the driver, which shows the necessary flags/options
 ~~~
-python mjo_gui.py -h
+python mjo_telecon_main.py -h
 ~~~
 Example: Run WITH the graphical interface
 ~~~
