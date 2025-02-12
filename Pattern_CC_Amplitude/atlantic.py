@@ -174,9 +174,9 @@ lon_max2=90
 rmm_list_model_67=rmm_list [3]
 rmm_list_model_23=rmm_list [1]
 pcc_ufs_p23 = patterncc_atlantic(timelag,rmm_list_obs_23,rmm_list_model_23,
-                                 z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min1,lon_max1)
+                                 z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)
 pcc_ufs_p67 = patterncc_atlantic(timelag,rmm_list_obs_67,rmm_list_model_67,
-                                 z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min1,lon_max1)             
+                                 z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2)             
 pcc_ufs_p23=np.mean ( pcc_ufs_p23,axis= 1   )
 pcc_ufs_p67=np.mean ( pcc_ufs_p67,axis= 1   )
 
@@ -189,10 +189,10 @@ amp_ufs_p23=np.mean ( amp_ufs_p23,axis= 1   )
 amp_ufs_p67=np.mean ( amp_ufs_p67,axis= 1   )
 
 bootstrap_size = 1000
-P23_atlantic_low,P23_atlantic_high=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_23,rmm_list_model_23,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min,lon_max,PCC=True)
-P67_atlantic_low,P67_atlantic_high=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_67,rmm_list_model_67,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min,lon_max,PCC=True)
-P23_atlantic_low_amp,P23_atlantic_high_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_23,rmm_list_model_23,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min,lon_max,amp=True)
-P67_atlantic_low_amp,P67_atlantic_high_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_67,rmm_list_model_67,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min,lon_max,amp=True)
+P23_atlantic_low,P23_atlantic_high=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_23,rmm_list_model_23,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=True)
+P67_atlantic_low,P67_atlantic_high=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_67,rmm_list_model_67,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,PCC=True)
+P23_atlantic_low_amp,P23_atlantic_high_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_23,rmm_list_model_23,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,amp=True)
+P67_atlantic_low_amp,P67_atlantic_high_amp=test_significance_atlantic(bootstrap_size,timelag,rmm_list_obs_67,rmm_list_model_67,z500_fcst_anom_reshape,z500_obs_anom,lat_min,lat_max,lon_min1,lon_max1,lon_min2,lon_max2,amp=True)
 
 
 import matplotlib.lines as mlines
