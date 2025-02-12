@@ -2,7 +2,13 @@
 
 This repository contains the user interface and code to run the diagnostics for evaluating the MJO teleconnections forecasted by a subseasonal to seasonal system. For the background information on diagnostics see: 
 
-Stan, C., C. Zheng, E. K.-M. Chang, D. I. V. Domeisen, C. Garfienkel, A. M. Jenney, H. Kim, Y.-K. Lim, H. Lin, A. Robertson, C. Schwartz, F. Vitart, J. Wang, P. Yadav, 2022: Advances in the prediction of MJO-Teleconnections in the S2S forecast systems. Bulletin of the American Meteorological Society, 103, E11427-E1447. https://doi.org/10.1175/BAMS-D-21-0130.1
+Stan, C., C. Zheng, E. K.-M. Chang, D. I. V. Domeisen, C. Garfienkel, A. M. Jenney, H. Kim, Y.-K. Lim, H. Lin, A. Robertson, C. Schwartz, F. Vitart, J. Wang, P. Yadav, 2022: Advances in the prediction of MJO-Teleconnections in the S2S forecast systems. Bulletin of the American Meteorological Society, 103, E11427-E1447. [https://doi.org/10.1175/BAMS-D-21-0130.1](https://doi.org/10.1175/BAMS-D-21-0130.1)
+
+Zheng, C., D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, J. Wang, Z. Wu, C. Stan, 2024: The impact of vertical model levels on the prediction of MJO teleconnections: Part I—The tropospheric pathways in the UFS global coupled model. Climate Dynamics, 62, 9031-9056. [https://doi.org/10.1007/s00382-024-07377-x](https://doi.org/10.1007/s00382-024-07377-x)
+
+Garfinkel, C. I., Z. Wu, P. Yadav, Z. Lawrence, D. I. V. Domeisen, C. Zheng, J. Wang, A. M. Jenney, H. Kim, C. Schwartz, C. Stan, 2025: The impact of vertical model levels on the prediction of MJO teleconnections. Part II: The stratospheric pathway in the UFS global coupled model, Climate Dynamics, 63. [https://rdcu.be/d9D94](https://doi.org/10.1007/s00382-024-07512-8)
+
+Wang, J. D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, Z. Wu, C. Zheng, C. Stan, 2025: Prediction of MJO teleconnections in the UFS global fully coupled model [https://assets-eu.researchsquare.com/files/rs-4903941/v1/dfd130a1-80d7-4df7-bc2e-2b628867a359.pdf?c=1727116809](PDF from researchsquare.com)
 
 Contents:
 1. [Software requirements](#introduction)
