@@ -38,15 +38,16 @@ def nogui_close_yaml(filename):
         9: "../T2m_composites/t2m_composites.py"
     }
     user_input = input("Please decide which diagnostics you would like to run (comma separated): "
-                       "1 for STRIPES index for geopotential height, "
-                       "2 for STRIPES index for precipitation, "
-                       "3 for Pattern CC and relative amplitude over the PNA region, "
-                       "4 for Pattern CC and Relative Amplitude over the Euro-Atlantic sector, "
-                       "5 for Stratospheric pathway, "
-                       "6 for Histogram of 10 hPa zonal wind, "
-                       "7 for Extratropical cyclone activity, "
-                       "8 for MJO, "
-                       "9 for Surface air temperature: ")
+                        "\n1: STRIPES index for geopotential height, "
+                        "\n2: STRIPES index for precipitation, "
+                        "\n3: Pattern CC and relative amplitude over the PNA region, "
+                        "\n4: Pattern CC and Relative Amplitude over the Euro-Atlantic sector, "
+                        "\n5: Stratospheric pathway, "
+                        "\n6: Histogram of 10 hPa zonal wind, "
+                        "\n7: Extratropical cyclone activity, "
+                        "\n8: MJO, "
+                        "\n9: Surface air temperature."
+                        "\n: ")
     user_input = user_input.replace(',', ' ')
     try:
         user = [int(n) for n in user_input.split()]
