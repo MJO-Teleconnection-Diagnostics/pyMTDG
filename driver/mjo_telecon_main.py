@@ -3662,7 +3662,7 @@ def main():
             print ("\n\tYou did not provide all the correct command line arguments\n")
             print ("\tUsage:\n")
             print ("\t" + str(sys.argv[0]) + " -g <gui> -c <config_file> -h \n")
-            print ("\t after doing -g and -c either type yes or no to indicate yes gui or no gui (ex: python3 mjo_gui.py -g no/yes -c example.yml")
+            print ("\t after doing -g and -c either type yes or no to indicate yes gui or no gui (ex: python3 mjo_telecon_main.py -g no/yes -c example.yml")
             print ("\t-c The input file with path to all the data see github repo for an example)")
             print ("\t-h Help message")
             print ("\n")
