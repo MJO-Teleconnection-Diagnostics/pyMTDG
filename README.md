@@ -8,7 +8,7 @@ Zheng, C., D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, J. Wang, Z.
 
 Garfinkel, C. I., Z. Wu, P. Yadav, Z. Lawrence, D. I. V. Domeisen, C. Zheng, J. Wang, A. M. Jenney, H. Kim, C. Schwartz, C. Stan, 2025: The impact of vertical model levels on the prediction of MJO teleconnections. Part II: The stratospheric pathway in the UFS global coupled model, Climate Dynamics, 63. [https://doi.org/10.1007/s00382-024-07512-8](https://doi.org/10.1007/s00382-024-07512-8)
 
-Wang, J. D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, Z. Wu, C. Zheng, C. Stan, 2025: Prediction of MJO teleconnections in the UFS global fully coupled model [https://doi.org/10.21203/rs.3.rs-4903941/v1](PDF from researchsquare.com)
+Wang, J. D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, Z. Wu, C. Zheng, C. Stan, 2025: Prediction of MJO teleconnections in the UFS global fully coupled model [https://doi.org/10.21203/rs.3.rs-4903941/v1](https://doi.org/10.21203/rs.3.rs-4903941/v1)
 
 Contents:
 1. [Software requirements](#introduction)
