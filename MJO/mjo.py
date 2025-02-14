@@ -278,7 +278,7 @@ for t in range(nfc):  # Ensure we run for the 35-day window
 
         num_err = a1*b2 - a2*b1
         denom_err = a1*b1 + a2*b2
-        taninv += np.arctan(num_err/denom_err)
+        taninv += np.arctan2(num_err,denom_err)
         nmjos += 1
     
 

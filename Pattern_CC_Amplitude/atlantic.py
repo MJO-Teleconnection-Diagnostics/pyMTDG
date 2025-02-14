@@ -229,12 +229,12 @@ for i in range(ncol):
     ax.grid(True)
     
 # save
-if not os.path.exists('../output/PatternCC_Atlantic/'+ds_model_name): 
-    os.mkdir('../output/PatternCC_Atlantic/'+ds_model_name)
+if not os.path.exists('../output/PatternCC_Atlantic/'+ds_fcst_name): 
+    os.mkdir('../output/PatternCC_Atlantic/'+ds_fcst_name)
 figname='z500_PatternCC&Amplitude_Atlantic' 
-fig.savefig('../output/PatternCC_Atlantic/'+ds_model_name+'/'+figname+'.jpg',dpi=300)
+fig.savefig('../output/PatternCC_Atlantic/'+ds_fcst_name+'/'+figname+'.jpg',dpi=300)
 
-write_output_text('../output/PatternCC_Atlantic/'+ds_model_name+'/'+figname,
+write_output_text('../output/PatternCC_Atlantic/'+ds_fcst_name+'/'+figname,
         ['PatternCC P23','PatternCC_low P23','PatternCC_high P23',
          'PatternCC P67','PatternCC_low P67','PatternCC _high P67',
          'RelAmp P23','RelAmp_low P23','RelAmp_high P23',
@@ -313,7 +313,7 @@ if (dictionary['Compute composites']==True):
        # Forecast
         h2=axes[ilag,1].contourf(lon,lat,xr_model_z500_composite_p23[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-        axes[ilag,1].format(title=ds_model_name + ' Phases 2&3_Week ' + lag)
+        axes[ilag,1].format(title=ds_fcst_name + ' Phases 2&3_Week ' + lag)
         axes[ilag,1].set_title(PCC_Atlantic_composite_p23_round[ilag], loc = "right")
     
         h3=axes[ilag,2].contourf(lon,lat,xr_obs_z500_composite_p67[ilag],extend='both',
@@ -322,7 +322,7 @@ if (dictionary['Compute composites']==True):
     
         h4=axes[ilag,3].contourf(lon,lat,xr_model_z500_composite_p67[ilag],extend='both',
                        cmap='RdBu_r', levels=levs_anom)
-        axes[ilag,3].format(title=ds_model_name + ' Phases 6&7_Week ' + lag)
+        axes[ilag,3].format(title=ds_fcst_name + ' Phases 6&7_Week ' + lag)
         axes[ilag,3].set_title(PCC_Atlantic_composite_p67_round[ilag], loc = "right")
 
     fig.colorbar(h1, loc='b', extend='both', label='Z500 anomaly',
@@ -330,8 +330,8 @@ if (dictionary['Compute composites']==True):
 
 
     # save
-    if not os.path.exists('../output/PatternCC_Atlantic/'+ds_model_name): 
-        os.mkdir('../output/PatternCC_Atlantic/'+ds_model_name)
+    if not os.path.exists('../output/PatternCC_Atlantic/'+ds_fcst_name): 
+        os.mkdir('../output/PatternCC_Atlantic/'+ds_fcst_name)
     figname='z500_composites_Atlantic' 
-    fig.savefig('../output/PatternCC_Atlantic/'+ds_model_name+'/'+figname+'.jpg',dpi=300)
+    fig.savefig('../output/PatternCC_Atlantic/'+ds_fcst_name+'/'+figname+'.jpg',dpi=300)
 
