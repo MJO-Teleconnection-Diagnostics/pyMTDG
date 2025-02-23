@@ -18,6 +18,7 @@ Contents:
 2. [Obtaining the code](#code)
 3. [Data format](#data)
 4. [Variables](#vars)
+5. [Examples](#output)
 
 ## 1. Software and computational requirements <a name="introduction"></a>
 The package has been developed using `Python 3.9`.
@@ -295,6 +296,6 @@ Composites of 2-meter temperature over the Northern Hemisphere midlatitudes:
 	*** Variable can be named any of: 't2m', 'T2m', 'temp'
 	*** Unit: K
 ~~~
-
-
+## 4. Examples <a name="output"></a>
+The package provides a set of figures and data files in the directory `output`. They can be visualized from the graphical interface by selecting `View results from previous calculation` and `UFS` when prompted for the model name. 
 
