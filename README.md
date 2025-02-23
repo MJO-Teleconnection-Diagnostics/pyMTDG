@@ -10,6 +10,9 @@ Garfinkel, C. I., Z. Wu, P. Yadav, Z. Lawrence, D. I. V. Domeisen, C. Zheng, J. 
 
 Wang, J. D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, Z. Wu, C. Zheng, C. Stan, 2025: Prediction of MJO teleconnections in the UFS global fully coupled model. [https://doi.org/10.21203/rs.3.rs-4903941/v1](https://doi.org/10.21203/rs.3.rs-4903941/v1)
 
+Stan, C., S. Kollapaneni, C. I. Garfinkel, A. M. Jenney, H. Kim, J. Wang, Z. Wu, C. Zheng, and A. Singh, 2025: A Python diagnostics package for evaluation of MJO-Teleconnections in S2S forecast systems. Geophysical Model Development. (submitted)
+
+
 Contents:
 1. [Software requirements](#introduction)
 2. [Obtaining the code](#code)
