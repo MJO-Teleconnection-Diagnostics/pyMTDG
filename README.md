@@ -297,5 +297,5 @@ Composites of 2-meter temperature over the Northern Hemisphere midlatitudes:
 	*** Unit: K
 ~~~
 ## 4. Examples <a name="output"></a>
-The package provides a set of figures and data files in the directory `output`. They can be visualized from the graphical interface by selecting `View results from previous calculation` and `UFS` when prompted for the model name. 
+The package provides a set of figures and data files in the directory `output`. They can be visualized from the graphical interface by selecting `View results from previous calculation` and `UFS5` when prompted for the model name. 
 
