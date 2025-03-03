@@ -265,17 +265,23 @@ def plot_amp_phase_err(ds_amp_err,ds_phase_err,ds_names,nfcst_days,fig_name):
     c1, c2 = plot.scale_luminance('cerulean', 0.5), plot.scale_luminance('red', 0.5)
     
     fcst_days=np.arange(nfcst_days)+1
+    
+    ya_min = np.round(-max(ds_amp_err),3) if min(ds_amp_err) > 0 else np.round(min(ds_amp_err),3)
+    ya_max = np.round(-min(ds_amp_err),3) if max(ds_amp_err) < 0 else np.round(max(ds_amp_err),3)
+    
+    yp_min = np.round(-max(ds_phase_err)) if min(ds_phase_err) > 0 else np.round(min(ds_phase_err))
+    yp_max = np.round(-min(ds_phase_err)) if max(ds_phase_err) < 0 else np.round(max(ds_phase_err))
             
     fig,ax1=plot.subplots(figsize=(8,4))
     ax2=ax1.twinx()
 
     ax1.plot(fcst_days,ds_phase_err,color=c1)
     ax1.axhline(y=0., color='k', linestyle='-',linewidth=0.5)
-    ax1.format(ylim=(-25,25),ylabel='Phase error, deg',ycolor=c1)
+    ax1.format(ylim=(yp_min,yp_max),ylabel='Phase error, deg',ycolor=c1)
     ax1.grid(False)
 
     ax2.plot(fcst_days,ds_amp_err,color=c2)
-    ax2.format(ylim=(-0.05,0.05),ylabel='Amplitude error',ycolor=c2)
+    ax2.format(ylim=(ya_min,ya_max),ylabel='Amplitude error',ycolor=c2)
     ax2.grid(False)
     
     ax2.set_title('MJO prediction skill: Phase and Amplitude')
