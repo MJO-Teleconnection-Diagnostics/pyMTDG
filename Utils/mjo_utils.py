@@ -269,8 +269,8 @@ def plot_amp_phase_err(ds_amp_err,ds_phase_err,ds_names,nfcst_days,fig_name):
     ya_min = np.round(-max(ds_amp_err),3) if min(ds_amp_err) > 0 else np.round(min(ds_amp_err),3)
     ya_max = np.round(-min(ds_amp_err),3) if max(ds_amp_err) < 0 else np.round(max(ds_amp_err),3)
     
-    yp_min = np.round(-max(ds_phase_err)) if min(ds_phase_err) > 0 else np.round(min(ds_phase_err))
-    yp_max = np.round(-min(ds_phase_err)) if max(ds_phase_err) < 0 else np.round(max(ds_phase_err))
+    yp_min = np.round(-max(ds_phase_err)-5.0) if min(ds_phase_err) > 0 else np.round(min(ds_phase_err)-5.0)
+    yp_max = np.round(-min(ds_phase_err)+5.0) if max(ds_phase_err) < 0 else np.round(max(ds_phase_err)+5.0)
             
     fig,ax1=plot.subplots(figsize=(8,4))
     ax2=ax1.twinx()
