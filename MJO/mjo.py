@@ -112,10 +112,10 @@ u850t_dot2_obs = xr.dot(u850_obs[:,:],eof_u850[1,:],dims='longitude')
         
 innerdot1 = (olrt_dot1_obs + u200t_dot1_obs + u850t_dot1_obs) 
 innerdot2  = (olrt_dot2_obs + u200t_dot2_obs + u850t_dot2_obs) 
-pc1 = innerdot1 / 12.0  #obs std
-pc2 = innerdot2 / 12.0  #obs std
-pc1_obs=pc1.dropna('time')
-pc2_obs=pc2.dropna('time') 
+pc1_obs = innerdot1 / 12.0  #obs std
+pc2_obs = innerdot2 / 12.0  #obs std
+pc1_obs=pc1_obs.dropna('time')
+pc2_obs=pc2_obs.dropna('time') 
 
 print('started model MJO calculation')
     
@@ -186,31 +186,31 @@ pc1s_fcst_lis = []
 pc2s_fcst_lis = []
 
 for i in range(len(fcst_u200_120_nor_lis)):
-    u200 = fcst_u200_120_nor_lis[i]
-    olr = fcst_olr_120_nor_lis[i]
-    u850 = fcst_u850_120_nor_lis[i]
+    u200_fcst = fcst_u200_120_nor_lis[i]
+    olr_fcst = fcst_olr_120_nor_lis[i]
+    u850_fcst = fcst_u850_120_nor_lis[i]
     
-    olrt_dot1 = xr.dot(olr[:,:], eof_olr[0,:], dims='longitude')
-    olrt_dot2 = xr.dot(olr[:,:], eof_olr[1,:], dims='longitude')
+    olrt_dot1_fcst = xr.dot(olr_fcst[:,:], eof_olr[0,:], dims='longitude')
+    olrt_dot2_fcst = xr.dot(olr_fcst[:,:], eof_olr[1,:], dims='longitude')
     
 
-    u200t_dot1 = xr.dot(u200[:,:], eof_u200[0,:], dims='longitude')
-    u200t_dot2 = xr.dot(u200[:,:], eof_u200[1,:], dims='longitude')
+    u200t_dot1_fcst = xr.dot(u200_fcst[:,:], eof_u200[0,:], dims='longitude')
+    u200t_dot2_fcst = xr.dot(u200_fcst[:,:], eof_u200[1,:], dims='longitude')
     
-    u850t_dot1 = xr.dot(u850[:,:], eof_u850[0,:], dims='longitude')
-    u850t_dot2 = xr.dot(u850[:,:], eof_u850[1,:], dims='longitude')
+    u850t_dot1_fcst = xr.dot(u850_fcst[:,:], eof_u850[0,:], dims='longitude')
+    u850t_dot2_fcst = xr.dot(u850_fcst[:,:], eof_u850[1,:], dims='longitude')
 
-    innerdot1 = (olrt_dot1 + u200t_dot1 + u850t_dot1) 
-    innerdot2  = (olrt_dot2 + u200t_dot2 + u850t_dot2)
+    innerdot1_fcst = (olrt_dot1_fcst + u200t_dot1_fcst + u850t_dot1_fcst) 
+    innerdot2_fcst  = (olrt_dot2_fcst + u200t_dot2_fcst + u850t_dot2_fcst)
     
-    pc1 = innerdot1 / 12.0  # obs std
-    pc2 = innerdot2 / 12.0  # obs std
+    pc1_fcst = innerdot1_fcst / 12.0  # obs std
+    pc2_fcst = innerdot2_fcst / 12.0  # obs std
         
-    pc1 = pc1.dropna('time')
-    pc2 = pc2.dropna('time')
+    pc1_fcst = pc1_fcst.dropna('time')
+    pc2_fcst = pc2_fcst.dropna('time')
     
-    pc1s_fcst_lis.append(pc1)
-    pc2s_fcst_lis.append(pc2)
+    pc1s_fcst_lis.append(pc1_fcst)
+    pc2s_fcst_lis.append(pc2_fcst)
     
 # Compute PC1 & PC2 of observations for the same dates as the forecast
 pc1s_obs_lis = []
@@ -266,27 +266,13 @@ for t in range(nfc):  # Ensure we run for the 35-day window
 
             num_err = a1*b2 - a2*b1
             denom_err = a1*b1 + a2*b2
-            taninv += np.arctan(num_err/denom_err)
+            taninv += np.arctan2(num_err,denom_err)
             nmjos += 1
-      
-        num += (a1*b1 + a2*b2)
-        denom_1 += a1**2 + a2**2
-        denom_2 += b1**2 + b2**2
-
-        rmse1 += (a1-b1)**2
-        rmse2 += (a2-b2)**2
-
-        num_err = a1*b2 - a2*b1
-        denom_err = a1*b1 + a2*b2
-        taninv += np.arctan2(num_err,denom_err)
-        nmjos += 1
-    
-
 
     acor = num / (np.sqrt(denom_1) * np.sqrt(denom_2))
     rmse = np.sqrt((rmse1 + rmse2) / nmjos)
     aerr = (np.sqrt(denom_2)-np.sqrt(denom_1)) / nmjos
-    perr = 180.*taninv / (np.pi*len(pc1s_fcst_lis))
+    perr = 180.*taninv / (np.pi*nmjos)
     
     acors.append(acor.values)
     rmses.append(rmse.values)
