@@ -66,7 +66,7 @@ a.2 Clone the repository and fetch only a single branch
 
 
 ~~~
-git clone --branch branc_name --single-branch  https://github.com/MJO-Teleconnection-Diagnostics/pyMTDG.git MJO-Teleconnections
+git clone --branch branch_name --single-branch  https://github.com/MJO-Teleconnection-Diagnostics/pyMTDG.git MJO-Teleconnections
 ~~~
 
 
