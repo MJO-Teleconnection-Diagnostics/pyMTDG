@@ -45,7 +45,7 @@ a. Clone the repository.
   a.1 Clone the repository (main and all other branches):
   
 ~~~
-git clone https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
+git clone https://github.com/MJO-Teleconnection-Diagnostics/pyMTDG.git MJO-Teleconnections
 ~~~
 
 Check what you just cloned (by default you will have only the _main_ branch):
@@ -66,7 +66,7 @@ a.2 Clone the repository and fetch only a single branch
 
 
 ~~~
-git clone --branch develop --single-branch  https://github.com/cristianastan2/MJO-Teleconnections.git MJO-Teleconnections
+git clone --branch branc_name --single-branch  https://github.com/MJO-Teleconnection-Diagnostics/pyMTDG.git MJO-Teleconnections
 ~~~
 
 
