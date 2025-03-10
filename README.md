@@ -1,4 +1,4 @@
-# MJO-Teleconnections Diagnostics Package
+# MJO-Teleconnection Diagnostics Package
 
 This repository contains the user interface and code to run the diagnostics for evaluating the MJO teleconnections forecasted by a subseasonal to seasonal system. For the background information on diagnostics see: 
 
