@@ -253,10 +253,9 @@ for t in range(nfc):  # Ensure we run for the 35-day window
         a1 = pc1s_obs_lis[i][t]
         a2 = pc2s_obs_lis[i][t]
         b1 = pc1s_fcst_lis[i][t]
-        b2 = pc2s_fcst_lis[i][t]
+        b2 = pc2s_fcst_lis[i][t]   
         
-        
-        if (amp_obs_lis[i][0] > 1):    #select MJO events with amplitude > 1 for obs
+        if (amp_obs_lis[i][t] > 1):    #select MJO events with amplitude > 1 for obs
             num += (a1*b1 + a2*b2)
             denom_1 += a1**2 + a2**2
             denom_2 += b1**2 + b2**2
@@ -266,7 +265,8 @@ for t in range(nfc):  # Ensure we run for the 35-day window
 
             num_err = a1*b2 - a2*b1
             denom_err = a1*b1 + a2*b2
-            taninv += np.arctan2(num_err,denom_err)
+            taninv += np.arctan2(num_err,denom_err)  # Using arctan2 to handle all quadrants correctly
+                                                     # the angle is defined between [-π, π]
             nmjos += 1
 
     acor = num / (np.sqrt(denom_1) * np.sqrt(denom_2))
@@ -278,6 +278,7 @@ for t in range(nfc):  # Ensure we run for the 35-day window
     rmses.append(rmse.values)
     aerrs.append(aerr.values)
     perrs.append(perr.values)
+    print('For forecast day ',t,' the number of observed MJO events (amplitude > 1) is: ',nmjos)
     
 # Plot acc, rmse, amplitude and phase errors 
 nfcst_days=dictionary['length of forecasts']
