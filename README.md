@@ -12,6 +12,7 @@ Wang, J. D. I. V. Domeisen, C. I. Garfinkel, A. M. Jenney, H. Kim, Z. Wu, C. Zhe
 
 Stan, C., S. Kollapaneni, C. I. Garfinkel, A. M. Jenney, H. Kim, J. Wang, Z. Wu, C. Zheng, and A. Singh, 2025: A Python diagnostics package for evaluation of MJO-Teleconnections in S2S forecast systems. Geophysical Model Development. (submitted)
 
+Citation: 10.5281/zenodo.15002615
 
 Contents:
 1. [Software requirements](#introduction)
