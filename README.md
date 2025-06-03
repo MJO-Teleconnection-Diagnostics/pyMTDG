@@ -277,7 +277,7 @@ Stratosphere:
 	*** Variable can be named any of: 'T','t','temp','t500'
 	*** Unit: K
 	* Geopotential height at 100 hPa
-	*** Variable can be named any of: 'z', 'Z', 'gh', 'z500'
+	*** Variable can be named any of: 'z', 'Z', 'gh', 'z100'
         * Unit: meters OR conversion to geopotential height will occur for any of the following:'m**2 s**-2', 'm^2/s^2', 'm2/s2','m2s-2', 'm2 s-2'
 ~~~
 ~~~
