@@ -47,7 +47,7 @@ def read_data_mo(datafn,lats,**kwargs):
     init_day = pd.to_datetime(init_time).day
     if init_month in [1,2,3,11,12]:
         fcst = get_variable_from_dataset(data_tmp)
-        data = fcst.sel(latitude=lats).mean(dim=('longitude'),skipna=True)
+        data = fcst.sel(latitude=lats,method='nearest').mean(dim=('longitude'),skipna=True)
     else: 
         data = 0     
     return data, init_year, init_month, init_day
