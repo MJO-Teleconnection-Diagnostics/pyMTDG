@@ -343,12 +343,21 @@ def compute_heatflux_anom(fileList_v, fileList_t, lats, lons, nyrs, **kwargs):
             init_year = data_tmp['time.year'][0] 
             init_day = data_tmp['time.day'][0]
             date_init = datetime(year=init_year.values,month=init_month.values,day=init_day.values)
-            data_tmp = data_tmp.sel(latitude=slice(lats[0],lats[1]))
+            lat0=data_tmp.latitude[0]
+            if lat0 > 0:
+                data_tmp = data_tmp.sel(latitude=slice(lats[0],lats[1]))
+            else:
+                data_tmp = data_tmp.sel(latitude=slice(lats[1],lats[0]))
+                
             data_t = get_variable_from_dataset(data_tmp)
             
             datafn = fileList_v[ifile]
             data_tmp1 = xr.open_mfdataset(datafn,combine='by_coords').compute()
-            data_tmp1 = data_tmp1.sel(latitude=slice(lats[0],lats[1]))
+            if lat0 > 0:
+                data_tmp1 = data_tmp1.sel(latitude=slice(lats[0],lats[1]))
+            else:
+                data_tmp1 = data_tmp1.sel(latitude=slice(lats[1],lats[0]))
+                
             data_v = get_variable_from_dataset(data_tmp1)
             date_init_all.append(date_init)
 
@@ -408,7 +417,11 @@ def compute_gph_anom(fileList_z, lats, lons, nyrs, **kwargs):
             init_day = pd.to_datetime(init_time).day
             date_init = datetime(year=init_year,month=init_month,day=init_day)
 
-            data_tmp = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[0],lats[1]))
+            lat_data0 = data.latitude[0]
+            if lat_data0 > 0:
+                data_tmp = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[0],lats[1]))
+            else:
+                data_tmp = data.sel(longitude=slice(lons[0],lons[1]), latitude=slice(lats[1],lats[0]))
             data_t = get_variable_from_dataset(data_tmp)
             date_init_all.append(date_init)
             del data
