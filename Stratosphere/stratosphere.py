@@ -49,10 +49,10 @@ EDD=date.fromisoformat(tEnd).day
 NYRS = EYY-SYY
 years = np.arange(SYY,EYY+1)
 
-if dictionary.get('Daily Anomaly', False):
-    filv_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/v500/v500.ei.oper.an.pl.regn128uv.1979.2019.nc'
-    filt_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t500/t500.ei.oper.an.pl.regn128sc.1979.2019.nc'
-    filz_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/z100/z100.ei.oper.an.pl.regn128sc.1979.2019.nc'
+if dictionary.get('ERAI', False):
+    filv_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/v500/v500.ei.oper.an.pl.regn128uv.1979.2019'
+    filt_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/t500/t500.ei.oper.an.pl.regn128sc.1979.2019'
+    filz_obs=dictionary['DIR_IN']+'/mjo_teleconnections_data/erai/z100/z100.ei.oper.an.pl.regn128sc.1979.2019'
     ds_obs_name='ERAI'
     
 else:
@@ -62,16 +62,16 @@ else:
     filz_obs=dictionary['Path to Z100 observation data files']
     ds_obs_name='OBS'
     
-data_v_obs = get_variable_from_dataset(xr.open_mfdataset(filv_obs,combine='by_coords').compute())
-data_v_obs = data_v_obs.sel(latitude=slice(80,40))
+data_v_obs = get_variable_from_dataset(xr.open_mfdataset(filv_obs+'*.nc',combine='by_coords').compute())
+data_v_obs = data_v_obs.sel(latitude=[80,40],method="nearest")
 data_v_obs = np.squeeze(data_v_obs.sel(time=data_v_obs.time.dt.year.isin(years)))
 
-data_t_obs = get_variable_from_dataset(xr.open_mfdataset(filt_obs,combine='by_coords').compute())
-data_t_obs = data_t_obs.sel(latitude=slice(80,40))
+data_t_obs = get_variable_from_dataset(xr.open_mfdataset(filt_obs+'*.nc',combine='by_coords').compute())
+data_t_obs = data_t_obs.sel(latitude=[80,40],method="nearest")
 data_t_obs = np.squeeze(data_t_obs.sel(time=data_t_obs.time.dt.year.isin(years)))
 
-data_z_obs = get_variable_from_dataset(xr.open_mfdataset(filz_obs,combine='by_coords').compute())
-data_z_obs = data_z_obs.sel(latitude=slice(90,55))
+data_z_obs = get_variable_from_dataset(xr.open_mfdataset(filz_obs+'*.nc',combine='by_coords').compute())
+data_z_obs = data_z_obs.sel(latitude=[90,55],method="nearest")
 data_z_obs = np.squeeze(data_z_obs.sel(time=data_z_obs.time.dt.year.isin(years)))
 
 lon = data_z_obs.coords['longitude'].values
