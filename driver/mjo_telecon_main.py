@@ -1118,6 +1118,7 @@ class ThirdSubWindow(QMainWindow):
         self.parent=parent
         self.selected = selected
         self.era=era
+        self.imerg = dict_file['IMERG']
         self.dirin = dirin
         self.pref = self.dirin+"/"
         self.prefix = self.dirin+"/OBS/"
@@ -1499,7 +1500,7 @@ Example: /project/$user/OBS/var/, where 'var' can be any name or a combination o
                     rendered.append('precDataT')
                     right_layout.addWidget(precData)
                     right_layout.addWidget(self.precDataT)
-                    if era == False:
+                    if era == False and self.imerg == False:
                         text_obs = diag_help_texts_obs[2]+'\n\n'
                         lab_obs=QLabel(text_obs)
                         lab_obs.setWordWrap(True)
